@@ -1,0 +1,35 @@
+### WordPress ###
+
+# macOS/IDE
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Log files
+*.log
+/tests/logs
+
+# Packages
+/node_modules/
+/vendor/
+
+# TSConfig cache
+tsconfig.tsbuildinfo
+
+# Enviroment
+.env
+.wp-env.override.json
+
+# Test output
+/tests/_output/*
+!/tests/_output/.gitkeep
+
+# Configs
+/phpcs.xml
+/phpunit.xml
+/phpstan.neon
+
+# Build
+**/build/*
+onelogs.zip

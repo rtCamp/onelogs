@@ -1,0 +1,356 @@
+.onelogs-logs-dashboard {
+	margin: 0;
+	max-width: none;
+	padding: 0;
+	width: 100%;
+
+	h1 {
+		margin-bottom: 20px;
+	}
+}
+
+// WordPress generates classnames with underscores, so we need to disable stylelint for this line.
+#toplevel_page_onelogs-main { /* stylelint-disable-line */
+
+	.dashicons-admin-generic {
+
+		&::before {
+			content: url("../images/logo.svg") !important;
+		}
+	}
+}
+
+.onelogs-settings-page {
+	margin: 0 auto;
+	max-width: 100%;
+	padding: 20px 0;
+
+	h1 {
+		margin-bottom: 30px;
+	}
+
+	&:has(.components-snackbar-list) {
+
+		.components-snackbar-list {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 1000000;
+			align-items: flex-end;
+			justify-content: flex-end;
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	&:not(:has(.components-snackbar-list)) {
+
+		.components-snackbar {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 1000000;
+			width: auto;
+		}
+	}
+
+	.components-notice__content {
+		white-space: pre-line !important;
+	}
+
+	.onelogs-success-notice {
+		background-color: #16a32d;
+		color: #fff;
+	}
+
+	.onelogs-error-notice {
+		background-color: #e11d1d;
+		color: #fff;
+	}
+}
+
+.onelogs-primary-filters {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 15px;
+
+	.components-base-control {
+		margin-bottom: 0;
+		width: 100%;
+	}
+}
+
+.onelogs-advanced-filters-toggle {
+	margin: 10px 0 15px;
+
+	.components-button {
+		height: auto;
+		line-height: 1.4;
+		padding: 0;
+
+		.toggle-icon {
+			display: inline-block;
+			transition: transform 0.2s ease;
+
+			&.expanded {
+				transform: rotate(180deg);
+			}
+		}
+	}
+}
+
+.onelogs-advanced-filters-grid {
+	border-bottom: 1px solid #e2e8f0;
+	display: grid;
+	gap: 10px;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-template-rows: 75px;
+	padding-bottom: 16px;
+
+
+	.components-base-control {
+		margin-bottom: 0;
+	}
+}
+
+.onelogs-filters-panel-footer {
+	display: flex;
+	gap: 10px;
+	justify-content: space-between;
+	margin-top: 15px;
+}
+
+.onelogs-pagination-controls {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+}
+
+.onelogs-logs-container {
+	margin-top: 30px;
+
+	.onelogs-logs-header {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 15px;
+
+		h2 {
+			margin-bottom: 0;
+		}
+
+		.onelogs-total-count {
+			color: #666;
+			font-size: 14px;
+
+			strong {
+				color: #23282d;
+			}
+		}
+	}
+}
+
+.onelogs-logs-table-container {
+	margin-top: 20px;
+
+	.wp-list-table {
+		table-layout: fixed;
+		width: 100%;
+
+		td {
+			vertical-align: top !important;
+		}
+	}
+
+	.onelogs-summary-column {
+		font-weight: 500;
+		max-width: 300px;
+		min-width: 200px;
+		word-break: break-word;
+	}
+
+	.onelogs-date-absolute {
+		color: #666;
+		font-size: 11px;
+	}
+
+	.onelogs-date-relative {
+		color: #0073aa;
+		font-size: 12px;
+		font-weight: 500;
+	}
+
+	.onelogs-connector-column {
+		color: #0073aa;
+		font-weight: 500;
+	}
+
+	.onelogs-action-column {
+		font-weight: 500;
+		text-transform: capitalize;
+
+		&[data-action="created"] {
+			color: #46b450;
+		}
+
+		&[data-action="updated"] {
+			color: #ffb900;
+		}
+
+		&[data-action="deleted"] {
+			color: #dc3232;
+		}
+
+		&[data-action="trashed"] {
+			color: #f56e28;
+		}
+
+		&[data-action="published"] {
+			color: #0073aa;
+		}
+
+		@media (max-width: 600px) {
+			display: none;
+		}
+	}
+
+	.onelogs-context-column {
+
+		@media (max-width: 769px) {
+			display: none;
+		}
+	}
+
+	.onelogs-subject-column {
+
+		@media (max-width: 480px) {
+			display: none;
+		}
+	}
+
+	.onelogs-column-user {
+		width: 115px;
+	}
+
+	.onelogs-ip-column {
+
+		@media (max-width: 990px) {
+			display: none;
+		}
+	}
+
+	.sortable-column {
+		cursor: pointer;
+		padding-right: 25px;
+		position: relative;
+		user-select: none;
+
+		&::after {
+			content: "↕";
+			font-size: 0.8em;
+			opacity: 0.5;
+			position: absolute;
+			right: 8px;
+		}
+
+		&[class*="-asc"]::after {
+			color: #0073aa;
+			content: "↑";
+			opacity: 1;
+		}
+
+		&[class*="-desc"]::after {
+			color: #0073aa;
+			content: "↓";
+			opacity: 1;
+		}
+	}
+
+	.onelogs-user-cell {
+		align-items: center;
+		display: flex;
+		gap: 8px;
+
+		@media (max-width: 480px) {
+			flex-wrap: wrap;
+		}
+	}
+
+	.onelogs-user-gravatar {
+		border-radius: 50%;
+		flex-shrink: 0;
+		height: 32px;
+		width: 32px;
+	}
+
+	.onelogs-user-name {
+		font-size: 13px;
+	}
+
+	.onelogs-site-column {
+		align-items: center;
+		display: flex;
+		font-size: 13px;
+		height: 100%;
+		max-width: 150px;
+	}
+
+	.onelogs-site-name {
+		color: #0073aa;
+		display: block;
+		font-weight: 500;
+	}
+
+	.onelogs-site-link {
+		color: #666;
+		font-size: 12px;
+		margin-left: 5px;
+		text-decoration: none;
+
+		&:hover {
+			color: #0073aa;
+		}
+	}
+
+	.onelogs-site-local {
+		color: #666;
+		font-style: italic;
+	}
+
+	.onelogs-toggle-section {
+		grid-column: span 2;
+		margin-top: 15px;
+	}
+
+	.onelogs-toggle-label {
+		align-items: center;
+		cursor: pointer;
+		display: flex;
+		font-size: 14px;
+		gap: 8px;
+
+		input[type="checkbox"] {
+			margin: 0;
+		}
+	}
+
+	.onelogs-no-results {
+		color: #666;
+		padding: 20px;
+		text-align: center;
+	}
+}
+
+.onelogs-spinner-container {
+	align-items: center;
+	display: flex;
+	height: 200px;
+	justify-content: center;
+}
+
+.onelogs-error-card {
+	border-left: 4px solid #d63638;
+	margin: 20px 0;
+}
+

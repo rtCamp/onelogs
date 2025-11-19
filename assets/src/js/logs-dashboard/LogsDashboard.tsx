@@ -1,0 +1,325 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
+import { __, sprintf } from '@wordpress/i18n';
+import { Card, CardBody, CardHeader, Spinner } from '@wordpress/components';
+import { setupApiFetch } from './apiConfig';
+import {
+	fetchActions,
+	fetchConnectors as apiFetchConnectors,
+	fetchContexts as apiFetchContexts,
+	fetchLogs as apiFetchLogs,
+	fetchSharedSites as apiFetchSharedSites,
+	fetchUsers as apiFetchUsers,
+} from './apiService';
+import { FiltersPanel } from './FiltersPanel';
+import { LogsTable } from './LogsTable';
+import { Pagination } from './Pagination';
+import { FilterOptions, LogEntry, SortableField, SortState, UserOption } from './types';
+
+setupApiFetch();
+
+const LogsDashboard: React.FC = () => {
+	const [ logs, setLogs ] = useState<LogEntry[]>( [] );
+	const [ contexts, setContexts ] = useState<string[]>( [] );
+	const [ actions, setActions ] = useState<string[]>( [] );
+	const [ connectors, setConnectors ] = useState<string[]>( [] );
+	const [ users, setUsers ] = useState<UserOption[]>( [] );
+	const [ sharedSites, setSharedSites ] = useState<any[]>( [] );
+	const [ showSharedSitesLogs, setShowSharedSitesLogs ] = useState<boolean>( false );
+	const [ filters, setFilters ] = useState<FilterOptions>( {
+		page: 1,
+		per_page: 20,
+		current_site_logs: true,
+		site_url: 'governing-site',
+	} );
+	const [ localSearch, setLocalSearch ] = useState<string>( '' );
+	const [ loading, setLoading ] = useState<boolean>( false );
+	const [ exportLoading, setExportLoading ] = useState<boolean>( false );
+	const [ totalPages, setTotalPages ] = useState<number>( 1 );
+	const [ totalLogs, setTotalLogs ] = useState<number>( 0 );
+	const [ error, setError ] = useState<string | null>( null );
+	const [ currentSort, setCurrentSort ] = useState<SortState>( {
+		field: null,
+		direction: null,
+	} );
+	const [ showAdvancedFilters, setShowAdvancedFilters ] = useState<boolean>( true );
+
+	const fetchLogsData = async () => {
+		setLoading( true );
+		setError( null );
+
+		try {
+			const result = await apiFetchLogs( filters, showSharedSitesLogs, sharedSites );
+			setLogs( result.logs );
+			setTotalLogs( result.total );
+			setTotalPages( result.pages );
+
+			if ( result.errors && result.errors.length > 0 ) {
+				/* translators: %s is replaced with selected site url */
+				setError( sprintf( __( 'Site %s returned errors:', 'onelogs' ), filters.site_url ) );
+			}
+		} catch ( err ) {
+			setError( err instanceof Error ? err.message : __( 'An error occurred while fetching logs', 'onelogs' ) );
+		} finally {
+			setLoading( false );
+		}
+	};
+
+	const exportData = async () => {
+		setExportLoading( true );
+		setError( null );
+
+		try {
+			const perPage = 1000; // Adjust based on server capacity
+			let page = 1;
+			let allLogs = [];
+
+			// Clone filters safely.
+			const filtersForExport = { ...filters };
+
+			// Fetch the first page.
+			const initialResult = await apiFetchLogs( filtersForExport, showSharedSitesLogs, sharedSites );
+			const totalPagesForExport = initialResult.pages || 1;
+			allLogs = [ ...initialResult.logs ];
+
+			// Fetch remaining pages (if any).
+			for ( page = 2; page <= totalPagesForExport; page++ ) {
+				const pagedFilters = { ...filtersForExport, page };
+				const pageResult = await apiFetchLogs( pagedFilters, showSharedSitesLogs, sharedSites );
+				allLogs.push( ...pageResult.logs );
+			}
+
+			// Define CSV headers.
+			const headers = [
+				'Date/Time',
+				'User',
+				'Role',
+				'Action',
+				'Object',
+				'Details',
+				'IP Address',
+				'Site Name',
+			];
+
+			// Build CSV rows.
+			const rows = allLogs.map( ( log ) => [
+				log.created || '',
+				log.user?.display_name || '',
+				log.user_role || '',
+				log.action || '',
+				log.object_data?.title || '',
+				log.summary || '',
+				log.ip || '',
+				log.site_name || window.location.origin,
+			] );
+
+			// Escape double quotes and wrap fields in quotes.
+			const escapeCSV = ( value ) => `"${ String( value ).replace( /"/g, '""' ) }"`;
+
+			// Combine CSV content.
+			const csvContent = [
+				headers.map( escapeCSV ).join( ',' ),
+				...rows.map( ( row ) => row.map( escapeCSV ).join( ',' ) ),
+			].join( '\n' );
+
+			// Trigger CSV download.
+			const blob = new Blob( [ csvContent ], { type: 'text/csv;charset=utf-8;' } );
+			const url = URL.createObjectURL( blob );
+			const link = document.createElement( 'a' );
+			link.href = url;
+			link.download = `onepress-logs-${ new Date().toISOString().split( 'T' )[ 0 ] }.csv`;
+			link.style.display = 'none';
+			document.body.appendChild( link );
+			link.click();
+			document.body.removeChild( link );
+			URL.revokeObjectURL( url );
+		} catch ( err ) {
+			setError( err?.message || 'Failed to export logs.' );
+		} finally {
+			setExportLoading( false );
+		}
+	};
+
+	const loadContexts = async () => {
+		try {
+			const data = await apiFetchContexts( filters );
+			setContexts( data );
+		} catch ( err ) {
+			setError( __( 'Error fetching contexts:', 'onelogs' ) );
+		}
+	};
+
+	const loadConnectors = async () => {
+		try {
+			const data = await apiFetchConnectors( filters );
+			setConnectors( data );
+		} catch ( err ) {
+			setError( __( 'Error fetching connectors:', 'onelogs' ) );
+		}
+	};
+
+	const loadUsers = async () => {
+		try {
+			const data = await apiFetchUsers( filters );
+			setUsers( data );
+		} catch ( err ) {
+			setError( __( 'Error fetching users:', 'onelogs' ) );
+		}
+	};
+
+	const loadSharedSites = async () => {
+		try {
+			const data = await apiFetchSharedSites();
+			setSharedSites( data );
+		} catch ( err ) {
+			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
+		}
+	};
+
+	const loadActions = async () => {
+		try {
+			const data = await fetchActions( filters );
+			setActions( data );
+		} catch ( err ) {
+			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
+		}
+	};
+
+	useEffect( () => {
+		loadContexts();
+		loadConnectors();
+		loadUsers();
+		loadSharedSites();
+		loadActions();
+		fetchLogsData();
+	}, [] );
+
+	useEffect( () => {
+		fetchLogsData();
+		loadUsers();
+		loadContexts();
+		loadActions();
+	}, [ filters, showSharedSitesLogs ] );
+
+	useEffect( () => {
+		setLocalSearch( filters.search || '' );
+	}, [ filters.search ] );
+
+	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: any ) => {
+		setFilters( ( prev ) => ( {
+			...prev,
+			[ key ]: value,
+			page: 1,
+		} ) );
+	}, [] );
+
+	const resetFilters = () => {
+		setFilters( {
+			page: 1,
+			per_page: 20,
+			current_site_logs: true,
+			site_url: 'governing-site',
+		} );
+	};
+
+	const handlePageChange = ( newPage: number ) => {
+		if ( newPage >= 1 && newPage <= totalPages ) {
+			setFilters( ( prev ) => ( {
+				...prev,
+				page: newPage,
+			} ) );
+		}
+	};
+
+	const handleSort = ( field: SortableField ) => {
+		let newDirection: 'asc' | 'desc' = 'asc';
+
+		if ( currentSort.field === field ) {
+			newDirection = currentSort.direction === 'asc' ? 'desc' : 'asc';
+		}
+
+		setCurrentSort( {
+			field,
+			direction: newDirection,
+		} );
+
+		setFilters( ( prev ) => ( {
+			...prev,
+			orderby: field,
+			order: newDirection,
+			page: 1,
+		} ) );
+	};
+	return (
+		<Card>
+			<CardHeader>
+				<div>
+					<h1 style={ { margin: 0 } }>
+						{ __( 'OneLogs', 'onepress-logs' ) }
+					</h1>
+				</div>
+			</CardHeader>
+			<CardBody>
+				<FiltersPanel
+					localSearch={ localSearch }
+					setLocalSearch={ setLocalSearch }
+					filters={ filters }
+					handleFilterChange={ handleFilterChange }
+					connectors={ connectors }
+					contexts={ contexts }
+					actions={ actions }
+					users={ users }
+					sharedSites={ sharedSites }
+					showSharedSitesLogs={ showSharedSitesLogs }
+					setShowSharedSitesLogs={ setShowSharedSitesLogs }
+					showAdvancedFilters={ showAdvancedFilters }
+					setShowAdvancedFilters={ setShowAdvancedFilters }
+					resetFilters={ resetFilters }
+					fetchLogsData={ fetchLogsData }
+					exportData={ exportData }
+					exportLoading={ exportLoading }
+				/>
+				{ error && (
+					<Card className="onelogs-error-card">
+						<CardBody>
+							<p style={ { color: 'red' } }>{ error }</p>
+						</CardBody>
+					</Card>
+				) }
+
+				{ loading ? (
+					<div className="onelogs-spinner-container">
+						<Spinner />
+					</div>
+				) : (
+					<div>
+						<LogsTable
+							logs={ logs }
+							users={ users }
+							currentSort={ currentSort }
+							handleSort={ handleSort }
+						/>
+
+						<Pagination
+							currentPage={ filters.page }
+							totalPages={ totalPages }
+							onPageChange={ handlePageChange }
+							totalLogs={ totalLogs }
+						/>
+					</div>
+				) }
+			</CardBody>
+		</Card>
+	);
+};
+
+document.addEventListener( 'DOMContentLoaded', () => {
+	const element = document.getElementById( 'onelogs-logs-dashboard' );
+
+	if ( element ) {
+		const root = createRoot( element );
+		root.render( <LogsDashboard /> );
+	}
+} );
+
+export default LogsDashboard;
