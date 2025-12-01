@@ -1,3 +1,5 @@
+![Banner](https://rtcamp.com/wp-content/uploads/sites/2/2024/09/OneLogs-Banner.png)
+
 # OneLogs
 
 Contributors: [rtcamp](https://profiles.wordpress.org/rtcamp), [whopiyush](https://github.com/whopiyush), [patil-vipul](https://github.com/patil-vipul), [up1512001](https://github.com/up1512001), [justlevine](https://github.com/justlevine), [aviral-mittal](https://github.com/aviral-mittal), [rishavjeet](https://github.com/rishavjeet), [vishal4669](https://github.com/vishal4669), [vishalkakadiya](https://github.com/vishalkakadiya)
@@ -84,17 +86,20 @@ across the OnePress network for improved oversight and operational transparency.
 3. Designate all other sites as “Brand Sites” (connected shared sites).
 4. Copy the API keys generated for each Brand Site from their respective settings pages
 5. In the Governing Site settings, register each Brand Site by adding:
-  - Site name
-  - URL
-  - Logo
-  - API key
+
+- Site name
+- URL
+- Logo
+- API key
 
 ### Accessing the Logs Dashboard
 
 1. On your Governing Site, open `OneLogs > Logs` from the sidebar.
 2. Use the Site Selector dropdown to switch between:
-  - Governing Site logs
-  - Any connected Brand Site logs
+
+- Governing Site logs
+- Any connected Brand Site logs
+
 3. On the Governing site, Governing site will be selected by default, on the Brand sites, the respective Brand site will
    be selected by default.
 4. Use the Search field to find events by summary text.
@@ -134,14 +139,19 @@ Yes. You can export filtered or complete log datasets to CSV directly from the d
 ### Troubleshooting
 
 1. **No brand site logs visible on the Governing Site**
-  - Ensure each Brand Site has OneLogs and Stream installed and active.
-  - Verify API keys and REST endpoints are correctly configured.
-  - Verify REST API permissions
+
+- Ensure each Brand Site has OneLogs and Stream installed and active.
+- Verify API keys and REST endpoints are correctly configured.
+- Verify REST API permissions
+
 2. **Search not working correctly**
-  - The search functionality only searches within the summary column
+
+- The search functionality only searches within the summary column
+
 3. **CSV export empty**
-  - Make sure filters aren’t too restrictive.
-  - Try exporting without filters to test data presence.
+
+- Make sure filters aren’t too restrictive.
+- Try exporting without filters to test data presence.
 
 This plugin is licensed under the GPL v2 or later.
 
