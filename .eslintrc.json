@@ -18,8 +18,7 @@
 		}
 	},
 	"globals": {
-		"_": true,
-		"patternSyncData": true
+		"_": true
 	},
 	"rules": {
 		"jsdoc/check-indentation": "error",

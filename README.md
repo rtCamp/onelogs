@@ -1,4 +1,4 @@
-![Banner](https://rtcamp.com/wp-content/uploads/sites/2/2024/09/OneLogs-Banner.png)
+![Banner](./wp-assets/banner.png)
 
 # OneLogs
 
