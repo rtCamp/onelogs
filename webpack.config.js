@@ -68,7 +68,7 @@ const scripts = {
 	entry: {
 		'logs-dashboard': path.resolve( process.cwd(), 'assets', 'src', 'js', 'logs-dashboard', 'index.ts' ),
 		settings: path.resolve( process.cwd(), 'assets', 'src', 'js', 'settings.js' ),
-		plugin: path.resolve( process.cwd(), 'assets', 'src', 'js', 'plugin.js' ),
+		onboarding: path.resolve( process.cwd(), 'assets', 'src', 'admin', 'onboarding', 'index.tsx' ),
 		SiteModal: path.resolve( process.cwd(), 'assets', 'src', 'js', 'components', 'SiteModal.js' ),
 		SiteSettings: path.resolve( process.cwd(), 'assets', 'src', 'js', 'components', 'SiteSettings.js' ),
 		SiteTable: path.resolve( process.cwd(), 'assets', 'src', 'js', 'components', 'SiteTable.js' ),
