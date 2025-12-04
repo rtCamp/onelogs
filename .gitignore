@@ -36,6 +36,3 @@ phpstan.neon
 # Build
 build/
 onelogs.zip
-
-# TSConfig cache
-tsconfig.tsbuildinfo
