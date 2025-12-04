@@ -1,6 +1,6 @@
 // Styles specific to the plugin onboarding (Plugins page)
 
-.onedesign-onboarding-page {
+.onelogs-onboarding-page {
 
 	.components-card {
 		margin-bottom: 20px;
@@ -16,7 +16,7 @@
 }
 
 // Onboarding modal container and backdrop
-[id="onedesign-site-selection-modal"] {
+[id="onelogs-site-selection-modal"] {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -25,7 +25,7 @@
 	min-width: 40vw;
 }
 
-body.onedesign-site-selection-modal {
+body.onelogs-site-selection-modal {
 
 	&::before {
 		content: "";

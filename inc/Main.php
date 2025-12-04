@@ -5,7 +5,7 @@
  * @package OneLogs
  */
 
-declare( strict_types=1 );
+declare( strict_types = 1 );
 
 namespace OneLogs;
 
@@ -24,13 +24,7 @@ final class Main {
 	 * @var class-string<\OneLogs\Contracts\Interfaces\Registrable>[]
 	 */
 	private const REGISTRABLE_CLASSES = [
-		Modules\Core\Assets::class,
-		Modules\Core\Settings::class,
-		Modules\Admin\Admin::class,
-		Modules\Admin\Logs_REST_Controller::class,
-		Modules\Admin\API_Key_REST_Controller::class,
-		Modules\Plugin_Configs\Secret_Key::class, // Secret_Key should be called before Basic_Options.
-		Modules\Admin\Basic_Options::class,
+
 	];
 
 	/**
@@ -65,19 +59,11 @@ final class Main {
 	 * Load the plugin classes.
 	 */
 	private function load(): void {
-		// Loop through all the classes, instantiate them, and register any hooks.
 		foreach ( self::REGISTRABLE_CLASSES as $class_name ) {
-			/**
-			 * If it's a singleton, we can use the instance method. Otherwise we instantiate it directly.
-			 */
-			$instance = method_exists( $class_name, 'instance' ) ? $class_name::instance() : new $class_name();
-
-			// Hooks should be registered outside of the constructor.
-			if ( ! $instance instanceof Contracts\Interfaces\Registrable ) {
-				continue;
-			}
-
+			$instance = new $class_name();
 			$instance->register_hooks();
 		}
+
+		// Do other generalizable stuff here.
 	}
 }

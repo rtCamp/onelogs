@@ -7,7 +7,7 @@
  * @package OneLogs
  */
 
-declare(strict_types = 1);
+declare( strict_types = 1 );
 
 namespace OneLogs;
 
@@ -35,7 +35,7 @@ final class Autoloader {
 			return self::$is_loaded;
 		}
 
-		$autoloader      = ONELOGS_DIR . '/vendor/autoload.php';
+		$autoloader      = ONELOGS_DIR . 'vendor/autoload.php';
 		self::$is_loaded = self::require_autoloader( $autoloader );
 
 		return self::$is_loaded;
