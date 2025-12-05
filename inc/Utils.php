@@ -132,26 +132,35 @@ class Utils {
 	 * @return string|false The API key if found, or false if no match.
 	 */
 	public static function get_shared_site_api_key_by_url( $url ) {
-		// Get shared sites from options.
+		if ( empty( $url ) ) {
+			return false;
+		}
+
+		$url = untrailingslashit( esc_url_raw( $url ) );
+		if ( empty( $url ) ) {
+			return false;
+		}
+
 		$shared_sites = get_option( 'onelogs_shared_sites', [] );
+
 		if ( empty( $shared_sites ) || ! is_array( $shared_sites ) ) {
 			return false;
 		}
 
-		// Normalize the input URL for comparison.
-		$normalized_input = preg_replace( '#^https?://#', '', trim( strtolower( $url ) ) );
-		$normalized_input = untrailingslashit( $normalized_input );
-
 		foreach ( $shared_sites as $site ) {
-			if ( empty( $site['siteUrl'] ) || empty( $site['apiKey'] ) ) {
+
+			if (
+				! is_array( $site ) ||
+				empty( $site['url'] ) ||
+				empty( $site['api_key'] )
+			) {
 				continue;
 			}
 
-			$normalized_site = preg_replace( '#^https?://#', '', trim( strtolower( $site['siteUrl'] ) ) );
-			$normalized_site = untrailingslashit( $normalized_site );
+			$site_url = untrailingslashit( esc_url_raw( $site['url'] ) );
 
-			if ( $normalized_site === $normalized_input ) {
-				return $site['apiKey'];
+			if ( $site_url && $site_url === $url ) {
+				return $site['api_key'];
 			}
 		}
 

@@ -76,7 +76,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_logs' ],
-					'permission_callback' => [ Utils::class, 'onelogs_key_validation' ],
+					'permission_callback' => [ $this, 'check_api_permissions' ],
 					'args'                => $this->get_logs_args_schema(),
 				],
 			]
@@ -89,7 +89,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_log' ],
-					'permission_callback' => [ Utils::class, 'onelogs_key_validation' ],
+					'permission_callback' => [ $this, 'check_api_permissions' ],
 					'args'                => [
 						'id' => [
 							'type'     => 'integer',
@@ -109,7 +109,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_contexts' ],
-					'permission_callback' => [ Utils::class, 'onelogs_key_validation' ],
+					'permission_callback' => [ $this, 'check_api_permissions' ],
 				],
 			]
 		);
@@ -122,7 +122,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_connectors' ],
-					'permission_callback' => [ Utils::class, 'onelogs_key_validation' ],
+					'permission_callback' => [ $this, 'check_api_permissions' ],
 				],
 			]
 		);
@@ -135,7 +135,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_users' ],
-					'permission_callback' => [ Utils::class, 'onelogs_key_validation' ],
+					'permission_callback' => [ $this, 'check_api_permissions' ],
 					'args'                => [
 						'search' => [
 							'type'              => 'string',
@@ -155,7 +155,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_actions' ],
-					'permission_callback' => [ Utils::class, 'onelogs_key_validation' ],
+					'permission_callback' => [ $this, 'check_api_permissions' ],
 				],
 			]
 		);
@@ -1272,7 +1272,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 		$request_args = [
 			'method'  => $method,
 			'headers' => [
-				'X-ONELOGS-TOKEN' => $api_key,
+				'X-OneLogs-Token' => $api_key,
 			],
 		];
 
