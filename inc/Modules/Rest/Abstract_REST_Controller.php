@@ -76,6 +76,9 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 		}
 
 		$request_origin = $request->get_header( 'origin' );
+		if ( empty( $request_origin ) ) {
+			$request_origin = $request->get_header( 'referer' );
+		}
 		$request_origin = ! empty( $request_origin ) ? esc_url_raw( wp_unslash( $request_origin ) ) : '';
 		$user_agent     = $request->get_header( 'user-agent' );
 		$user_agent     = ! empty( $user_agent ) ? sanitize_text_field( wp_unslash( $user_agent ) ) : '';
