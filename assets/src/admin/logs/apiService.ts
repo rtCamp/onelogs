@@ -1,7 +1,6 @@
-import { FilterOptions, UserOption } from './types';
-import apiFetch from "@wordpress/api-fetch";
+import type { FilterOptions, UserOption } from './types';
+import apiFetch from '@wordpress/api-fetch';
 
-const API_NAMESPACE = window.OneLogsData.restUrl + '/onelogs/v1';
 const NONCE = window.OneLogsData.restNonce;
 const API_KEY = window.OneLogsData.apiKey;
 
@@ -113,12 +112,12 @@ const oneLogsFetch = async <T = any>(
 			'X-OneLogs-Token': API_KEY,
 		};
 		return next( options );
-	});
+	} );
 
 	const apiResponse = await apiFetch( {
 		path: `/onelogs/v1/${ endpoint }${ query }`,
 		method: 'GET',
-	});
+	} );
 
 	const result = apiResponse;
 

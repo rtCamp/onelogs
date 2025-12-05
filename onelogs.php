@@ -70,17 +70,3 @@ if ( class_exists( 'OneLogs\Main' ) ) {
 		}
 	);
 }
-
-// Activation Hooks.
-register_activation_hook(
-	__FILE__,
-	static function (): void {
-		// @todo onboarding should be it's own class.
-		// Show onboarding on first admin load after activation.
-		if ( get_option( 'onelogs_show_onboarding' ) ) {
-			return;
-		}
-
-		add_option( 'onelogs_show_onboarding', '1', '', false );
-	}
-);

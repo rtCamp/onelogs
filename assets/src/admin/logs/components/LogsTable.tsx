@@ -1,6 +1,6 @@
 import React from 'react';
 import { __ } from '@wordpress/i18n';
-import { LogEntry, SortableField, SortState, UserOption } from '../types';
+import type { LogEntry, SortableField, SortState, UserOption } from '../types';
 import { formatDate } from '../utils';
 
 interface LogsTableProps {

@@ -13,7 +13,7 @@ import {
 import { FiltersPanel } from './FiltersPanel';
 import { LogsTable } from './LogsTable';
 import { Pagination } from './Pagination';
-import { FilterOptions, LogEntry, SortableField, SortState, UserOption } from '../types';
+import type { FilterOptions, LogEntry, SortableField, SortState, UserOption } from '../types';
 
 const LogsDashboard: React.FC = () => {
 	const [ logs, setLogs ] = useState<LogEntry[]>( [] );

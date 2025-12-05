@@ -7,7 +7,6 @@
 
 namespace OneLogs;
 
-use OneLogs\Modules\Plugin_Configs\Constants;
 use OneLogs\Modules\Settings\Settings;
 
 /**
@@ -148,7 +147,6 @@ class Utils {
 		}
 
 		foreach ( $shared_sites as $site ) {
-
 			if (
 				! is_array( $site ) ||
 				empty( $site['url'] ) ||

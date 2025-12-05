@@ -13,7 +13,6 @@
 namespace OneLogs\Modules\Rest;
 
 use OneLogs\Utils;
-use WP_REST_Controller;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;

@@ -28,10 +28,10 @@ class Assets implements Registrable {
 	/**
 	 * Asset handles
 	 */
-	public const ADMIN_STYLES_HANDLE            = self::PREFIX . 'admin';
-	public const SETTINGS_SCRIPT_HANDLE         = self::PREFIX . 'settings';
-	public const ONBOARDING_SCRIPT_HANDLE       = self::PREFIX . 'setup';
-	public const LOGS_DASHBOARD_SCRIPT_HANDLE  = self::PREFIX . 'logs-dashboard';
+	public const ADMIN_STYLES_HANDLE          = self::PREFIX . 'admin';
+	public const SETTINGS_SCRIPT_HANDLE       = self::PREFIX . 'settings';
+	public const ONBOARDING_SCRIPT_HANDLE     = self::PREFIX . 'setup';
+	public const LOGS_DASHBOARD_SCRIPT_HANDLE = self::PREFIX . 'logs-dashboard';
 
 	/**
 	 * Localized data for scripts.
@@ -102,7 +102,6 @@ class Assets implements Registrable {
 		$this->register_script( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding' );
 		$this->register_style( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding', [ 'wp-components' ] );
 
-
 		$this->register_style(
 			self::ADMIN_STYLES_HANDLE,
 			'admin',
@@ -118,30 +117,36 @@ class Assets implements Registrable {
 	 * @return void -- register styles and scripts
 	 */
 	public function enqueue_scripts(): void {
-			$this->register_script(
-				self::LOGS_DASHBOARD_SCRIPT_HANDLE,
-				'logs-dashboard',
-				[ 'wp-element', 'wp-components', 'wp-i18n', 'wp-api-fetch' ],
-			);
+		$this->register_script(
+			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
+			'logs-dashboard',
+			[ 'wp-element', 'wp-components', 'wp-i18n', 'wp-api-fetch' ],
+		);
 
-			wp_localize_script(
-				self::LOGS_DASHBOARD_SCRIPT_HANDLE,
-				'OneLogsData',
-				self::get_localized_data(),
-			);
+		$this->register_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE, 'logs-dashboard', [ 'wp-components' ], );
 
-			wp_enqueue_script( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+		wp_localize_script(
+			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
+			'OneLogsData',
+			self::get_localized_data(),
+		);
 
-			$this->register_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE, 'logs-dashboard', [ 'wp-components' ], );
-			wp_enqueue_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+		$screen = get_current_screen();
+		if ( 'onelogs' === $screen->id ) {
+			return;
+		}
 
+		wp_enqueue_script( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+
+		wp_enqueue_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
 	}
 
 	/**
 	 * Add defer attribute to certain plugin bundle scripts to improve loading performance.
 	 *
-	 * @param string $tag    The script tag.
+	 * @param string $tag The script tag.
 	 * @param string $handle The script handle.
+	 *
 	 * @return string Modified script tag.
 	 */
 	public function defer_scripts( string $tag, string $handle ): string {
@@ -160,11 +165,11 @@ class Assets implements Registrable {
 	/**
 	 * Register a script.
 	 *
-	 * @param string   $handle    Name of the script. Should be unique.
-	 * @param string   $filename  Path of the script relative to js directory.
-	 *                            excluding the .js extension.
-	 * @param string[] $deps      Optional. An array of registered script handles this script depends on. If not set, the dependencies will be inherited from the asset file.
-	 * @param ?string  $ver       Optional. String specifying script version number, if not set, the version will be inherited from the asset file.
+	 * @param string   $handle Name of the script. Should be unique.
+	 * @param string   $filename Path of the script relative to js directory.
+	 *                              excluding the .js extension.
+	 * @param string[] $deps Optional. An array of registered script handles this script depends on. If not set, the dependencies will be inherited from the asset file.
+	 * @param ?string  $ver Optional. String specifying script version number, if not set, the version will be inherited from the asset file.
 	 * @param bool     $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 */
 	private function register_script( string $handle, string $filename, array $deps = [], $ver = null, bool $in_footer = true ): bool {
@@ -193,15 +198,15 @@ class Assets implements Registrable {
 	/**
 	 * Register a CSS stylesheet
 	 *
-	 * @param string   $handle    Name of the stylesheet. Should be unique.
-	 * @param string   $filename  Path of the stylesheet relative to the css directory,
-	 *                            excluding the .css extension.
-	 * @param string[] $deps      Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
-	 * @param ?string  $ver       Optional. String specifying style version number, if not set, the version will be inherited from the asset file.
+	 * @param string   $handle Name of the stylesheet. Should be unique.
+	 * @param string   $filename Path of the stylesheet relative to the css directory,
+	 *                              excluding the .css extension.
+	 * @param string[] $deps Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @param ?string  $ver Optional. String specifying style version number, if not set, the version will be inherited from the asset file.
 	 *
-	 * @param string   $media     Optional. The media for which this stylesheet has been defined.
-	 *                            Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media queries like
-	 *                            '(orientation: portrait)' and '(max-width: 640px)'.
+	 * @param string   $media Optional. The media for which this stylesheet has been defined.
+	 *                              Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media queries like
+	 *                              '(orientation: portrait)' and '(max-width: 640px)'.
 	 */
 	private function register_style( string $handle, string $filename, array $deps = [], $ver = null, string $media = 'all' ): bool {
 		// CSS doesnt have a PHP assets file so we infer from the file itself.
