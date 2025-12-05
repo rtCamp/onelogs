@@ -1,6 +1,5 @@
 export * from './types';
 export * from './utils';
-export * from './apiConfig';
 export * from './apiService';
 export * from './FiltersPanel';
 export * from './LogsTable';

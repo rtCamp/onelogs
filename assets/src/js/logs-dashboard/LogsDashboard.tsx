@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { __, sprintf } from '@wordpress/i18n';
 import { Card, CardBody, CardHeader, Spinner } from '@wordpress/components';
-import { setupApiFetch } from './apiConfig';
 import {
 	fetchActions,
 	fetchConnectors as apiFetchConnectors,
@@ -15,8 +14,6 @@ import { FiltersPanel } from './FiltersPanel';
 import { LogsTable } from './LogsTable';
 import { Pagination } from './Pagination';
 import { FilterOptions, LogEntry, SortableField, SortState, UserOption } from './types';
-
-setupApiFetch();
 
 const LogsDashboard: React.FC = () => {
 	const [ logs, setLogs ] = useState<LogEntry[]>( [] );
