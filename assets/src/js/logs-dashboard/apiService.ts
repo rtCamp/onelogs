@@ -1,4 +1,5 @@
 import { FilterOptions, UserOption } from './types';
+import apiFetch from "@wordpress/api-fetch";
 
 const API_NAMESPACE = window.OneLogsData.restUrl + '/onelogs/v1';
 const NONCE = window.OneLogsData.restNonce;
@@ -104,16 +105,22 @@ const oneLogsFetch = async <T = any>(
 		query = `?site_url=${ filters.site_url }`;
 	}
 
-	const apiResponse = await fetch( `${ API_NAMESPACE }/${ endpoint }${ query }`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-WP-Nonce': NONCE,
+	apiFetch.use( apiFetch.createNonceMiddleware( NONCE ) );
+
+	apiFetch.use( ( options, next ) => {
+		options.headers = {
+			...( options.headers || {} ),
 			'X-OneLogs-Token': API_KEY,
-		},
-	} );
+		};
+		return next( options );
+	});
 
-	const json = await apiResponse.json();
+	const apiResponse = await apiFetch( {
+		path: `/onelogs/v1/${ endpoint }${ query }`,
+		method: 'GET',
+	});
 
-	return returnKey ? json?.[ returnKey ] ?? [] : json;
+	const result = apiResponse;
+
+	return returnKey ? result?.[ returnKey ] ?? [] : result;
 };
