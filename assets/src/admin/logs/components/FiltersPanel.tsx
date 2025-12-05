@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
 import debounce from 'lodash/debounce';
-import { FilterOptions, UserOption } from './types';
-import { fetchSiteType } from './apiService';
+import { FilterOptions, UserOption } from '../types';
+import { fetchSiteType } from '../apiService';
 
 interface FiltersPanelProps {
 	localSearch: string;

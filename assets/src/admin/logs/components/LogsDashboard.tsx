@@ -9,11 +9,11 @@ import {
 	fetchLogs as apiFetchLogs,
 	fetchSharedSites as apiFetchSharedSites,
 	fetchUsers as apiFetchUsers,
-} from './apiService';
+} from '../apiService';
 import { FiltersPanel } from './FiltersPanel';
 import { LogsTable } from './LogsTable';
 import { Pagination } from './Pagination';
-import { FilterOptions, LogEntry, SortableField, SortState, UserOption } from './types';
+import { FilterOptions, LogEntry, SortableField, SortState, UserOption } from '../types';
 
 const LogsDashboard: React.FC = () => {
 	const [ logs, setLogs ] = useState<LogEntry[]>( [] );

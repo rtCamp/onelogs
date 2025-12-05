@@ -66,10 +66,9 @@ const styles = {
 const scripts = {
 	...sharedConfig,
 	entry: {
-		'logs-dashboard': path.resolve( process.cwd(), 'assets', 'src', 'js', 'logs-dashboard', 'index.ts' ),
+		'logs-dashboard': path.resolve( process.cwd(), 'assets', 'src', 'admin', 'logs', 'index.ts' ),
 		settings: path.resolve( process.cwd(), 'assets', 'src', 'admin', 'settings', 'index.js' ),
 		onboarding: path.resolve( process.cwd(), 'assets', 'src', 'admin', 'onboarding', 'index.tsx' ),
-		'multisite-plugin': path.resolve( process.cwd(), 'assets', 'src', 'admin', 'multisite-plugin', 'index.js' ),
 	},
 	module: {
 		rules: sharedConfig?.module?.rules?.filter(
