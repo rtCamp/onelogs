@@ -1,27 +1,36 @@
-import { useCallback, useEffect, useState } from '@wordpress/element';
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useState, useCallback } from '@wordpress/element';
 import {
+	TextareaControl,
 	Button,
 	Card,
-	CardBody,
-	CardHeader,
-	Modal,
 	Notice,
 	Spinner,
-	TextareaControl,
+	CardHeader,
+	CardBody,
 	TextControl,
+	Modal,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-const API_NAMESPACE = OneLogsSettings.restUrl + '/onelogs/v1';
-const NONCE = OneLogsSettings.restNonce;
-const API_KEY = OneLogsSettings.apiKey;
+/**
+ * internal dependencies
+ */
+import { API_NAMESPACE, NONCE, API_KEY } from '../js/constants';
 
+/**
+ * SiteSettings component for managing API key and governing site connection.
+ *
+ * @return {JSX.Element} Rendered component.
+ */
 const SiteSettings = () => {
 	const [ apiKey, setApiKey ] = useState( '' );
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ notice, setNotice ] = useState( null );
 	const [ governingSite, setGoverningSite ] = useState( '' );
-	const [ showDisconnectionModal, setShowDisconnectionModal ] = useState( false );
+	const [ showDisconectionModal, setShowDisconectionModal ] = useState( false );
 
 	const fetchApiKey = useCallback( async () => {
 		try {
@@ -140,25 +149,25 @@ const SiteSettings = () => {
 				message: __( 'Failed to disconnect governing site. Please try again later.', 'onelogs' ),
 			} );
 		} finally {
-			setShowDisconnectionModal( false );
+			setShowDisconectionModal( false );
 		}
 	}, [ apiKey ] );
 
 	const handleDisconnectGoverningSite = useCallback( async () => {
-		setShowDisconnectionModal( true );
+		setShowDisconectionModal( true );
 	}, [] );
 
 	useEffect( () => {
 		fetchApiKey();
 		fetchCurrentGoverningSite();
-	}, [ fetchApiKey, fetchCurrentGoverningSite ] );
+	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	if ( isLoading ) {
 		return <Spinner />;
 	}
 
 	return (
-		<div className="some-site-settings-class">
+		<>
 
 			{ notice && (
 				<Notice
@@ -227,7 +236,7 @@ const SiteSettings = () => {
 						variant="secondary"
 						isDestructive
 						onClick={ handleDisconnectGoverningSite }
-						disabled={ governingSite.trim().length === 0 || isLoading }
+						disabled={ governingSite?.trim().length === 0 || isLoading }
 					>
 						{ __( 'Disconnect Governing Site', 'onelogs' ) }
 					</Button>
@@ -242,17 +251,17 @@ const SiteSettings = () => {
 				</CardBody>
 			</Card>
 
-			{ showDisconnectionModal && (
+			{ showDisconectionModal && (
 				<Modal
 					title={ __( 'Disconnect Governing Site', 'onelogs' ) }
-					onRequestClose={ () => setShowDisconnectionModal( false ) }
+					onRequestClose={ () => setShowDisconectionModal( false ) }
 					shouldCloseOnClickOutside={ true }
 				>
 					<p>{ __( 'Are you sure you want to disconnect from the governing site? This action cannot be undone.', 'onelogs' ) }</p>
 					<div style={ { display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '16px' } }>
 						<Button
 							variant="secondary"
-							onClick={ () => setShowDisconnectionModal( false ) }
+							onClick={ () => setShowDisconectionModal( false ) }
 						>
 							{ __( 'Cancel', 'onelogs' ) }
 						</Button>
@@ -266,7 +275,7 @@ const SiteSettings = () => {
 					</div>
 				</Modal>
 			) }
-		</div>
+		</>
 	);
 };
 

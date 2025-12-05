@@ -1,7 +1,7 @@
 import { FilterOptions, UserOption } from './types';
 
-const API_NAMESPACE = window.OneLogsData.rest_url + '/onelogs/v1';
-const NONCE = window.OneLogsData.nonce;
+const API_NAMESPACE = window.OneLogsData.restUrl + '/onelogs/v1';
+const NONCE = window.OneLogsData.restNonce;
 const API_KEY = window.OneLogsData.apiKey;
 
 type FetchOptions = {

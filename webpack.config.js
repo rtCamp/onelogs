@@ -17,7 +17,7 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const sharedConfig = {
 	...defaultConfig,
 	output: {
-		path: path.resolve( process.cwd(), 'build', 'js' ),
+		path: path.resolve( process.cwd(), 'build' ),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
@@ -39,7 +39,7 @@ const sharedConfig = {
 const styles = {
 	...sharedConfig,
 	output: {
-		path: path.resolve( process.cwd(), 'build', 'css' ),
+		path: path.resolve( process.cwd(), 'build' ),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
@@ -67,11 +67,9 @@ const scripts = {
 	...sharedConfig,
 	entry: {
 		'logs-dashboard': path.resolve( process.cwd(), 'assets', 'src', 'js', 'logs-dashboard', 'index.ts' ),
-		settings: path.resolve( process.cwd(), 'assets', 'src', 'js', 'settings.js' ),
+		settings: path.resolve( process.cwd(), 'assets', 'src', 'admin', 'settings', 'index.js' ),
 		onboarding: path.resolve( process.cwd(), 'assets', 'src', 'admin', 'onboarding', 'index.tsx' ),
-		SiteModal: path.resolve( process.cwd(), 'assets', 'src', 'js', 'components', 'SiteModal.js' ),
-		SiteSettings: path.resolve( process.cwd(), 'assets', 'src', 'js', 'components', 'SiteSettings.js' ),
-		SiteTable: path.resolve( process.cwd(), 'assets', 'src', 'js', 'components', 'SiteTable.js' ),
+		'multisite-plugin': path.resolve( process.cwd(), 'assets', 'src', 'admin', 'multisite-plugin', 'index.js' ),
 	},
 	module: {
 		rules: sharedConfig?.module?.rules?.filter(

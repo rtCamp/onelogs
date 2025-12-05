@@ -77,8 +77,8 @@ function delete_plugin_data(): void {
 		'onelogs_shared_sites',
 
 		// Brand site options.
-		'onelogs_governing_site_url',
-		'onelogs_child_site_api_key',
+		'onelogs_parent_site_url',
+		'onelogs_consumer_api_key',
 	];
 
 	foreach ( $options as $option ) {

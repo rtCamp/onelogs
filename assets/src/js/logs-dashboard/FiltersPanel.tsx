@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { FilterOptions, UserOption } from './types';
 import { fetchSiteType } from './apiService';
 
@@ -86,8 +86,8 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						options={ [
 							{ label: __( 'Governing Site', 'onelogs' ), value: 'governing-site' },
 							...sharedSites.map( ( site ) => ( {
-								label: site.siteName || site.siteUrl,
-								value: site.siteUrl,
+								label: site.name || site.url,
+								value: site.url,
 							} ) ),
 						] }
 					/> ) }

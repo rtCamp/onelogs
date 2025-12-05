@@ -5,10 +5,18 @@
  * @package OneLogs
  */
 
-namespace OneLogs\Settings;
+namespace OneLogs\Modules\Settings;
 
 use OneLogs\Contracts\Interfaces\Registrable;
 use OneLogs\Utils;
+use function OneLogs\Settings\add_action;
+use function OneLogs\Settings\add_menu_page;
+use function OneLogs\Settings\add_submenu_page;
+use function OneLogs\Settings\current_user_can;
+use function OneLogs\Settings\esc_html_e;
+use function OneLogs\Settings\remove_submenu_page;
+use function OneLogs\Settings\wp_die;
+use function OneLogs\Settings\wp_get_current_user;
 
 /**
  * Class Shared_Sites

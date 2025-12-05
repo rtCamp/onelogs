@@ -24,7 +24,13 @@ final class Main {
 	 * @var class-string<\OneLogs\Contracts\Interfaces\Registrable>[]
 	 */
 	private const REGISTRABLE_CLASSES = [
-
+		Modules\Core\Assets::class,
+		Modules\Core\Rest::class,
+		Modules\Settings\Admin::class,
+		Modules\Settings\Settings::class,
+		Modules\Rest\Basic_Options_Controller::class,
+		Modules\Rest\API_Key_REST_Controller::class,
+		Modules\Rest\Logs_REST_Controller::class
 	];
 
 	/**

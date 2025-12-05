@@ -30,12 +30,12 @@ class Secret_Key implements Registrable {
 	 * @return string The generated secret key.
 	 */
 	public static function generate_secret_key( bool $should_regenerate = false ): string {
-		$secret_key = get_option( Constants::ONELOGS_API_KEY );
+		$secret_key = get_option( Settings::OPTION_CONSUMER_API_KEY );
 
 		if ( empty( $secret_key ) || $should_regenerate ) {
 			$secret_key = self::generate_key();
 			// Store the secret key in the database.
-			$is_key_updated = update_option( Constants::ONELOGS_API_KEY, $secret_key, false );
+			$is_key_updated = update_option( Settings::OPTION_CONSUMER_API_KEY, $secret_key, false );
 
 			if ( ! $is_key_updated ) {
 				return '';
@@ -49,7 +49,7 @@ class Secret_Key implements Registrable {
 	 * Get the secret key.
 	 */
 	public static function get_secret_key(): WP_REST_Response|\WP_Error {
-		$secret_key = get_option( Constants::ONELOGS_API_KEY );
+		$secret_key = get_option( Settings::OPTION_CONSUMER_API_KEY );
 		if ( empty( $secret_key ) ) {
 			$secret_key = self::generate_secret_key();
 		}

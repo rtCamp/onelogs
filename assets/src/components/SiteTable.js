@@ -1,8 +1,36 @@
+/**
+ * WordPress dependencies
+ */
 import { useState } from '@wordpress/element';
 import { Button, Card, CardHeader, CardBody, Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => {
+/**
+ * Internal dependencies
+ */
+import { getInitials } from '../js/utils';
+import MultiSites from './MultiSites';
+
+/**
+ * PHP consts for JS usage.
+ */
+import { IS_MULTISITE, IS_GOVERNING_SITE_SELECTED } from '../js/constants';
+
+/**
+ * SiteTable component to display and manage brand sites.
+ *
+ * @param {Object}   props              - Component properties.
+ * @param {Array}    props.sites        - List of brand sites.
+ * @param {Function} props.onEdit       - Function to handle editing a site.
+ * @param {Function} props.onDelete     - Function to handle deleting a site.
+ * @param {Function} props.setFormData  - Function to set form data for editing.
+ * @param {Function} props.setShowModal - Function to show/hide the modal for adding/editing a site.
+ * @param {Function} props.setSites     - Function to update the list of sites.
+ * @param {Function} props.setNotice    - Function to set notice messages.
+ *
+ * @return {JSX.Element} Rendered component.
+ */
+const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal, setSites, setNotice } ) => {
 	const [ showDeleteModal, setShowDeleteModal ] = useState( false );
 	const [ deleteIndex, setDeleteIndex ] = useState( null );
 
@@ -26,13 +54,24 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 		<Card style={ { marginTop: '30px' } }>
 			<CardHeader>
 				<h3>{ __( 'Brand Sites', 'onelogs' ) }</h3>
-				<Button
-					style={ { width: 'fit-content' } }
-					variant="primary"
-					onClick={ () => setShowModal( true ) }
-				>
-					{ __( 'Add Brand Site', 'onelogs' ) }
-				</Button>
+				<div style={ { display: 'flex', gap: '16px' } }>
+					{
+						IS_MULTISITE && IS_GOVERNING_SITE_SELECTED && (
+							<MultiSites
+								setBrandSites={ setSites }
+								brandSites={ sites }
+								setNotice={ setNotice }
+							/>
+						)
+					}
+					<Button
+						style={ { width: 'fit-content' } }
+						variant="primary"
+						onClick={ () => setShowModal( true ) }
+					>
+						{ __( 'Add Brand Site', 'onelogs' ) }
+					</Button>
+				</div>
 			</CardHeader>
 			<CardBody>
 				<table className="wp-list-table widefat fixed striped">
@@ -40,6 +79,7 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 						<tr>
 							<th>{ __( 'Site Name', 'onelogs' ) }</th>
 							<th>{ __( 'Site URL', 'onelogs' ) }</th>
+							<th>{ __( 'Logo', 'onelogs' ) }</th>
 							<th>{ __( 'API Key', 'onelogs' ) }</th>
 							<th>{ __( 'Actions', 'onelogs' ) }</th>
 						</tr>
@@ -47,16 +87,29 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 					<tbody>
 						{ sites.length === 0 && (
 							<tr>
-								<td colSpan="4" style={ { textAlign: 'center' } }>
+								<td colSpan="5" style={ { textAlign: 'center' } }>
 									{ __( 'No Brand Sites found.', 'onelogs' ) }
 								</td>
 							</tr>
 						) }
 						{ sites?.map( ( site, index ) => (
 							<tr key={ index }>
-								<td>{ site?.siteName }</td>
-								<td>{ site?.siteUrl }</td>
-								<td><code>{ site.apiKey.substring( 0, 10 ) }...</code></td>
+								<td>{ site?.name }</td>
+								<td>{ site?.url }</td>
+								<td>
+									{ site?.logo ? (
+										<img
+											src={ site.logo }
+											alt={ __( 'Site Logo', 'onelogs' ) }
+											style={ { maxWidth: '100px', maxHeight: '50px' } }
+											loading="lazy"
+											decoding="async"
+										/>
+									) : (
+										<span className="onelogs-site-initials">{ getInitials( site?.name ) }</span>
+									) }
+								</td>
+								<td><code>{ site?.api_key.substring( 0, 10 ) }...</code></td>
 								<td>
 									<Button
 										variant="secondary"
@@ -65,6 +118,7 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 											onEdit( index );
 											setShowModal( true );
 										} }
+										disabled={ site?.is_editable === false }
 										style={ { marginRight: '8px' } }
 									>
 										{ __( 'Edit', 'onelogs' ) }
@@ -92,12 +146,19 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 	);
 };
 
+/**
+ * DeleteConfirmationModal component for confirming site deletion.
+ *
+ * @param {Object}   props           - Component properties.
+ * @param {Function} props.onConfirm - Function to call on confirmation.
+ * @param {Function} props.onCancel  - Function to call on cancellation.
+ * @return {JSX.Element} Rendered component.
+ */
 const DeleteConfirmationModal = ( { onConfirm, onCancel } ) => (
 	<Modal
 		title={ __( 'Delete Brand Site', 'onelogs' ) }
 		onRequestClose={ onCancel }
 		isDismissible={ true }
-		shouldCloseOnClickOutside={ true }
 	>
 		<p>{ __( 'Are you sure you want to delete this Brand Site? This action cannot be undone.', 'onelogs' ) }</p>
 		<div style={ { display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '16px' } }>

@@ -8,6 +8,7 @@
 namespace OneLogs;
 
 use OneLogs\Modules\Plugin_Configs\Constants;
+use OneLogs\Modules\Settings\Settings;
 
 /**
  * Class Utils
@@ -18,7 +19,7 @@ class Utils {
 	 * Get the current site type.
 	 */
 	public static function get_current_site_type(): string {
-		return (string) get_option( Constants::ONELOGS_SITE_TYPE, '' );
+		return (string) get_option( Settings::OPTION_SITE_TYPE, '' );
 	}
 
 	/**
@@ -83,10 +84,10 @@ class Utils {
 		if ( isset( $_SERVER['HTTP_X_ONELOGS_TOKEN'] ) && ! empty( $_SERVER['HTTP_X_ONELOGS_TOKEN'] ) ) {
 			$token = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_ONELOGS_TOKEN'] ) );
 			// Get the api key from options.
-			$api_key = get_option( Constants::ONELOGS_API_KEY, 'default_api_key' );
+			$api_key = get_option( Settings::OPTION_CONSUMER_API_KEY, 'default_api_key' );
 
 			// governing site url.
-			$governing_site_url = get_option( Constants::ONELOGS_GOVERNING_SITE_URL, '' );
+			$governing_site_url = get_option( Settings::OPTION_CONSUMER_PARENT_SITE_URL, '' );
 
 			// check if governing site is set and matches with request origin.
 			$request_origin = '';
@@ -109,7 +110,7 @@ class Utils {
 
 			// if token is valid and request is from different domain then save it as governing site.
 			if ( self::is_brand_site() && ! $is_same_domain && $is_token_valid && empty( $governing_site_url ) && $is_health_check ) {
-				update_option( Constants::ONELOGS_GOVERNING_SITE_URL, $request_origin, false );
+				update_option( Settings::OPTION_CONSUMER_PARENT_SITE_URL, $request_origin, false );
 
 				return true;
 			}

@@ -10,9 +10,8 @@
  * @since   1.0.0
  */
 
-namespace OneLogs\Modules\Admin;
+namespace OneLogs\Modules\Rest;
 
-use OneLogs\Contracts\Interfaces\Registrable;
 use OneLogs\Utils;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -32,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package Onelogs\Modules\Admin
  * @since   1.0.0
  */
-class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
+class Logs_REST_Controller extends Abstract_REST_Controller {
 
 	/**
 	 * Maximum number of results per page.
@@ -52,7 +51,6 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->namespace = 'onelogs/v1';
 		$this->rest_base = 'logs';
 	}
 
@@ -72,7 +70,7 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/' . $this->rest_base,
 			[
 				[
@@ -85,7 +83,7 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 		);
 
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/' . $this->rest_base . '/(?P<id>\d+)',
 			[
 				[
@@ -105,7 +103,7 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 
 		// Endpoint for available contexts.
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/' . $this->rest_base . '/contexts',
 			[
 				[
@@ -118,7 +116,7 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 
 		// Endpoint for available connectors.
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/' . $this->rest_base . '/connectors',
 			[
 				[
@@ -131,7 +129,7 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 
 		// Endpoint for users.
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/' . $this->rest_base . '/users',
 			[
 				[
@@ -151,7 +149,7 @@ class Logs_REST_Controller extends WP_REST_Controller implements Registrable {
 
 		// Endpoint for available actions.
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/' . $this->rest_base . '/actions',
 			[
 				[

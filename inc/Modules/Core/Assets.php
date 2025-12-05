@@ -1,34 +1,44 @@
 <?php
 /**
- * Registers plugin assets.
+ * Enqueue assets for OneLogs.
  *
  * @package OneLogs
  */
 
-declare( strict_types = 1 );
-
 namespace OneLogs\Modules\Core;
 
 use OneLogs\Contracts\Interfaces\Registrable;
-use OneLogs\Modules\Plugin_Configs\Constants;
+use OneLogs\Modules\Settings\Settings;
 
 /**
  * Class Assets
  */
-final class Assets implements Registrable {
+class Assets implements Registrable {
 	/**
-	 * Script handles.
-	 */
-	public const SETTINGS_SCRIPT_HANDLE         = 'onelogs-settings';
-	public const PLUGIN_SETUP_SCRIPT_HANDLE     = 'onelogs-plugin-setup';
-	public const ONBOARDING_STYLE_HANDLE        = 'onelogs-plugin-onboarding';
-	public const SHARED_COMPONENTS_STYLE_HANDLE = 'onelogs-shared-components';
-
-	/**
-	 * The relative to the built assets directory.
+	 * The relative path to the built assets directory.
 	 * No preceding or trailing slashes.
 	 */
 	private const ASSETS_DIR = 'build';
+
+	/**
+	 * Prefix for all asset handles.
+	 */
+	private const PREFIX = 'onelogs-';
+
+	/**
+	 * Asset handles
+	 */
+	public const ADMIN_STYLES_HANDLE            = self::PREFIX . 'admin';
+	public const SETTINGS_SCRIPT_HANDLE         = self::PREFIX . 'settings';
+	public const ONBOARDING_SCRIPT_HANDLE       = self::PREFIX . 'setup';
+	public const LOGS_DASHBOARD_SCRIPT_HANDLE  = self::PREFIX . 'logs-dashboard';
+
+	/**
+	 * Localized data for scripts.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private static array $localized_data;
 
 	/**
 	 * Plugin directory path.
@@ -45,6 +55,22 @@ final class Assets implements Registrable {
 	private string $plugin_url;
 
 	/**
+	 * Prepare localized data.
+	 */
+	public static function get_localized_data(): array {
+		if ( empty( self::$localized_data ) ) {
+			self::$localized_data = [
+				'restUrl'      => esc_url( home_url( '/wp-json' ) ),
+				'restNonce'    => wp_create_nonce( 'wp_rest' ),
+				'apiKey'       => Settings::get_api_key(),
+				'settingsLink' => esc_url( admin_url( 'admin.php?page=onelogs-settings' ) ),
+			];
+		}
+
+		return self::$localized_data;
+	}
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -54,70 +80,61 @@ final class Assets implements Registrable {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * Assets are only registered globally. Enqueuing is handled in specific that needs them.
 	 */
 	public function register_hooks(): void {
-		// Assets are always registered. They can be enqueued later as needed.
-		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ], 20, 1 );
+		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ], 20, 1 );
 
 		// Add defer attribute to certain plugin bundles to improve admin load performance.
 		add_filter( 'script_loader_tag', [ $this, 'defer_scripts' ], 10, 2 );
-		add_filter( 'admin_body_class', [ $this, 'add_body_class_for_modal' ] );
 	}
 
 	/**
-	 * Create global variable onelogs_sites with site info.
+	 * Register admin assets to WordPress.
 	 *
-	 * @param string $classes Existing body classes.
-	 *
-	 * @return string
-	 */
-	public function add_body_class_for_modal( $classes ): string {
-		$current_screen = get_current_screen();
-		if ( ! $current_screen || 'plugins' !== $current_screen->base ) {
-			return $classes;
-		}
-
-		// get onelogs_site_type_transient transient to check if site type is set.
-		$site_type_transient = get_transient( Constants::ONELOGS_SITE_TYPE_TRANSIENT );
-			// If transient is false, it means site type is not set.
-		if ( $site_type_transient ) {
-			// If site type is already set, do not show the modal.
-			return $classes;
-		}
-
-		// add onelogs-site-selection-modal class to body.
-		$classes .= ' onelogs-site-selection-modal ';
-		return $classes;
-	}
-
-	/**
-	 * Register all scripts ands and styles.
+	 * Assets are registered once centrally, and enqueued in the modules that need them.
 	 */
 	public function register_assets(): void {
-		// JS.
-		$this->register_script( self::PLUGIN_SETUP_SCRIPT_HANDLE, 'plugin' );
-		$this->register_script( self::SETTINGS_SCRIPT_HANDLE, 'settings' );
 
-		// Localize the setup script.
-		wp_localize_script(
-			self::PLUGIN_SETUP_SCRIPT_HANDLE,
-			'OneLogsSettings',
-			[
-				'restUrl'   => esc_url( home_url( '/wp-json' ) ),
-				'apiKey'    => get_option( 'onelogs_api_key', '' ),
-				'restNonce' => wp_create_nonce( 'wp_rest' ),
-				'setupUrl'  => admin_url( 'admin.php?page=onelogs-settings' ),
-			]
-		);
+		$this->register_script( self::SETTINGS_SCRIPT_HANDLE, 'settings' );
+		$this->register_style( self::SETTINGS_SCRIPT_HANDLE, 'settings' );
+
+		$this->register_script( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding' );
+		$this->register_style( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding', [ 'wp-components' ] );
+
 
 		$this->register_style(
-			self::ONBOARDING_STYLE_HANDLE,
-			'logs-setup',
-			[ 'wp-components' ]
+			self::ADMIN_STYLES_HANDLE,
+			'admin',
+			[ 'wp-components' ],
 		);
+
+		wp_enqueue_style( self::ADMIN_STYLES_HANDLE );
+	}
+
+	/**
+	 * Add scripts and styles to the page.
+	 *
+	 * @return void -- register styles and scripts
+	 */
+	public function enqueue_scripts(): void {
+			$this->register_script(
+				self::LOGS_DASHBOARD_SCRIPT_HANDLE,
+				'logs-dashboard',
+				[ 'wp-element', 'wp-components', 'wp-i18n', 'wp-api-fetch' ],
+			);
+
+			wp_localize_script(
+				self::LOGS_DASHBOARD_SCRIPT_HANDLE,
+				'OneLogsData',
+				self::get_localized_data(),
+			);
+
+			wp_enqueue_script( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+
+			$this->register_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE, 'logs-dashboard', [ 'wp-components' ], );
+			wp_enqueue_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+
 	}
 
 	/**
@@ -132,7 +149,7 @@ final class Assets implements Registrable {
 			self::SETTINGS_SCRIPT_HANDLE,
 		];
 
-		// Bail if we dont need to defer.
+		// Bail if we don't need to defer.
 		if ( ! in_array( $handle, $defer_handles, true ) || false !== strpos( $tag, ' defer' ) ) {
 			return $tag;
 		}
@@ -151,9 +168,9 @@ final class Assets implements Registrable {
 	 * @param bool     $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 */
 	private function register_script( string $handle, string $filename, array $deps = [], $ver = null, bool $in_footer = true ): bool {
-		$asset_file = sprintf( '%s/js/%s.asset.php', trailingslashit( $this->plugin_dir ) . untrailingslashit( self::ASSETS_DIR ), $filename );
+		$asset_file = sprintf( '%s/%s.asset.php', $this->plugin_dir . untrailingslashit( self::ASSETS_DIR ), $filename );
 
-			// Bail if the asset file does not exist. Log error and optionally show admin notice.
+		// Bail if the asset file does not exist. Log error and optionally show admin notice.
 		if ( ! file_exists( $asset_file ) ) {
 			return false;
 		}
@@ -162,7 +179,7 @@ final class Assets implements Registrable {
 		$asset = require_once $asset_file;
 
 		$version   = $ver ?? ( $asset['version'] ?? filemtime( $asset_file ) );
-		$asset_src = sprintf( '%s/js/%s.js', trailingslashit( $this->plugin_url ) . untrailingslashit( self::ASSETS_DIR ), $filename );
+		$asset_src = sprintf( '%s/%s.js', $this->plugin_url . untrailingslashit( self::ASSETS_DIR ), $filename );
 
 		return wp_register_script(
 			$handle,
@@ -188,7 +205,7 @@ final class Assets implements Registrable {
 	 */
 	private function register_style( string $handle, string $filename, array $deps = [], $ver = null, string $media = 'all' ): bool {
 		// CSS doesnt have a PHP assets file so we infer from the file itself.
-		$asset_file = sprintf( '%s/css/%s.css', trailingslashit( $this->plugin_dir ) . untrailingslashit( self::ASSETS_DIR ), $filename );
+		$asset_file = sprintf( '%s/%s.css', $this->plugin_dir . untrailingslashit( self::ASSETS_DIR ), $filename );
 
 		// Bail if the asset file does not exist.
 		if ( ! file_exists( $asset_file ) ) {
@@ -196,7 +213,7 @@ final class Assets implements Registrable {
 		}
 
 		$version   = $ver ?? (string) filemtime( $asset_file );
-		$asset_src = sprintf( '%s/css/%s.css', trailingslashit( $this->plugin_url ) . untrailingslashit( self::ASSETS_DIR ), $filename );
+		$asset_src = sprintf( '%s/%s.css', $this->plugin_url . untrailingslashit( self::ASSETS_DIR ), $filename );
 
 		// Register as a style.
 		return wp_register_style(

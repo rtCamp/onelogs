@@ -7,10 +7,9 @@
 
 declare(strict_types = 1);
 
-namespace OneLogs\Modules\Admin;
+namespace OneLogs\Modules\Rest;
 
-use OneLogs\Modules\Core\Settings;
-use OneLogs\Rest\Abstract_REST_Controller;
+use OneLogs\Settings\Settings;
 use WP_REST_Response;
 use WP_REST_Server;
 
@@ -24,7 +23,7 @@ final class API_Key_REST_Controller extends Abstract_REST_Controller {
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			$this->namespace,
+			Abstract_REST_Controller::NAMESPACE,
 			'/api-key',
 			[
 				[
