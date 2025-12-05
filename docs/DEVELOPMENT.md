@@ -1,28 +1,20 @@
-# Development Guidelines - OneLogs
+# Contributing to the OneLogs as a Developer
 
 Code contributions, bug reports, and feature requests are welcome! The following sections provide guidelines for contributing to this project, as well as information about development processes and testing.
 
 ## Table of Contents
 
-- [Development Guidelines - OneLogs](#development-guidelines---onelogs)
+- [Contributing to the OneLogs as a Developer](#contributing-to-the-onelogs-as-a-developer)
   - [Table of Contents](#table-of-contents)
   - [Directory Structure](#directory-structure)
   - [Local setup](#local-setup)
     - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Useful Commands](#useful-commands)
-      - [Installing Dependencies](#installing-dependencies)
-      - [Accessing the Local Environment](#accessing-the-local-environment)
-      - [Linting and Formatting](#linting-and-formatting)
-    - [Running Tests](#running-tests)
-    - [Building the plugin for distribution](#building-the-plugin-for-distribution)
+    - [Building OneLogs Packages](#building-onelogs-packages)
   - [Code Contributions (Pull Requests)](#code-contributions-pull-requests)
     - [Workflow](#workflow)
     - [Code Quality / Code Standards](#code-quality--code-standards)
-      - [PHP\_CodeSniffer](#php_codesniffer)
-      - [PHPStan](#phpstan)
       - [ESLint](#eslint)
-      - [Stylelint](#stylelint)
+  - [Changesets](#changesets)
   - [Releasing](#releasing)
     - [Release Commands](#release-commands)
 
@@ -34,64 +26,81 @@ Code contributions, bug reports, and feature requests are welcome! The following
 ```bash
 .
 ├── .github/ # GitHub-specific files and CI/CD workflows.
-│
-│   # Non-php plugin assets.
-├── assets/ 
-│   └── @todo
-│
-│   # Project documentation.
-├── docs/
-│   ├── CODE_OF_CONDUCT.md
-│   ├── CONTRIBUTING.md     # 👈 You are here.
-│   ├── DEVELOPMENT.md
-│   └── SECURITY.md
-│
-│   # PHP source files.
-├── inc/ @todo
-│   ├── Contracts
-│   │   ├── Interfaces
-│   │   │  └── Registrable.php # Classes that hook into WordPress.
-│   │   └── Traits
-│   │      └── Singleton.php  # Singleton anti-pattern. Use sparingly.
-│   │
-│   ├── Modules
-│   │   ├── Core
-│   │   │  └── Assets.php # Manages asset registration.
-│   │   └── @todo
-│   │
-│   ├── Rest
-│   │  └── Abstract_REST_Controller.php # Base class for REST controllers.
-│   │
-│   ├── Autoloader.php # Wraps autoloader for WordPress.
-│   └── Main.php  # Main plugin class, initializes modules.
-│
-│   # Tests
-├── tests/
-│   ├── _output/ # Generated results and caches.
-│   ├── phpunit/ # PHPUnit tests.
-│   │
-│   └── bootstrap.php # PHPUnit bootstrapper
-
-│   # Build directories
-├── build/        # assets built by webpack
-├── node_modules/ # Node.js dependencies
-├── vendor/       # Composer dependencies
-│
-├── onelogs.php # Root plugin entrypoint.
-│
-│   # Important config files.
-│   # .dist suffixes mean there may be a user-customized version without the suffix.
-├── .editorconfig
-├── .eslintrc.json
-├── .nvmrc
-├── .wp-env.json
+├── LICENSE
+├── README.md
+├── assets/
+│   └── src/
+│       ├── admin/
+│       │   ├── logs/
+│       │   ├── onboarding/
+│       │   └── settings/
+│       ├── components/
+│       │   ├── Dashicons.js
+│       │   ├── MultiSites.js
+│       │   ├── SiteModal.js
+│       │   ├── SiteSettings.js
+│       │   └── SiteTable.js
+│       ├── css/
+│       │   ├── logs-dashboard.scss
+│       │   └── onboarding.scss
+│       ├── images/
+│       │   └── logo.svg
+│       └── js/
+│           ├── constants.js
+│           └── utils.js
 ├── babel.config.js
 ├── composer.json
+├── composer.lock
+├── deploy-onelogs.sh
+├── docs/
+│   ├── CODE_OF_CONDUCT.md
+│   ├── CONTRIBUTING.md
+│   ├── DEVELOPMENT.md
+│   └── SECURITY.md
+├── inc/
+│   ├── Autoloader.php
+│   ├── Contracts/
+│   │   ├── Interfaces/
+│   │   │   └── Registrable.php
+│   │   └── Traits/
+│   │       └── Singleton.php
+│   ├── Dependencies.php
+│   ├── Encryptor.php
+│   ├── Main.php
+│   ├── Modules/
+│   │   ├── Core/
+│   │   │   ├── Assets.php
+│   │   │   └── Rest.php
+│   │   ├── Multisite/
+│   │   │   ├── Admin.php
+│   │   │   └── Settings.php
+│   │   ├── Rest/
+│   │   │   ├── API_Key_REST_Controller.php
+│   │   │   ├── Abstract_REST_Controller.php
+│   │   │   ├── Basic_Options_Controller.php
+│   │   │   └── Logs_REST_Controller.php
+│   │   └── Settings/
+│   │       ├── Admin.php
+│   │       └── Settings.php
+│   └── Utils.php
+├── onelogs.php
+├── onelogs.zip
+├── package-lock.json
 ├── package.json
 ├── phpcs.xml.dist
 ├── phpstan.neon.dist
-├── README.md
-└── webpack.config.js
+├── phpunit.xml.dist
+├── tests/
+│   ├── _output/
+│   ├── bootstrap.php
+│   └── phpunit/
+├── tree.md
+├── tsconfig.json
+├── uninstall.php
+├── webpack.config.js
+└── wp-assets/
+    └── banner.png
+
 ```
 
 </details>
@@ -113,7 +122,7 @@ You can use Docker and the `wp-env` tool to set up a local development environme
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/rtCamp/onelogs.git
+   git clone https://github.com/rtCamp/OneLogs.git
    ```
 
 2. Change into the project folder and install the development dependencies:
@@ -136,6 +145,7 @@ You can use Docker and the `wp-env` tool to set up a local development environme
    ```
 
 The WordPress development site will be available at <http://localhost:8888> and the WP Admin Dashboard will be available at <http://localhost:8888/wp-admin/>. You can log in to the admin using the username `admin` and password `password`.
+
 
 ### Useful Commands
 
@@ -271,39 +281,8 @@ You can run Stylelint on CSS files using:
 npm run lint:css
 ```
 
-#### TypeScript
-
-This project uses TypeScript instead of plain JavaScript for better type safety and developer experience. TypeScript checks are performed using the TypeScript compiler (`tsc`).
-
-Our specific TypeScript configuration is defined in the [`tsconfig.json`](../tsconfig.json) file.
-
-You can run TypeScript checks using:
-
-```bash
-npm run lint:js:types
-```
-
 ## Releasing
-
 1. Ensure all changes are committed and tested.
-2. Update changelogs and version numbers.
-3. Merge to main branch.
-4. Tag release and push to remote.
-5. Publish packages if needed.
-
-### Release Commands
-
-Command to create a tag and push it:
-
-```bash
-git tag -a vx.x.x -m "Release vx.x.x"
-git push --tags
-```
-
-Command to delete the tag (Locally) incase wanted to release same tag:
-
-```bash
-git tag --delete vx.x.x
-```
-
-Release will be auto generated and kept in draft once pushed a tag.
+2. Update changelogs, version numbers, and `n.e.x.t` tags.
+3. Push `develop` branch to `main`.
+4. Create a new GitHub release draft with the new tag.
