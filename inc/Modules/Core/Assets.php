@@ -28,9 +28,9 @@ class Assets implements Registrable {
 	/**
 	 * Asset handles
 	 */
-	public const ADMIN_STYLES_HANDLE = self::PREFIX . 'admin';
-	public const SETTINGS_SCRIPT_HANDLE = self::PREFIX . 'settings';
-	public const ONBOARDING_SCRIPT_HANDLE = self::PREFIX . 'setup';
+	public const ADMIN_STYLES_HANDLE          = self::PREFIX . 'admin';
+	public const SETTINGS_SCRIPT_HANDLE       = self::PREFIX . 'settings';
+	public const ONBOARDING_SCRIPT_HANDLE     = self::PREFIX . 'setup';
 	public const LOGS_DASHBOARD_SCRIPT_HANDLE = self::PREFIX . 'logs-dashboard';
 
 	/**
