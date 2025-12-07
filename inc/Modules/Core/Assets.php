@@ -28,9 +28,9 @@ class Assets implements Registrable {
 	/**
 	 * Asset handles
 	 */
-	public const ADMIN_STYLES_HANDLE          = self::PREFIX . 'admin';
-	public const SETTINGS_SCRIPT_HANDLE       = self::PREFIX . 'settings';
-	public const ONBOARDING_SCRIPT_HANDLE     = self::PREFIX . 'setup';
+	public const ADMIN_STYLES_HANDLE = self::PREFIX . 'admin';
+	public const SETTINGS_SCRIPT_HANDLE = self::PREFIX . 'settings';
+	public const ONBOARDING_SCRIPT_HANDLE = self::PREFIX . 'setup';
 	public const LOGS_DASHBOARD_SCRIPT_HANDLE = self::PREFIX . 'logs-dashboard';
 
 	/**
@@ -144,7 +144,7 @@ class Assets implements Registrable {
 	/**
 	 * Add defer attribute to certain plugin bundle scripts to improve loading performance.
 	 *
-	 * @param string $tag The script tag.
+	 * @param string $tag    The script tag.
 	 * @param string $handle The script handle.
 	 *
 	 * @return string Modified script tag.
@@ -165,12 +165,12 @@ class Assets implements Registrable {
 	/**
 	 * Register a script.
 	 *
-	 * @param string   $handle Name of the script. Should be unique.
-	 * @param string   $filename Path of the script relative to js directory.
-	 *                              excluding the .js extension.
-	 * @param string[] $deps Optional. An array of registered script handles this script depends on. If not set, the dependencies will be inherited from the asset file.
-	 * @param ?string  $ver Optional. String specifying script version number, if not set, the version will be inherited from the asset file.
-	 * @param bool     $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
+	 * @param string   $handle        Name of the script. Should be unique.
+	 * @param string   $filename      Path of the script relative to js directory.
+	 *                                excluding the .js extension.
+	 * @param string[] $deps          Optional. An array of registered script handles this script depends on. If not set, the dependencies will be inherited from the asset file.
+	 * @param ?string  $ver           Optional. String specifying script version number, if not set, the version will be inherited from the asset file.
+	 * @param bool     $in_footer     Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 */
 	private function register_script( string $handle, string $filename, array $deps = [], $ver = null, bool $in_footer = true ): bool {
 		$asset_file = sprintf( '%s/%s.asset.php', $this->plugin_dir . untrailingslashit( self::ASSETS_DIR ), $filename );
@@ -198,15 +198,15 @@ class Assets implements Registrable {
 	/**
 	 * Register a CSS stylesheet
 	 *
-	 * @param string   $handle Name of the stylesheet. Should be unique.
-	 * @param string   $filename Path of the stylesheet relative to the css directory,
-	 *                              excluding the .css extension.
-	 * @param string[] $deps Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
-	 * @param ?string  $ver Optional. String specifying style version number, if not set, the version will be inherited from the asset file.
+	 * @param string   $handle        Name of the stylesheet. Should be unique.
+	 * @param string   $filename      Path of the stylesheet relative to the css directory,
+	 *                                excluding the .css extension.
+	 * @param string[] $deps          Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @param ?string  $ver           Optional. String specifying style version number, if not set, the version will be inherited from the asset file.
 	 *
-	 * @param string   $media Optional. The media for which this stylesheet has been defined.
-	 *                              Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media queries like
-	 *                              '(orientation: portrait)' and '(max-width: 640px)'.
+	 * @param string   $media         Optional. The media for which this stylesheet has been defined.
+	 *                                Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media queries like
+	 *                                '(orientation: portrait)' and '(max-width: 640px)'.
 	 */
 	private function register_style( string $handle, string $filename, array $deps = [], $ver = null, string $media = 'all' ): bool {
 		// CSS doesnt have a PHP assets file so we infer from the file itself.

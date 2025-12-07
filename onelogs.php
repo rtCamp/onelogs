@@ -1,19 +1,19 @@
 <?php
 /**
- * Plugin Name: OneLogs
- * Description:       Provides a unified activity log dashboard across OnePress connected sites, extending Stream to display logs from governing and brand sites in one place.
- * Author: rtCamp
- * Author URI: https://rtcamp.com
- * Plugin URI: https://github.com/rtCamp/OneLogs/
- * Update URI: https://github.com/rtCamp/OneLogs/
- * License: GPL2+
- * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain: onelogs
- * Domain Path: /languages
- * Version: 1.0.0-beta.1
- * Requires PHP: 8.0
- * Requires at least: 6.8
- * Tested up to: 6.8.2
+ * Plugin Name:         OneLogs
+ * Description:         Provides a unified activity log dashboard across OnePress connected sites, extending Stream to display logs from governing and brand sites in one place.
+ * Author:              rtCamp
+ * Author URI:          https://rtcamp.com
+ * Plugin URI:          https://github.com/rtCamp/OneLogs/
+ * Update URI:          https://github.com/rtCamp/OneLogs/
+ * License:             GPL2+
+ * License URI:         https://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:         onelogs
+ * Domain Path:         /languages
+ * Version:             1.0.0-beta.1
+ * Requires PHP:        8.0
+ * Requires at least:   6.8
+ * Tested up to:        6.8.2
  *
  * @package OneLogs
  */

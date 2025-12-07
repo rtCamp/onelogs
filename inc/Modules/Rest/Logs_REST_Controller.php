@@ -426,7 +426,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	/**
 	 * Build WHERE clauses for SQL query.
 	 *
-	 * @param array $args The query arguments.
+	 * @param array $args     The query arguments.
 	 * @param array $sql_args Reference to SQL arguments array.
 	 *
 	 * @return array WHERE clauses.
@@ -489,7 +489,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * Format log data for API response.
 	 *
 	 * @param object $result Database result object.
-	 * @param array  $meta Optional metadata array.
+	 * @param array  $meta   Optional metadata array.
 	 *
 	 * @return array Formatted log data.
 	 */
@@ -543,7 +543,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * Get object type from connector and context
 	 *
 	 * @param string $connector The connector name.
-	 * @param string $context The context name.
+	 * @param string $context   The context name.
 	 */
 	private function get_custom_object_type( string $connector, string $context ): string {
 		// Map connector/context to object types.
@@ -568,9 +568,9 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * Get object data including edit and view links
 	 *
 	 * @param string   $object_type The type of the object.
-	 * @param int|null $object_id The ID of the object.
-	 * @param string   $connector The connector name.
-	 * @param string   $context The context name.
+	 * @param int|null $object_id   The ID of the object.
+	 * @param string   $connector   The connector name.
+	 * @param string   $context     The context name.
 	 */
 	private function get_object_data( string $object_type, ?int $object_id, string $connector, string $context ): ?array {
 		if ( ! $object_id ) {
@@ -731,9 +731,9 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	/**
 	 * Get human-readable action title
 	 *
-	 * @param string $action The action performed.
+	 * @param string $action      The action performed.
 	 * @param string $object_type The type of the object.
-	 * @param string $context The context of the action.
+	 * @param string $context     The context of the action.
 	 */
 	private function get_action_title( string $action, string $object_type, string $context ): string {
 		// Action verb mapping.
@@ -882,7 +882,7 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	/**
 	 * Get local logs from current site.
 	 *
-	 * @param \WP_REST_Request $request The request object.
+	 * @param \WP_REST_Request $request      The request object.
 	 * @param bool             $return_count Whether to return count or just logs.
 	 *
 	 * @return array|\WP_Error Response array or error.
@@ -1258,9 +1258,9 @@ class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * Wrapped to ensure consistent return format, and simplify usage.
 	 *
 	 * @param string $site_url The base URL of the remote site.
-	 * @param string $path The REST API endpoint path.
-	 * @param array  $args Request arguments (query parameters or body data).
-	 * @param string $method HTTP method (GET, POST, etc.). Default is 'GET'.
+	 * @param string $path     The REST API endpoint path.
+	 * @param array  $args     Request arguments (query parameters or body data).
+	 * @param string $method   HTTP method (GET, POST, etc.). Default is 'GET'.
 	 *
 	 * @return array
 	 */

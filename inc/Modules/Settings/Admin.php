@@ -291,13 +291,14 @@ class Admin implements Registrable {
 
 		// Add onelogs-site-selection-modal class to body.
 		$classes .= ' onelogs-site-selection-modal ';
+
 		return $classes;
 	}
 
 	/**
 	 * Add body class for missing sites.
 	 *
-	 * @param string     $classes Existing body classes.
+	 * @param string     $classes        Existing body classes.
 	 * @param \WP_Screen $current_screen Current screen object.
 	 */
 	private function add_body_class_for_missing_sites( string $classes, \WP_Screen $current_screen ): string {
@@ -308,6 +309,7 @@ class Admin implements Registrable {
 		}
 
 		$classes .= ' onelogs-missing-brand-sites ';
+
 		return $classes;
 	}
 }
