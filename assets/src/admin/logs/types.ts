@@ -44,13 +44,11 @@ export interface FilterOptions {
 	exclude_current_site?: boolean;
 }
 
-export interface LocalFilterOptions {
-	search?: string;
-}
-
 export type SortableField = 'ID' | 'summary' | 'connector' | 'context' | 'action' | 'user_id' | 'ip' | 'created' | 'site_name';
 
 export interface SortState {
 	field: SortableField | null;
 	direction: 'asc' | 'desc' | null;
 }
+
+export type fetchReturn = object | string[];
