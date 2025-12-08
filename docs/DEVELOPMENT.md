@@ -26,7 +26,7 @@ Code contributions, bug reports, and feature requests are welcome! The following
 ```bash
 .
 ├── .github/ # GitHub-specific files and CI/CD workflows.
-│
+├── LICENSE
 │   # Non-php plugin assets.
 ├── assets
 │   └── src
