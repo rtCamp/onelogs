@@ -31,12 +31,12 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_site_type' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 				],
 				[
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'set_site_type' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 					'args'                => [
 						'site_type' => [
 							'required'          => true,
@@ -58,19 +58,17 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_shared_sites' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 				],
 				[
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'set_shared_sites' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 					'args'                => [
 						'sites_data' => [
 							'required'          => true,
 							'type'              => 'array',
-							'validate_callback' => static function ( $value ): bool {
-								return is_array( $value );
-							},
+							'validate_callback' => 'rest_validate_request_args',
 						],
 					],
 				],
@@ -100,12 +98,12 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_secret_key' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 				],
 				[
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => [ $this, 'regenerate_secret_key' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 				],
 			]
 		);
@@ -120,12 +118,12 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_governing_site' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 				],
 				[
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => [ $this, 'remove_governing_site' ],
-					'permission_callback' => [ self::class, 'permission_callback' ],
+					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 				],
 			],
 		);

@@ -40,11 +40,8 @@ class Admin implements Registrable {
 	 * @return void
 	 */
 	public function add_logs_page(): void {
-		$shared_sites   = get_option( 'onelogs_shared_sites', [] );
-		$show_logs_menu = ! Settings::is_governing_site() || ( is_array( $shared_sites ) && count( $shared_sites ) > 0 );
-
-		// We only add the Logs submenu if there are shared sites configured.
-		if ( ! $show_logs_menu ) {
+		// Only add plugin-specific submenu pages if sites have been connecting.
+		if ( ! Settings::is_governing_site() || ! Settings::get_shared_sites() ) {
 			return;
 		}
 
