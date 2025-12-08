@@ -4,19 +4,31 @@ Code contributions, bug reports, and feature requests are welcome! The following
 
 ## Table of Contents
 
+Based on the document, here's the table of contents:
+
+## Table of Contents
+
 - [Contributing to the OneLogs as a Developer](#contributing-to-the-onelogs-as-a-developer)
   - [Table of Contents](#table-of-contents)
   - [Directory Structure](#directory-structure)
   - [Local setup](#local-setup)
     - [Prerequisites](#prerequisites)
-    - [Building OneLogs Packages](#building-onelogs-packages)
+    - [Installation](#installation)
+    - [Useful Commands](#useful-commands)
+      - [Installing Dependencies](#installing-dependencies)
+      - [Accessing the Local Environment](#accessing-the-local-environment)
+      - [Linting and Formatting](#linting-and-formatting)
+    - [Running Tests](#running-tests)
+    - [Building the plugin for distribution](#building-the-plugin-for-distribution)
   - [Code Contributions (Pull Requests)](#code-contributions-pull-requests)
     - [Workflow](#workflow)
     - [Code Quality / Code Standards](#code-quality--code-standards)
+      - [PHP_CodeSniffer](#php_codesniffer)
+      - [PHPStan](#phpstan)
       - [ESLint](#eslint)
-  - [Changesets](#changesets)
+      - [Stylelint](#stylelint)
+      - [TypeScript](#typescript)
   - [Releasing](#releasing)
-    - [Release Commands](#release-commands)
 
 ## Directory Structure
 
