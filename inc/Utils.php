@@ -12,7 +12,7 @@ use OneLogs\Modules\Settings\Settings;
 /**
  * Class Utils
  */
-class Utils {
+final class Utils {
 
 	/**
 	 * Get the current site type.

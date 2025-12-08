@@ -15,7 +15,7 @@ use OneLogs\Modules\Multisite\Settings as MU_Settings;
 /**
  * Class Admin
  */
-class Admin implements Registrable {
+final class Admin implements Registrable {
 	/**
 	 * The menu slug for the admin menu.
 	 *

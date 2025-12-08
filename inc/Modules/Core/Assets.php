@@ -5,6 +5,8 @@
  * @package OneLogs
  */
 
+declare( strict_types = 1 );
+
 namespace OneLogs\Modules\Core;
 
 use OneLogs\Contracts\Interfaces\Registrable;
@@ -13,7 +15,7 @@ use OneLogs\Modules\Settings\Settings;
 /**
  * Class Assets
  */
-class Assets implements Registrable {
+final class Assets implements Registrable {
 	/**
 	 * The relative path to the built assets directory.
 	 * No preceding or trailing slashes.

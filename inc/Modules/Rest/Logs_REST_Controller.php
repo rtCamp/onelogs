@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package Onelogs\Modules\Admin
  * @since   1.0.0
  */
-class Logs_REST_Controller extends Abstract_REST_Controller {
+final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 	/**
 	 * Maximum number of results per page.
