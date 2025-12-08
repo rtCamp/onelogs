@@ -112,14 +112,6 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 		if ( self::is_same_domain( $governing_site_url, $request_origin ) || false !== strpos( $user_agent, $governing_site_url ) ) {
 			return true;
 		}
-
-		// If we're still here, check multisite.
-		if ( ! is_multisite() ) {
-			return false;
-		}
-
-		$all_multisite_urls = self::get_all_multisite_urls();
-		return ( in_array( $request_origin, $all_multisite_urls, true ) && in_array( $governing_site_url, $all_multisite_urls, true ) ) || false !== strpos( $user_agent, $request_origin );
 	}
 
 	/**

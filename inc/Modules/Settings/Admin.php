@@ -229,13 +229,7 @@ final class Admin implements Registrable {
 			Assets::SETTINGS_SCRIPT_HANDLE,
 			'OneLogsSettings',
 			array_merge(
-				Assets::get_localized_data(),
-				[
-					'multisites'              => MU_Settings::get_all_multisites_info(),
-					'isMultisite'             => is_multisite(),
-					'isGoverningSiteSelected' => MU_Settings::is_governing_site_selected(),
-					'currentSiteId'           => is_multisite() ? get_current_blog_id() : null,
-				]
+				Assets::get_localized_data()
 			)
 		);
 
