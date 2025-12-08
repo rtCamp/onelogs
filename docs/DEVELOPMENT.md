@@ -26,80 +26,113 @@ Code contributions, bug reports, and feature requests are welcome! The following
 ```bash
 .
 ├── .github/ # GitHub-specific files and CI/CD workflows.
-├── LICENSE
-├── README.md
-├── assets/
-│   └── src/
-│       ├── admin/
-│       │   ├── logs/
-│       │   ├── onboarding/
-│       │   └── settings/
-│       ├── components/
+│
+│   # Non-php plugin assets.
+├── assets
+│   └── src
+│       ├── admin
+│       │   ├── logs
+│       │   │   ├── apiService.ts
+│       │   │   ├── components
+│       │   │   │   ├── FiltersPanel.tsx
+│       │   │   │   ├── LogsDashboard.tsx
+│       │   │   │   ├── LogsTable.tsx
+│       │   │   │   └── Pagination.tsx
+│       │   │   ├── index.ts
+│       │   │   ├── types.ts
+│       │   │   └── utils.ts
+│       │   ├── onboarding
+│       │   │   ├── index.tsx
+│       │   │   └── page.tsx
+│       │   └── settings
+│       │       └── index.js
+│       ├── components
 │       │   ├── Dashicons.js
 │       │   ├── MultiSites.js
 │       │   ├── SiteModal.js
 │       │   ├── SiteSettings.js
 │       │   └── SiteTable.js
-│       ├── css/
+│       ├── css
+│       │   ├── admin.scss
 │       │   ├── logs-dashboard.scss
 │       │   └── onboarding.scss
-│       ├── images/
+│       ├── images
 │       │   └── logo.svg
-│       └── js/
+│       └── js
 │           ├── constants.js
 │           └── utils.js
-├── babel.config.js
-├── composer.json
-├── composer.lock
-├── deploy-onelogs.sh
+│
+│   # Project documentation.
 ├── docs/
 │   ├── CODE_OF_CONDUCT.md
-│   ├── CONTRIBUTING.md
+│   ├── CONTRIBUTING.md     # 👈 You are here.
 │   ├── DEVELOPMENT.md
 │   └── SECURITY.md
-├── inc/
+│
+│   # PHP source files.
+├── inc
 │   ├── Autoloader.php
-│   ├── Contracts/
-│   │   ├── Interfaces/
+│   ├── Contracts
+│   │   ├── Interfaces
 │   │   │   └── Registrable.php
-│   │   └── Traits/
+│   │   └── Traits
 │   │       └── Singleton.php
 │   ├── Dependencies.php
 │   ├── Encryptor.php
 │   ├── Main.php
-│   ├── Modules/
-│   │   ├── Core/
+│   ├── Modules
+│   │   ├── Core
 │   │   │   ├── Assets.php
 │   │   │   └── Rest.php
-│   │   ├── Multisite/
+│   │   ├── Multisite
 │   │   │   ├── Admin.php
 │   │   │   └── Settings.php
-│   │   ├── Rest/
-│   │   │   ├── API_Key_REST_Controller.php
+│   │   ├── Rest
 │   │   │   ├── Abstract_REST_Controller.php
+│   │   │   ├── API_Key_REST_Controller.php
 │   │   │   ├── Basic_Options_Controller.php
 │   │   │   └── Logs_REST_Controller.php
-│   │   └── Settings/
+│   │   └── Settings
 │   │       ├── Admin.php
 │   │       └── Settings.php
 │   └── Utils.php
-├── onelogs.php
-├── onelogs.zip
-├── package-lock.json
+│
+│   # Tests
+├── tests/
+│   ├── _output/ # Generated results and caches.
+│   ├── phpunit/ # PHPUnit tests.
+│   │
+│   └── bootstrap.php # PHPUnit bootstrapper
+│
+├── languages
+│   └── onelogs.pot
+│
+│   # Build directories
+├── build/        # assets built by webpack
+├── node_modules/ # Node.js dependencies
+├── vendor/       # Composer dependencies
+│
+├── wp-assets/    # WordPress plugin assets (banners, screenshots)
+│
+├── onelogs.php # Root plugin entrypoint.
+├── uninstall.php # The plugin uninstaller.
+│
+│   # Important config files.
+│   # .dist suffixes mean there may be a user-customized version without the suffix.
+├── .editorconfig
+├── .eslintrc.json
+├── .nvmrc
+├── .wp-env.json
+├── babel.config.js
+├── composer.json
+├── composer.lock
 ├── package.json
+├── package-lock.json
 ├── phpcs.xml.dist
 ├── phpstan.neon.dist
-├── phpunit.xml.dist
-├── tests/
-│   ├── _output/
-│   ├── bootstrap.php
-│   └── phpunit/
-├── tree.md
+├── README.md
 ├── tsconfig.json
-├── uninstall.php
-├── webpack.config.js
-└── wp-assets/
-    └── banner.png
+└── webpack.config.js
 
 ```
 
@@ -279,6 +312,18 @@ You can run Stylelint on CSS files using:
 
 ```bash
 npm run lint:css
+```
+
+#### TypeScript
+
+This project uses TypeScript instead of plain JavaScript for better type safety and developer experience. TypeScript checks are performed using the TypeScript compiler (`tsc`).
+
+Our specific TypeScript configuration is defined in the [`tsconfig.json`](../tsconfig.json) file.
+
+You can run TypeScript checks using:
+
+```bash
+npm run lint:js:types
 ```
 
 ## Releasing
