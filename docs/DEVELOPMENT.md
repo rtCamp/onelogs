@@ -187,7 +187,6 @@ You can use Docker and the `wp-env` tool to set up a local development environme
 
 The WordPress development site will be available at <http://localhost:8888> and the WP Admin Dashboard will be available at <http://localhost:8888/wp-admin/>. You can log in to the admin using the username `admin` and password `password`.
 
-
 ### Useful Commands
 
 #### Installing Dependencies
@@ -230,7 +229,6 @@ npm run test:php
 ```
 
 You should see the html coverage report in the `tests/_output/html` directory and the clover XML report in `tests/_output/php-coverage.xml`.
-
 
 ### Building the plugin for distribution
 
@@ -335,6 +333,7 @@ npm run lint:js:types
 ```
 
 ## Releasing
+
 1. Ensure all changes are committed and tested.
 2. Update changelogs, version numbers, and `n.e.x.t` tags.
 3. Push `develop` branch to `main`.
