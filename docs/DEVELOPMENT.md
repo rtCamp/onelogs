@@ -4,10 +4,6 @@ Code contributions, bug reports, and feature requests are welcome! The following
 
 ## Table of Contents
 
-Based on the document, here's the table of contents:
-
-## Table of Contents
-
 - [Contributing to the OneLogs as a Developer](#contributing-to-the-onelogs-as-a-developer)
   - [Table of Contents](#table-of-contents)
   - [Directory Structure](#directory-structure)
