@@ -84,7 +84,6 @@ final class Assets implements Registrable {
 	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ], 20, 1 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ], 20, 1 );
 
 		// Add defer attribute to certain plugin bundles to improve admin load performance.
@@ -107,18 +106,10 @@ final class Assets implements Registrable {
 		$this->register_style(
 			self::ADMIN_STYLES_HANDLE,
 			'admin',
-			[ 'wp-components' ],
 		);
 
 		wp_enqueue_style( self::ADMIN_STYLES_HANDLE );
-	}
 
-	/**
-	 * Add scripts and styles to the page.
-	 *
-	 * @return void -- register styles and scripts
-	 */
-	public function enqueue_scripts(): void {
 		$this->register_script(
 			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
 			'logs-dashboard',
@@ -126,21 +117,6 @@ final class Assets implements Registrable {
 		);
 
 		$this->register_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE, 'logs-dashboard', [ 'wp-components' ], );
-
-		wp_localize_script(
-			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
-			'OneLogsData',
-			self::get_localized_data(),
-		);
-
-		$screen = get_current_screen();
-		if ( 'onelogs' === $screen->id ) {
-			return;
-		}
-
-		wp_enqueue_script( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
-
-		wp_enqueue_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
 	}
 
 	/**

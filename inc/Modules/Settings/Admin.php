@@ -10,7 +10,6 @@ namespace OneLogs\Modules\Settings;
 
 use OneLogs\Contracts\Interfaces\Registrable;
 use OneLogs\Modules\Core\Assets;
-use OneLogs\Modules\Multisite\Settings as MU_Settings;
 
 /**
  * Class Admin
@@ -82,25 +81,6 @@ final class Admin implements Registrable {
 			[ $this, 'screen_callback' ],
 			999
 		);
-
-		$shared_sites = get_option( 'onelogs_shared_sites', [] );
-
-		$show_logs_menu = ! Settings::is_governing_site() || ( is_array( $shared_sites ) && count( $shared_sites ) > 0 );
-
-		// We only add the Logs submenu if there are shared sites configured.
-		if ( ! $show_logs_menu ) {
-			return;
-		}
-
-		add_submenu_page(
-			self::MENU_SLUG,
-			__( 'Logs', 'onelogs' ),
-			__( 'Logs', 'onelogs' ),
-			'manage_options',
-			self::MENU_SLUG,
-			[ $this, 'logs_screen_callback' ],
-			1
-		);
 	}
 
 	/**
@@ -118,17 +98,6 @@ final class Admin implements Registrable {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Settings', 'onelogs' ); ?></h1>
 			<div id="onelogs-settings-page"></div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Logs page content callback.
-	 */
-	public function logs_screen_callback(): void {
-		?>
-		<div class="wrap">
-			<div id="onelogs-logs-dashboard" class="onelogs-logs-dashboard"></div>
 		</div>
 		<?php
 	}

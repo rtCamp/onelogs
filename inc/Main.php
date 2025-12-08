@@ -31,6 +31,7 @@ final class Main {
 		Modules\Rest\Basic_Options_Controller::class,
 		Modules\Rest\API_Key_REST_Controller::class,
 		Modules\Rest\Logs_REST_Controller::class,
+		Modules\Logs\Admin::class,
 	];
 
 	/**
