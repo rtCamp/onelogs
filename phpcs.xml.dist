@@ -36,8 +36,6 @@
 	<!-- Set severity to 1 to see everything that isn't effectively turned off. -->
 	<arg name="severity" value="1" />
 
-
-
 	<!-- Ruleset Config: set these to match your project constraints. -->
 
 	<!--
