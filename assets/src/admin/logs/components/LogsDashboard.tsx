@@ -21,7 +21,7 @@ const LogsDashboard: React.FC = () => {
 	const [ actions, setActions ] = useState<string[]>( [] );
 	const [ connectors, setConnectors ] = useState<string[]>( [] );
 	const [ users, setUsers ] = useState<UserOption[]>( [] );
-	const [ sharedSites, setSharedSites ] = useState<any[]>( [] );
+	const [ sharedSites, setSharedSites ] = useState<[]>( [] );
 	const [ showSharedSitesLogs, setShowSharedSitesLogs ] = useState<boolean>( false );
 	const [ filters, setFilters ] = useState<FilterOptions>( {
 		page: 1,

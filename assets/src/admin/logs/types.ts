@@ -19,7 +19,7 @@ export interface LogEntry {
 	summary: string;
 	created: string;
 	ip: string;
-	meta: Record<string, any>;
+	meta: Record<string, []>;
 	user_display_name?: string;
 	site_name?: string;
 	site_url?: string;

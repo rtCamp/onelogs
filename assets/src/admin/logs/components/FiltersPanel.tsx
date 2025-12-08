@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
-import debounce from 'lodash/debounce';
+import { debounce } from '../../../js/utils';
 import type { FilterOptions, UserOption } from '../types';
 import { fetchSiteType } from '../apiService';
 
@@ -9,11 +9,11 @@ interface FiltersPanelProps {
 	localSearch: string;
 	setLocalSearch: ( value: string ) => void;
 	filters: FilterOptions;
-	handleFilterChange: ( key: keyof FilterOptions, value: any ) => void;
+	handleFilterChange: ( key: keyof FilterOptions, value: string | [] | object ) => void;
 	connectors: string[];
 	contexts: string[];
 	users: UserOption[];
-	sharedSites: any[];
+	sharedSites: [];
 	showSharedSitesLogs: boolean;
 	setShowSharedSitesLogs: ( value: boolean ) => void;
 	showAdvancedFilters: boolean;

@@ -11,11 +11,6 @@ import { __ } from '@wordpress/i18n';
 import { getInitials } from '../js/utils';
 
 /**
- * PHP consts for JS usage.
- */
-import { IS_MULTISITE, IS_GOVERNING_SITE_SELECTED } from '../js/constants';
-
-/**
  * SiteTable component to display and manage brand sites.
  *
  * @param {Object}   props              - Component properties.
@@ -24,12 +19,10 @@ import { IS_MULTISITE, IS_GOVERNING_SITE_SELECTED } from '../js/constants';
  * @param {Function} props.onDelete     - Function to handle deleting a site.
  * @param {Function} props.setFormData  - Function to set form data for editing.
  * @param {Function} props.setShowModal - Function to show/hide the modal for adding/editing a site.
- * @param {Function} props.setSites     - Function to update the list of sites.
- * @param {Function} props.setNotice    - Function to set notice messages.
  *
  * @return {JSX.Element} Rendered component.
  */
-const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal, setSites, setNotice } ) => {
+const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => {
 	const [ showDeleteModal, setShowDeleteModal ] = useState( false );
 	const [ deleteIndex, setDeleteIndex ] = useState( null );
 

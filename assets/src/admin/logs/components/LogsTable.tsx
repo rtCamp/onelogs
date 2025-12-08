@@ -1,7 +1,7 @@
 import React from 'react';
 import { __ } from '@wordpress/i18n';
 import type { LogEntry, SortableField, SortState, UserOption } from '../types';
-import { formatDate } from '../utils';
+import { formatDate } from '../../../js/utils';
 
 interface LogsTableProps {
 	logs: LogEntry[];
@@ -12,25 +12,9 @@ interface LogsTableProps {
 
 export const LogsTable: React.FC<LogsTableProps> = ( {
 	logs,
-	users,
 	currentSort,
 	handleSort,
 } ) => {
-	const getUserDisplayName = ( userId: number ): { name: string; gravatar?: string } => {
-		const user = users.find( ( u ) => u.id === userId );
-		return {
-			name: user ? user.display_name : `User ${ userId }`,
-			gravatar: user?.gravatar_url,
-		};
-	};
-
-	const getSortIndicator = ( field: SortableField ) => {
-		if ( currentSort.field !== field ) {
-			return null;
-		}
-		return currentSort.direction === 'asc' ? '↑' : '↓';
-	};
-
 	return (
 		<div className="onelogs-logs-table-container">
 			{ logs?.length > 0 ? (

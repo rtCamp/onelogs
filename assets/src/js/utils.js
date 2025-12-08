@@ -73,8 +73,54 @@ const isValidUrl = ( url ) => {
 	}
 };
 
+/**
+ * Debounce function to limit the rate at which a function can fire.
+ *
+ * @param {Function} func      The function to debounce
+ * @param {number}   wait      The number of milliseconds to wait
+ * @param {boolean}  immediate If true, trigger the function on the leading edge, instead of the trailing.
+ *
+ * @return {(function(): void)|*} The debounced function
+ */
+function debounce( func, wait, immediate ) {
+	let timeout;
+	return function() {
+		const context = this,
+			args = arguments;
+		clearTimeout( timeout );
+		if ( immediate && ! timeout ) {
+			func.apply( context, args );
+		}
+		timeout = setTimeout( function() {
+			timeout = null;
+			if ( ! immediate ) {
+				func.apply( context, args );
+			}
+		}, wait );
+	};
+}
+
+/**
+ * Formats a date string into a more readable format.
+ *
+ * @param {string} dateString The date string to format.
+ *
+ * @return {string} The formatted date string.
+ */
+export const formatDate = ( dateString ) => {
+	return new Date( dateString ).toLocaleString( 'en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: true,
+	} );
+};
+
 export {
 	getInitials,
 	isURL,
 	isValidUrl,
+	debounce,
 };
