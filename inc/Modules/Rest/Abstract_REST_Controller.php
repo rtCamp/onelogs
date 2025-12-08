@@ -144,24 +144,4 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 		}
 		return hash_equals( $parsed_url1['host'], $parsed_url2['host'] );
 	}
-
-	/**
-	 * Get URLs of all multisites in the network.
-	 *
-	 * @return array Array of multisite URLs.
-	 */
-	private function get_all_multisite_urls(): array {
-		$sites_info = MU_Settings::get_all_multisites_info();
-		$urls       = [];
-
-		foreach ( $sites_info as $site ) {
-			if ( ! isset( $site['url'] ) ) {
-				continue;
-			}
-
-			$urls[] = $site['url'];
-		}
-
-		return $urls;
-	}
 }
