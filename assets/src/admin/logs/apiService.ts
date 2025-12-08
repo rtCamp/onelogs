@@ -1,11 +1,11 @@
-import type { FilterOptions, UserOption } from './types';
+import type { fetchReturn, FilterOptions, UserOption } from './types';
 import apiFetch from '@wordpress/api-fetch';
 
 const NONCE = window.OneLogsData.restNonce;
 const API_KEY = window.OneLogsData.apiKey;
 
 type FetchOptions = {
-	filters?: Record<string, any>;
+	filters?: Record<string, object>;
 	queryParams?: URLSearchParams;
 	returnKey?: string;
 	headers?: Record<string, string>;
@@ -13,16 +13,12 @@ type FetchOptions = {
 
 export const fetchLogs = async (
 	filters: FilterOptions,
-	showSharedSitesLogs: boolean,
-	sharedSites: any[],
 ) => {
 	const formattedFilters = {
 		...filters,
 		date_from: filters.date_from ? `${ filters.date_from } 00:00:00` : undefined,
 		date_to: filters.date_to ? `${ filters.date_to } 23:59:59` : undefined,
 	};
-
-	let response: any;
 
 	if ( filters.site_url === 'governing-site' ) {
 		formattedFilters.current_site_logs = true;
@@ -86,15 +82,15 @@ export const fetchUsers = async ( filters ): Promise<UserOption[]> => oneLogsFet
 	returnKey: 'data',
 } );
 
-export const fetchSharedSites = async (): Promise<any[]> => oneLogsFetch<any[]>( 'shared-sites', { returnKey: 'shared_sites' } );
+export const fetchSharedSites = async () => oneLogsFetch( 'shared-sites', { returnKey: 'shared_sites' } );
 
-export const fetchSiteType = async () => oneLogsFetch<any[]>( 'site-type', { returnKey: 'site_type' } );
+export const fetchSiteType = async () => oneLogsFetch( 'site-type', { returnKey: 'site_type' } );
 
-const oneLogsFetch = async <T = any>(
+const oneLogsFetch = async <T extends fetchReturn>(
 	endpoint: string,
 	options: FetchOptions = {},
 ): Promise<T> => {
-	const { filters, queryParams, returnKey, headers = {} } = options;
+	const { filters, queryParams, returnKey } = options;
 
 	let query = '';
 
@@ -106,12 +102,12 @@ const oneLogsFetch = async <T = any>(
 
 	apiFetch.use( apiFetch.createNonceMiddleware( NONCE ) );
 
-	apiFetch.use( ( options, next ) => {
-		options.headers = {
-			...( options.headers || {} ),
+	apiFetch.use( ( fetchOptions, next ) => {
+		fetchOptions.headers = {
+			...( fetchOptions.headers || {} ),
 			'X-OneLogs-Token': API_KEY,
 		};
-		return next( options );
+		return next( fetchOptions );
 	} );
 
 	const apiResponse = await apiFetch( {

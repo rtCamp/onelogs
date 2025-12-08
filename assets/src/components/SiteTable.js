@@ -9,7 +9,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getInitials } from '../js/utils';
-import MultiSites from './MultiSites';
 
 /**
  * PHP consts for JS usage.
@@ -55,15 +54,6 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal, setSit
 			<CardHeader>
 				<h3>{ __( 'Brand Sites', 'onelogs' ) }</h3>
 				<div style={ { display: 'flex', gap: '16px' } }>
-					{
-						IS_MULTISITE && IS_GOVERNING_SITE_SELECTED && (
-							<MultiSites
-								setBrandSites={ setSites }
-								brandSites={ sites }
-								setNotice={ setNotice }
-							/>
-						)
-					}
 					<Button
 						style={ { width: 'fit-content' } }
 						variant="primary"

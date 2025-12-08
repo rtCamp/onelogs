@@ -30,7 +30,7 @@ const SiteSettings = () => {
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ notice, setNotice ] = useState( null );
 	const [ governingSite, setGoverningSite ] = useState( '' );
-	const [ showDisconectionModal, setShowDisconectionModal ] = useState( false );
+	const [ showDisconectionModal, setShowDisconnectionModal ] = useState( false );
 
 	const fetchApiKey = useCallback( async () => {
 		try {
@@ -149,12 +149,12 @@ const SiteSettings = () => {
 				message: __( 'Failed to disconnect governing site. Please try again later.', 'onelogs' ),
 			} );
 		} finally {
-			setShowDisconectionModal( false );
+			setShowDisconnectionModal( false );
 		}
 	}, [ apiKey ] );
 
 	const handleDisconnectGoverningSite = useCallback( async () => {
-		setShowDisconectionModal( true );
+		setShowDisconnectionModal( true );
 	}, [] );
 
 	useEffect( () => {
@@ -254,14 +254,14 @@ const SiteSettings = () => {
 			{ showDisconectionModal && (
 				<Modal
 					title={ __( 'Disconnect Governing Site', 'onelogs' ) }
-					onRequestClose={ () => setShowDisconectionModal( false ) }
+					onRequestClose={ () => setShowDisconnectionModal( false ) }
 					shouldCloseOnClickOutside={ true }
 				>
 					<p>{ __( 'Are you sure you want to disconnect from the governing site? This action cannot be undone.', 'onelogs' ) }</p>
 					<div style={ { display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '16px' } }>
 						<Button
 							variant="secondary"
-							onClick={ () => setShowDisconectionModal( false ) }
+							onClick={ () => setShowDisconnectionModal( false ) }
 						>
 							{ __( 'Cancel', 'onelogs' ) }
 						</Button>

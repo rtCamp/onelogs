@@ -72,7 +72,7 @@ const LogsDashboard: React.FC = () => {
 			let allLogs = [];
 
 			// Clone filters safely.
-			const filtersForExport = { ...filters };
+			const filtersForExport = { ...filters, perPage };
 
 			// Fetch the first page.
 			const initialResult = await apiFetchLogs( filtersForExport, showSharedSitesLogs, sharedSites );
@@ -81,7 +81,7 @@ const LogsDashboard: React.FC = () => {
 
 			// Fetch remaining pages (if any).
 			for ( page = 2; page <= totalPagesForExport; page++ ) {
-				const pagedFilters = { ...filtersForExport, page };
+				const pagedFilters = { ...filtersForExport, page, perPage };
 				const pageResult = await apiFetchLogs( pagedFilters, showSharedSitesLogs, sharedSites );
 				allLogs.push( ...pageResult.logs );
 			}
