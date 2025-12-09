@@ -66,9 +66,8 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 					'permission_callback' => static fn() => current_user_can( 'manage_options' ),
 					'args'                => [
 						'sites_data' => [
-							'required'          => true,
-							'type'              => 'array',
-							'validate_callback' => 'rest_validate_request_args',
+							'required' => true,
+							'type'     => 'array',
 						],
 					],
 				],

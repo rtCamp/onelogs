@@ -41,7 +41,7 @@ class Admin implements Registrable {
 	 */
 	public function add_logs_page(): void {
 		// Only add plugin-specific submenu pages if sites have been connecting.
-		if ( ! Settings::is_governing_site() || ! Settings::get_shared_sites() ) {
+		if ( Settings::is_governing_site() && empty( Settings::get_shared_sites() ) ) {
 			return;
 		}
 
