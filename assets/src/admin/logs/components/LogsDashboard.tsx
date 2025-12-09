@@ -41,7 +41,7 @@ const LogsDashboard: React.FC = () => {
 	} );
 	const [ showAdvancedFilters, setShowAdvancedFilters ] = useState<boolean>( true );
 
-	const fetchLogsData = async () => {
+	const fetchLogsData = useCallback( async () => {
 		setLoading( true );
 		setError( null );
 
@@ -60,7 +60,7 @@ const LogsDashboard: React.FC = () => {
 		} finally {
 			setLoading( false );
 		}
-	};
+	}, [ filters, showSharedSitesLogs, sharedSites ] );
 
 	const exportData = async () => {
 		setExportLoading( true );
@@ -137,50 +137,50 @@ const LogsDashboard: React.FC = () => {
 		}
 	};
 
-	const loadContexts = async () => {
+	const loadContexts = useCallback( async () => {
 		try {
 			const data = await apiFetchContexts( filters );
 			setContexts( data );
 		} catch ( err ) {
 			setError( __( 'Error fetching contexts:', 'onelogs' ) );
 		}
-	};
+	}, [ filters ] );
 
-	const loadConnectors = async () => {
+	const loadConnectors = useCallback( async () => {
 		try {
 			const data = await apiFetchConnectors( filters );
 			setConnectors( data );
 		} catch ( err ) {
 			setError( __( 'Error fetching connectors:', 'onelogs' ) );
 		}
-	};
+	}, [ filters ] );
 
-	const loadUsers = async () => {
+	const loadUsers = useCallback( async () => {
 		try {
 			const data = await apiFetchUsers( filters );
 			setUsers( data );
 		} catch ( err ) {
 			setError( __( 'Error fetching users:', 'onelogs' ) );
 		}
-	};
+	}, [ filters ] );
 
-	const loadSharedSites = async () => {
+	const loadSharedSites = useCallback( async () => {
 		try {
 			const data = await apiFetchSharedSites();
 			setSharedSites( data );
 		} catch ( err ) {
 			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
 		}
-	};
+	}, [] );
 
-	const loadActions = async () => {
+	const loadActions = useCallback( async () => {
 		try {
 			const data = await fetchActions( filters );
 			setActions( data );
 		} catch ( err ) {
 			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
 		}
-	};
+	}, [ filters ] );
 
 	useEffect( () => {
 		loadContexts();
@@ -189,20 +189,21 @@ const LogsDashboard: React.FC = () => {
 		loadSharedSites();
 		loadActions();
 		fetchLogsData();
-	}, [] );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ ] ); // Run only once on mount, do not include fetchLogsData in deps to avoid infinite loop.
 
 	useEffect( () => {
 		fetchLogsData();
 		loadUsers();
 		loadContexts();
 		loadActions();
-	}, [ filters, showSharedSitesLogs ] );
+	}, [ filters, showSharedSitesLogs, fetchLogsData, loadActions, loadContexts, loadUsers ] );
 
 	useEffect( () => {
 		setLocalSearch( filters.search || '' );
 	}, [ filters.search ] );
 
-	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: any ) => {
+	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: string | [] | object ) => {
 		setFilters( ( prev ) => ( {
 			...prev,
 			[ key ]: value,
