@@ -30,7 +30,7 @@ const SiteSettings = () => {
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ notice, setNotice ] = useState( null );
 	const [ governingSite, setGoverningSite ] = useState( '' );
-	const [ showDisconectionModal, setShowDisconnectionModal ] = useState( false );
+	const [ showDisconnectionModal, setShowDisconnectionModal ] = useState( false );
 
 	const fetchApiKey = useCallback( async () => {
 		try {
@@ -251,7 +251,7 @@ const SiteSettings = () => {
 				</CardBody>
 			</Card>
 
-			{ showDisconectionModal && (
+			{ showDisconnectionModal && (
 				<Modal
 					title={ __( 'Disconnect Governing Site', 'onelogs' ) }
 					onRequestClose={ () => setShowDisconnectionModal( false ) }

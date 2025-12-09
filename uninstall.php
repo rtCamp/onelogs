@@ -23,8 +23,6 @@ function multisite_uninstall(): void {
 		return;
 	}
 
-	delete_network_plugin_data();
-
 	$site_ids = get_sites(
 		[
 			'fields' => 'ids',
@@ -48,19 +46,6 @@ function multisite_uninstall(): void {
  */
 function uninstall(): void {
 	delete_plugin_data();
-}
-
-/**
- * Delete multisite network plugin data.
- */
-function delete_network_plugin_data(): void {
-	$options = [
-		'onelogs_multisite_governing_site',
-	];
-
-	foreach ( $options as $option ) {
-		delete_site_option( $option );
-	}
 }
 
 /**

@@ -63,7 +63,13 @@ class Admin implements Registrable {
 	 */
 	public function enqueue_scripts( string $hook ): void {
 
-		if ( strpos( $hook, 'onelogs' ) === false ) {
+		$screen = get_current_screen();
+
+		if ( ! $screen instanceof \WP_Screen ) {
+			return;
+		}
+
+		if ( strpos( $hook, 'onelogs' ) === false && 'onelogs' !== $screen->id ) {
 			return;
 		}
 
@@ -72,11 +78,6 @@ class Admin implements Registrable {
 			'OneLogsData',
 			Assets::get_localized_data(),
 		);
-
-		$screen = get_current_screen();
-		if ( 'onelogs' === $screen->id ) {
-			return;
-		}
 
 		wp_enqueue_script( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
 

@@ -45,16 +45,12 @@ const getInitials = ( name ) => {
  * @return {boolean} True if the string is a valid URL, false otherwise.
  */
 const isURL = ( str ) => {
-	const pattern = new RegExp(
-		'^https?:\\/\\/' +
-		'(?:[a-z\\d](?:[a-z\\d-]*[a-z\\d])?\\.)?' +
-		'[a-z\\d](?:[a-z\\d-]*[a-z\\d])?\\.' +
-		'[a-z]{2,}' +
-		'(?::\\d+)?' +
-		'(?:\\/[^\\s]*)?' +
-		'$', 'i',
-	);
-	return pattern.test( str );
+	try {
+		new URL( str );
+		return true;
+	} catch {
+		return false;
+	}
 };
 
 /**
