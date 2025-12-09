@@ -113,7 +113,6 @@ final class Assets implements Registrable {
 		$this->register_script(
 			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
 			'logs-dashboard',
-			[ 'wp-element', 'wp-components', 'wp-i18n', 'wp-api-fetch' ],
 		);
 
 		$this->register_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE, 'logs-dashboard', [ 'wp-components' ], );

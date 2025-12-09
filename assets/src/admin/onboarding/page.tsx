@@ -45,14 +45,14 @@ const SiteTypeSelector = ( { value, setSiteType }: {
 const OnboardingScreen = () => {
 	// WordPress provides snake_case keys here. Using them intentionally.
 	// eslint-disable-next-line camelcase
-	const { nonce, setup_url, site_type } = window.OneLogsSettings;
+	const { restNonce, settingsLink, site_type } = window.OneLogsSettings;
 
 	const [ siteType, setSiteType ] = useState<SiteType | ''>( site_type || '' );
 	const [ notice, setNotice ] = useState<NoticeState | null>( null );
 	const [ isSaving, setIsSaving ] = useState<boolean>( false );
 
 	useEffect( () => {
-		apiFetch.use( apiFetch.createNonceMiddleware( nonce ) );
+		apiFetch.use( apiFetch.createNonceMiddleware( restNonce ) );
 		apiFetch<{ onelogs_site_type?: SiteType }>( { path: '/wp/v2/settings' } )
 			.then( ( settings ) => {
 				if ( settings?.onelogs_site_type ) {
@@ -85,8 +85,8 @@ const OnboardingScreen = () => {
 				setSiteType( settings.onelogs_site_type );
 
 				// Redirect user to setup page.
-				if ( setup_url ) {
-					window.location.href = setup_url;
+				if ( settingsLink ) {
+					window.location.href = settingsLink;
 				}
 			} );
 		} catch {

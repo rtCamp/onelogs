@@ -18,7 +18,8 @@
 		}
 	},
 	"globals": {
-		"_": true
+		"_": true,
+		"OneLogsData": true
 	},
 	"rules": {
 		"eslint-comments/no-unlimited-disable": "error",

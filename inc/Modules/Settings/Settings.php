@@ -346,18 +346,6 @@ final class Settings implements Registrable {
 		$api_key = self::generate_api_key();
 		update_option( self::OPTION_CONSUMER_API_KEY, Encryptor::encrypt( $api_key ) );
 
-		if ( is_multisite() ) {
-			/**
-			 * Trigger action when API key is generated in multisite setup.
-			 *
-			 * @param string $secret_key The generated secret key.
-			 * @param int $blog_id The blog ID where the key is generated.
-			 *
-			 * @hook onelogs_regenerate_api_key
-			 */
-			do_action( 'onelogs_regenerate_api_key', $api_key, get_current_blog_id() );
-		}
-
 		return $api_key;
 	}
 
