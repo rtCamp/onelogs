@@ -69,7 +69,7 @@ final class Utils {
 		}
 
 		// Normalize the input URL for comparison.
-		$normalized_input = preg_replace( '#^https?://#', '', trim( strtolower( $url ) ) );
+		$normalized_input = preg_replace( '#^https?://#', '', trim( strtolower( $url ) ) ) ?? '';
 		$normalized_input = untrailingslashit( $normalized_input );
 
 		foreach ( $shared_sites as $site ) {
@@ -77,7 +77,7 @@ final class Utils {
 				continue;
 			}
 
-			$normalized_site = preg_replace( '#^https?://#', '', trim( strtolower( $site['siteUrl'] ) ) );
+			$normalized_site = preg_replace( '#^https?://#', '', trim( strtolower( $site['siteUrl'] ) ) ) ?? '';
 			$normalized_site = untrailingslashit( $normalized_site );
 
 			if ( $normalized_site === $normalized_input ) {

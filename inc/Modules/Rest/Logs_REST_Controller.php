@@ -488,8 +488,8 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	/**
 	 * Format log data for API response.
 	 *
-	 * @param object $result Database result object.
-	 * @param array  $meta   Optional metadata array.
+	 * @param object{ID: int, site_id: int, blog_id: int, user_id: int, user_role: string, object_id: int|null, connector: string, context: string, action: string, summary: string, created: string, ip: string} $result Database result object.
+	 * @param array                                                                                                                                                                                               $meta   Optional metadata array.
 	 *
 	 * @return array Formatted log data.
 	 */
@@ -514,9 +514,9 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$trashable_contexts          = [ 'post', 'page', 'attachment' ];
 		$should_populate_object_data = ! ( in_array( $result->context, $trashable_contexts, true ) && 'trashed' === $result->action );
 
-		$object_type  = $should_populate_object_data ? $this->get_custom_object_type( $result->connector, $result->context ) : null;
+		$object_type  = $should_populate_object_data ? $this->get_custom_object_type( $result->connector, $result->context ) : '';
 		$object_data  = $should_populate_object_data ? $this->get_object_data( $object_type, $result->object_id, $result->connector, $result->context ) : null;
-		$action_title = $should_populate_object_data ? $this->get_action_title( $result->action, $object_type, $result->context ) : null;
+		$action_title = $should_populate_object_data ? $this->get_action_title( $result->action, $object_type, $result->context ) : '';
 
 		return [
 			'ID'           => (int) $result->ID,
@@ -572,7 +572,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param string   $connector   The connector name.
 	 * @param string   $context     The context name.
 	 */
-	private function get_object_data( string $object_type, ?int $object_id, string $connector, string $context ): ?array {
+	private function get_object_data( string $object_type, int|null $object_id, string $connector, string $context ): ?array {
 		if ( ! $object_id ) {
 			return null;
 		}
@@ -790,7 +790,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 *
-	 * @return \WP_REST_Response|\WP_Error Response object or error.
+	 * @return \WP_REST_Response Response object or error.
 	 */
 	public function get_logs( WP_REST_Request $request ) {
 		$params = $request->get_params();
@@ -833,7 +833,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 					'error' => $local_logs_result->get_error_message(),
 				];
 			} else {
-				$all_logs     = array_merge( $all_logs, $local_logs_result['logs'] );
+				$all_logs    = array_merge( $all_logs, $local_logs_result['logs'] );
 				$total_count += (int) $local_logs_result['total'];
 			}
 		}
@@ -846,8 +846,8 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 			foreach ( $response['data'] as &$log ) {
 				$site_info        = Utils::get_shared_site_data_by_url( $brand_site );
-				$log['site_name'] = $site_info['siteName'];
-				$log['site_url']  = $site_info['siteUrl'];
+				$log['site_name'] = $site_info['siteName'] ?? $brand_site;
+				$log['site_url']  = $site_info['siteName'] ?? $brand_site;
 				$log['is_remote'] = true;
 			}
 
@@ -887,7 +887,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 *
 	 * @return array|\WP_Error Response array or error.
 	 */
-	private function get_local_logs( WP_REST_Request $request, bool $return_count = true ): array {
+	private function get_local_logs( WP_REST_Request $request, bool $return_count = true ): array|\WP_Error {
 		global $wpdb;
 
 		$params = $request->get_params();
@@ -954,7 +954,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		if ( ! $return_count ) {
 			$offset     = ( $page - 1 ) * $per_page;
-			$sql       .= ' LIMIT %d OFFSET %d';
+			$sql        .= ' LIMIT %d OFFSET %d';
 			$sql_args[] = $per_page;
 			$sql_args[] = $offset;
 		}
