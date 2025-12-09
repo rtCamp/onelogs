@@ -54,7 +54,7 @@
 		}
 	}
 
-	.components-notice__content {
+	.components-notice__content { // stylelint-disable-line -- WordPress generates classnames with underscores
 		white-space: pre-line !important;
 	}
 
