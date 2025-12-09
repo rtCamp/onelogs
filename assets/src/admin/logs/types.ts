@@ -35,7 +35,7 @@ export interface LogEntry {
 	};
 }
 
-export interface FilterOptions {
+export interface FilterOptions extends Record<string, unknown> {
 	page: number;
 	per_page: number;
 	orderby?: string;
@@ -64,7 +64,7 @@ export interface SortState {
 
 export type APIResponse = {
 	[key: string]: unknown;
-	data: object[];
+	data: object[] | LogEntry[] | UserOption[];
 	meta: {
 		total: number;
 		total_pages: number;
@@ -74,7 +74,7 @@ export type APIResponse = {
 
 export type StringArrayResponse = string[];
 
-export type fetchReturn = APIResponse | StringArrayResponse | string;
+export type fetchReturn = APIResponse | StringArrayResponse | string | SharedSite[];
 
 export interface SharedSite {
 	api_key: string;

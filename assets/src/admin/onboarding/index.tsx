@@ -2,9 +2,9 @@ import { createRoot } from 'react-dom/client';
 import OnboardingScreen, { type SiteType } from './page';
 
 interface OneLogsSettings {
-	nonce: string;
+	restNonce: string;
 	site_type: SiteType | '';
-	setup_url: string;
+	settingsLink: string;
 }
 
 declare global {

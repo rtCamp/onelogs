@@ -13,7 +13,7 @@ import {
 import { FiltersPanel } from './FiltersPanel';
 import { LogsTable } from './LogsTable';
 import { Pagination } from './Pagination';
-import type { FilterOptions, LogEntry, SharedSite, SortableField, SortState, UserOption } from '../types';
+import type { FilterOptions, LogEntry, SharedSite, SortState, UserOption } from '../types';
 
 const LogsDashboard: React.FC = () => {
 	const [ logs, setLogs ] = useState<LogEntry[]>( [] );
@@ -46,8 +46,8 @@ const LogsDashboard: React.FC = () => {
 		setError( null );
 
 		try {
-			const result = await apiFetchLogs( filters, showSharedSitesLogs, sharedSites );
-			setLogs( result.logs );
+			const result = await apiFetchLogs( filters );
+			setLogs( result.logs as LogEntry[] );
 			setTotalLogs( result.total );
 			setTotalPages( result.pages );
 
@@ -60,7 +60,7 @@ const LogsDashboard: React.FC = () => {
 		} finally {
 			setLoading( false );
 		}
-	}, [ filters, showSharedSitesLogs, sharedSites ] );
+	}, [ filters ] );
 
 	const exportData = async () => {
 		setExportLoading( true );
@@ -69,21 +69,21 @@ const LogsDashboard: React.FC = () => {
 		try {
 			const perPage = 1000; // Adjust based on server capacity
 			let page = 1;
-			let allLogs = [];
+			let allLogs: LogEntry[] = [];
 
 			// Clone filters safely.
 			const filtersForExport = { ...filters, perPage };
 
 			// Fetch the first page.
-			const initialResult = await apiFetchLogs( filtersForExport, showSharedSitesLogs, sharedSites );
+			const initialResult = await apiFetchLogs( filtersForExport );
 			const totalPagesForExport = initialResult.pages || 1;
-			allLogs = [ ...initialResult.logs ];
+			allLogs = [ ...initialResult.logs as LogEntry[] ];
 
 			// Fetch remaining pages (if any).
 			for ( page = 2; page <= totalPagesForExport; page++ ) {
 				const pagedFilters = { ...filtersForExport, page, perPage };
-				const pageResult = await apiFetchLogs( pagedFilters, showSharedSitesLogs, sharedSites );
-				allLogs.push( ...pageResult.logs );
+				const pageResult = await apiFetchLogs( pagedFilters );
+				allLogs.push( ...pageResult.logs as LogEntry[] );
 			}
 
 			// Define CSV headers.
@@ -111,7 +111,7 @@ const LogsDashboard: React.FC = () => {
 			] );
 
 			// Escape double quotes and wrap fields in quotes.
-			const escapeCSV = ( value ) => `"${ String( value ).replace( /"/g, '""' ) }"`;
+			const escapeCSV = ( value:string ) => `"${ String( value ).replace( /"/g, '""' ) }"`;
 
 			// Combine CSV content.
 			const csvContent = [
@@ -130,8 +130,9 @@ const LogsDashboard: React.FC = () => {
 			link.click();
 			document.body.removeChild( link );
 			URL.revokeObjectURL( url );
-		} catch ( err ) {
-			setError( err?.message || 'Failed to export logs.' );
+		} catch ( err : unknown ) {
+			const message = err instanceof Error ? err.message : 'Failed to export logs.';
+			setError( message );
 		} finally {
 			setExportLoading( false );
 		}
@@ -157,8 +158,8 @@ const LogsDashboard: React.FC = () => {
 
 	const loadUsers = useCallback( async () => {
 		try {
-			const data = await apiFetchUsers( filters );
-			setUsers( data );
+			const response = await apiFetchUsers( filters );
+			setUsers( response.data as UserOption[] );
 		} catch ( err ) {
 			setError( __( 'Error fetching users:', 'onelogs' ) );
 		}
@@ -166,8 +167,8 @@ const LogsDashboard: React.FC = () => {
 
 	const loadSharedSites = useCallback( async () => {
 		try {
-			const data = await apiFetchSharedSites();
-			setSharedSites( data );
+			const response = await apiFetchSharedSites();
+			setSharedSites( response as SharedSite[] );
 		} catch ( err ) {
 			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
 		}
@@ -204,11 +205,15 @@ const LogsDashboard: React.FC = () => {
 	}, [ filters.search ] );
 
 	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: string | number ) => {
-		setFilters( ( prev ) => ( {
-			...prev,
-			[ key ]: value,
-			page: 1,
-		} ) );
+		setFilters( ( prev ) => {
+			if ( value === '' || value === null || value === undefined ) {
+				delete prev[ key ];
+			} else {
+				prev[ key ] = value;
+			}
+
+			return { ...prev, page: 1 };
+		} );
 	}, [] );
 
 	const resetFilters = () => {
@@ -229,7 +234,7 @@ const LogsDashboard: React.FC = () => {
 		}
 	};
 
-	const handleSort = ( field: SortableField ) => {
+	const handleSort = ( field: string ) => {
 		let newDirection: 'asc' | 'desc' = 'asc';
 
 		if ( currentSort.field === field ) {

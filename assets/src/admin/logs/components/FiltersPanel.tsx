@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { debounce } from '@wordpress/compose';
-import type { fetchReturn, FilterOptions, UserOption } from '../types';
+import type { fetchReturn, FilterOptions, SharedSite, UserOption } from '../types';
 import { fetchSiteType } from '../apiService';
 
 interface FiltersPanelProps {
@@ -14,7 +14,7 @@ interface FiltersPanelProps {
 	contexts: string[];
 	actions: string[];
 	users: UserOption[];
-	sharedSites: [];
+	sharedSites: SharedSite[];
 	showSharedSitesLogs: boolean;
 	setShowSharedSitesLogs: ( value: boolean ) => void;
 	showAdvancedFilters: boolean;
@@ -56,9 +56,9 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 
 	useEffect( () => {
 		loadSiteType();
-		const debouncedFn = debounce( ( searchValue: string ) => {
-			handleFilterChange( 'search', searchValue );
-		}, 500, false );
+		const debouncedFn = debounce( ( searchValue: unknown ) => {
+			handleFilterChange( 'search', searchValue as string );
+		}, 500 );
 
 		debouncedSearchRef.current = debouncedFn;
 	}, [ handleFilterChange ] );
@@ -72,7 +72,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__nextHasNoMarginBottom
 						label={ __( 'Site', 'onelogs' ) }
 						value={ filters.site_url || '' }
-						onChange={ ( value ) => handleFilterChange( 'site_url', value || undefined ) }
+						onChange={ ( value ) => handleFilterChange( 'site_url', value ) }
 						options={ [
 							{ label: __( 'Governing Site', 'onelogs' ), value: 'governing-site' },
 							...sharedSites.map( ( site: {name: string; url: string} ) => ( {
@@ -123,7 +123,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__nextHasNoMarginBottom
 						label={ __( 'User', 'onelogs' ) }
 						value={ filters.user_id?.toString() || '' }
-						onChange={ ( value ) => handleFilterChange( 'user_id', value ? parseInt( value, 10 ) : undefined ) }
+						onChange={ ( value ) => handleFilterChange( 'user_id', value ? parseInt( value, 10 ) : '' ) }
 						options={ [
 							{ label: __( 'All Users', 'onelogs' ), value: '' },
 							...users.map( ( user ) => ( {
@@ -141,7 +141,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						label={ __( 'Date From', 'onelogs' ) }
 						type="date"
 						value={ filters.date_from || '' }
-						onChange={ ( value ) => handleFilterChange( 'date_from', value || undefined ) }
+						onChange={ ( value ) => handleFilterChange( 'date_from', value || '' ) }
 						max={ today }
 					/>
 				</div>
@@ -153,7 +153,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						label={ __( 'Date To', 'onelogs' ) }
 						type="date"
 						value={ filters.date_to || '' }
-						onChange={ ( value ) => handleFilterChange( 'date_to', value || undefined ) }
+						onChange={ ( value ) => handleFilterChange( 'date_to', value || '' ) }
 						min={ filters.date_from || undefined }
 						max={ today }
 					/>

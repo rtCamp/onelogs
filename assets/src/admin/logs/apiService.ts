@@ -18,8 +18,7 @@ const API_KEY = window.OneLogsData.apiKey;
 
 type FetchOptions = {
 	filters?: {
-		site_url?: string;
-
+		site_url?: string | undefined;
 	};
 	queryParams?: URLSearchParams;
 	returnKey?: string;
@@ -80,22 +79,19 @@ export const fetchLogs = async (
 	};
 };
 
-export const fetchContexts = async ( filters: Record<string, object> ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/contexts', {
+export const fetchContexts = async ( filters: FilterOptions ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/contexts', {
 	filters,
 	returnKey: 'data',
 } );
 
-export const fetchActions = async ( filters: Record<string, object> ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/actions', {
+export const fetchActions = async ( filters: FilterOptions ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/actions', {
 	filters,
 	returnKey: 'data',
 } );
 
-export const fetchConnectors = async ( filters: Record<string, object> ): Promise<string[]> => oneLogsFetch( 'logs/connectors', { filters } );
+export const fetchConnectors = async ( filters: FilterOptions ): Promise<string[]> => oneLogsFetch( 'logs/connectors', { filters } );
 
-export const fetchUsers = async ( filters: Record<string, object> ): Promise<APIResponse> => oneLogsFetch( 'logs/users', {
-	filters,
-	returnKey: 'data',
-} );
+export const fetchUsers = async ( filters: FilterOptions ): Promise<APIResponse> => oneLogsFetch( 'logs/users', { filters } );
 
 export const fetchSharedSites = async () => oneLogsFetch( 'shared-sites', { returnKey: 'shared_sites' } );
 

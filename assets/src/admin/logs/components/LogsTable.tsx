@@ -1,13 +1,13 @@
 import React from 'react';
 import { __ } from '@wordpress/i18n';
-import type { LogEntry, SortableField, SortState, UserOption } from '../types';
+import type { LogEntry, SortState, UserOption } from '../types';
 import { formatDate } from '../../../js/utils';
 
 interface LogsTableProps {
 	logs: LogEntry[];
 	users: UserOption[];
 	currentSort: SortState;
-	handleSort: ( field: SortableField | string ) => void;
+	handleSort: ( field: string ) => void;
 }
 
 export const LogsTable: React.FC<LogsTableProps> = ( {
