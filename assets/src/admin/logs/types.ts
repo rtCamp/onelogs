@@ -24,6 +24,15 @@ export interface LogEntry {
 	site_name?: string;
 	site_url?: string;
 	is_remote?: boolean;
+	user?: {
+		display_name?: string;
+		avatar_url?: string;
+	};
+	object_data?: {
+		title?: string;
+		edit_link_text?: string;
+		edit_link?: string;
+	};
 }
 
 export interface FilterOptions {
@@ -40,15 +49,38 @@ export interface FilterOptions {
 	search?: string;
 	date_from?: string;
 	date_to?: string;
-	site_url?: string;
+	site_url?: string | undefined;
 	exclude_current_site?: boolean;
+	current_site_logs?: boolean;
+	include_shared_sites?: boolean;
 }
 
 export type SortableField = 'ID' | 'summary' | 'connector' | 'context' | 'action' | 'user_id' | 'ip' | 'created' | 'site_name';
 
 export interface SortState {
-	field: SortableField | null;
+	field: SortableField | null | string;
 	direction: 'asc' | 'desc' | null;
 }
 
-export type fetchReturn = object | string[];
+export type APIResponse = {
+	[key: string]: unknown;
+	data: object[];
+	meta: {
+		total: number;
+		total_pages: number;
+		errors?: string | [];
+	};
+};
+
+export type StringArrayResponse = string[];
+
+export type fetchReturn = APIResponse | StringArrayResponse | string;
+
+export interface SharedSite {
+	api_key: string;
+	id: string;
+	logo: string;
+	logo_id: number;
+	name: string;
+	url: string;
+}

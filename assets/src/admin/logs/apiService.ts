@@ -1,11 +1,26 @@
-import type { fetchReturn, FilterOptions, UserOption } from './types';
+import type { APIResponse, fetchReturn, FilterOptions } from './types';
 import apiFetch from '@wordpress/api-fetch';
+
+interface OneLogsDataType {
+	restUrl: string;
+	restNonce: string;
+	apiKey: string;
+}
+
+declare global {
+	interface Window {
+		OneLogsData: OneLogsDataType;
+	}
+}
 
 const NONCE = window.OneLogsData.restNonce;
 const API_KEY = window.OneLogsData.apiKey;
 
 type FetchOptions = {
-	filters?: Record<string, object>;
+	filters?: {
+		site_url?: string;
+
+	};
 	queryParams?: URLSearchParams;
 	returnKey?: string;
 	headers?: Record<string, string>;
@@ -39,13 +54,13 @@ export const fetchLogs = async (
 			}
 		} );
 
-		const apiResponse = await oneLogsFetch( 'logs', { queryParams } );
+		const apiResponse = await oneLogsFetch<APIResponse>( 'logs', { queryParams } );
 
 		return {
-			logs: apiResponse.data || [],
-			total: apiResponse.meta.total || 0,
-			pages: apiResponse.meta.total_pages || 1,
-			errors: apiResponse.meta.errors,
+			logs: apiResponse?.data || [],
+			total: apiResponse?.meta.total || 0,
+			pages: apiResponse?.meta.total_pages || 1,
+			errors: apiResponse?.meta.errors,
 		};
 	}
 	const queryParams = new URLSearchParams();
@@ -55,7 +70,7 @@ export const fetchLogs = async (
 		}
 	} );
 
-	const apiResponse = await oneLogsFetch( 'logs', { queryParams } );
+	const apiResponse = await oneLogsFetch<APIResponse>( 'logs', { queryParams } );
 
 	return {
 		logs: apiResponse.data,
@@ -65,19 +80,19 @@ export const fetchLogs = async (
 	};
 };
 
-export const fetchContexts = async ( filters ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/contexts', {
+export const fetchContexts = async ( filters: Record<string, object> ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/contexts', {
 	filters,
 	returnKey: 'data',
 } );
 
-export const fetchActions = async ( filters ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/actions', {
+export const fetchActions = async ( filters: Record<string, object> ): Promise<string[]> => oneLogsFetch<string[]>( 'logs/actions', {
 	filters,
 	returnKey: 'data',
 } );
 
-export const fetchConnectors = async ( filters ): Promise<string[]> => oneLogsFetch( 'logs/connectors', { filters } );
+export const fetchConnectors = async ( filters: Record<string, object> ): Promise<string[]> => oneLogsFetch( 'logs/connectors', { filters } );
 
-export const fetchUsers = async ( filters ): Promise<UserOption[]> => oneLogsFetch( 'logs/users', {
+export const fetchUsers = async ( filters: Record<string, object> ): Promise<APIResponse> => oneLogsFetch( 'logs/users', {
 	filters,
 	returnKey: 'data',
 } );
@@ -115,7 +130,7 @@ const oneLogsFetch = async <T extends fetchReturn>(
 		method: 'GET',
 	} );
 
-	const result = apiResponse;
+	const result = apiResponse as APIResponse;
 
-	return returnKey ? result?.[ returnKey ] ?? [] : result;
+	return ( returnKey ? ( result[ returnKey ] ?? [] ) : result ) as T;
 };

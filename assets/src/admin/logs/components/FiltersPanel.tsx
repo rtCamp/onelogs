@@ -2,16 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { debounce } from '../../../js/utils';
-import type { FilterOptions, UserOption } from '../types';
+import type { fetchReturn, FilterOptions, UserOption } from '../types';
 import { fetchSiteType } from '../apiService';
 
 interface FiltersPanelProps {
 	localSearch: string;
 	setLocalSearch: ( value: string ) => void;
 	filters: FilterOptions;
-	handleFilterChange: ( key: keyof FilterOptions, value: string | [] | object ) => void;
+	handleFilterChange: ( key: keyof FilterOptions, value: string | number ) => void;
 	connectors: string[];
 	contexts: string[];
+	actions: string[];
 	users: UserOption[];
 	sharedSites: [];
 	showSharedSitesLogs: boolean;
@@ -40,7 +41,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 } ) => {
 	const debouncedSearchRef = useRef<( ( searchValue: string | undefined ) => void ) | null>( null );
 
-	const [ siteType, setSiteType ] = useState( false );
+	const [ siteType, setSiteType ] = useState<string | fetchReturn>( '' );
 	const today = new Date().toISOString().split( 'T' )[ 0 ];
 
 	const loadSiteType = async () => {
@@ -55,17 +56,11 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 
 	useEffect( () => {
 		loadSiteType();
-		const debouncedFn = debounce( ( searchValue: string | undefined ) => {
+		const debouncedFn = debounce( ( searchValue: string ) => {
 			handleFilterChange( 'search', searchValue );
-		}, 500 );
+		}, 500, false );
 
 		debouncedSearchRef.current = debouncedFn;
-
-		return () => {
-			if ( debouncedFn && typeof debouncedFn.cancel === 'function' ) {
-				debouncedFn.cancel();
-			}
-		};
 	}, [ handleFilterChange ] );
 
 	return (
@@ -80,7 +75,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						onChange={ ( value ) => handleFilterChange( 'site_url', value || undefined ) }
 						options={ [
 							{ label: __( 'Governing Site', 'onelogs' ), value: 'governing-site' },
-							...sharedSites.map( ( site ) => ( {
+							...sharedSites.map( ( site: {name: string; url: string} ) => ( {
 								label: site.name || site.url,
 								value: site.url,
 							} ) ),
@@ -93,7 +88,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__nextHasNoMarginBottom
 						label={ __( 'Context', 'onelogs' ) }
 						value={ filters.context || '' }
-						onChange={ ( value ) => handleFilterChange( 'context', value || undefined ) }
+						onChange={ ( value ) => handleFilterChange( 'context', value ) }
 						options={ [
 							{ label: __( 'All Contexts', 'onelogs' ), value: '' },
 							...contexts.map( ( context ) => ( {
@@ -111,7 +106,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						style={ { flex: 1 } }
 						label={ __( 'Action', 'onelogs' ) }
 						value={ filters.action || '' }
-						onChange={ ( value ) => handleFilterChange( 'action', value || undefined ) }
+						onChange={ ( value ) => handleFilterChange( 'action', value ) }
 						options={ [
 							{ label: __( 'All Actions', 'onelogs' ), value: '' },
 							...actions.map( ( action ) => ( {
@@ -127,7 +122,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 						label={ __( 'User', 'onelogs' ) }
-						value={ filters.user_id || '' }
+						value={ filters.user_id?.toString() || '' }
 						onChange={ ( value ) => handleFilterChange( 'user_id', value ? parseInt( value, 10 ) : undefined ) }
 						options={ [
 							{ label: __( 'All Users', 'onelogs' ), value: '' },

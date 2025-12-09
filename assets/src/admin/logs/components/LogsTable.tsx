@@ -7,7 +7,7 @@ interface LogsTableProps {
 	logs: LogEntry[];
 	users: UserOption[];
 	currentSort: SortState;
-	handleSort: ( field: SortableField ) => void;
+	handleSort: ( field: SortableField | string ) => void;
 }
 
 export const LogsTable: React.FC<LogsTableProps> = ( {

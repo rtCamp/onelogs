@@ -68,7 +68,7 @@ Code contributions, bug reports, and feature requests are welcome! The following
 │       │   └── logo.svg
 │       └── js
 │           ├── constants.js
-│           └── utils.js
+│           └── utils.ts
 │
 │   # Project documentation.
 ├── docs/
