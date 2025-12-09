@@ -179,6 +179,7 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 	 */
 	public function get_shared_sites(): WP_REST_Response|\WP_Error {
 		$shared_sites = Settings::get_shared_sites();
+
 		return rest_ensure_response(
 			[
 				'success'      => true,
@@ -243,11 +244,11 @@ class Basic_Options_Controller extends Abstract_REST_Controller {
 		);
 	}
 
-		/**
-		 * Get governing site url.
-		 *
-		 * @return \WP_REST_Response|\WP_Error
-		 */
+	/**
+	 * Get governing site url.
+	 *
+	 * @return \WP_REST_Response|\WP_Error
+	 */
 	public function get_governing_site(): WP_REST_Response|\WP_Error {
 		$governing_site_url = Settings::get_parent_site_url();
 

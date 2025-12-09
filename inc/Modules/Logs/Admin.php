@@ -74,14 +74,14 @@ class Admin implements Registrable {
 		}
 
 		wp_localize_script(
-			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
+			Assets::LOGS_DASHBOARD_SCRIPT_HANDLE,
 			'OneLogsData',
 			Assets::get_localized_data(),
 		);
 
-		wp_enqueue_script( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+		wp_enqueue_script( Assets::LOGS_DASHBOARD_SCRIPT_HANDLE );
 
-		wp_enqueue_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE );
+		wp_enqueue_style( Assets::LOGS_DASHBOARD_SCRIPT_HANDLE );
 	}
 
 	/**

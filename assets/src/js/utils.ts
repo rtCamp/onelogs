@@ -76,7 +76,7 @@ const isValidUrl = ( url:string ) => {
  *
  * @return {string} The formatted date string.
  */
-export const formatDate = ( dateString:string ) => {
+const formatDate = ( dateString:string ) => {
 	return new Date( dateString ).toLocaleString( 'en-US', {
 		month: 'short',
 		day: 'numeric',
@@ -91,4 +91,5 @@ export {
 	getInitials,
 	isURL,
 	isValidUrl,
+	formatDate,
 };

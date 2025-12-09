@@ -69,7 +69,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			Abstract_REST_Controller::NAMESPACE,
+			self::NAMESPACE,
 			'/' . $this->rest_base,
 			[
 				[
@@ -833,7 +833,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 					'error' => $local_logs_result->get_error_message(),
 				];
 			} else {
-				$all_logs    = array_merge( $all_logs, $local_logs_result['logs'] );
+				$all_logs     = array_merge( $all_logs, $local_logs_result['logs'] );
 				$total_count += (int) $local_logs_result['total'];
 			}
 		}
@@ -954,7 +954,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		if ( ! $return_count ) {
 			$offset     = ( $page - 1 ) * $per_page;
-			$sql        .= ' LIMIT %d OFFSET %d';
+			$sql       .= ' LIMIT %d OFFSET %d';
 			$sql_args[] = $per_page;
 			$sql_args[] = $offset;
 		}

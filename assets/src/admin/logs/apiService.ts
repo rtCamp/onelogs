@@ -1,5 +1,6 @@
 import type { APIResponse, fetchReturn, FilterOptions } from './types';
 import apiFetch from '@wordpress/api-fetch';
+import { NONCE, API_KEY } from '../../js/constants';
 
 interface OneLogsDataType {
 	restUrl: string;
@@ -12,9 +13,6 @@ declare global {
 		OneLogsData: OneLogsDataType;
 	}
 }
-
-const NONCE = window.OneLogsData.restNonce;
-const API_KEY = window.OneLogsData.apiKey;
 
 type FetchOptions = {
 	filters?: {

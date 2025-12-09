@@ -25,15 +25,6 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * Reuses the namespace constant.
-	 *
-	 * @var string
-	 */
-	protected $namespace = self::NAMESPACE;
-
-	/**
-	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
 		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
