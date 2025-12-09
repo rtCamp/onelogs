@@ -13,7 +13,7 @@ import {
 import { FiltersPanel } from './FiltersPanel';
 import { LogsTable } from './LogsTable';
 import { Pagination } from './Pagination';
-import type { FilterOptions, LogEntry, SortableField, SortState, UserOption } from '../types';
+import type { FilterOptions, LogEntry, SharedSite, SortableField, SortState, UserOption } from '../types';
 
 const LogsDashboard: React.FC = () => {
 	const [ logs, setLogs ] = useState<LogEntry[]>( [] );
@@ -21,7 +21,7 @@ const LogsDashboard: React.FC = () => {
 	const [ actions, setActions ] = useState<string[]>( [] );
 	const [ connectors, setConnectors ] = useState<string[]>( [] );
 	const [ users, setUsers ] = useState<UserOption[]>( [] );
-	const [ sharedSites, setSharedSites ] = useState<[]>( [] );
+	const [ sharedSites, setSharedSites ] = useState<SharedSite[]>( [] );
 	const [ showSharedSitesLogs, setShowSharedSitesLogs ] = useState<boolean>( false );
 	const [ filters, setFilters ] = useState<FilterOptions>( {
 		page: 1,
@@ -203,7 +203,7 @@ const LogsDashboard: React.FC = () => {
 		setLocalSearch( filters.search || '' );
 	}, [ filters.search ] );
 
-	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: string | [] | object ) => {
+	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: string | number ) => {
 		setFilters( ( prev ) => ( {
 			...prev,
 			[ key ]: value,

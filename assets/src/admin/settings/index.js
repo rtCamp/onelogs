@@ -1,7 +1,8 @@
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, createRoot } from '@wordpress/element';
+import { useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
 import { Snackbar } from '@wordpress/components';
 
@@ -30,16 +31,14 @@ const OneLogsSettingsPage = () => {
 	} );
 
 	useEffect( () => {
-		const token = ( NONCE );
-
 		const fetchData = async () => {
 			try {
 				const [ siteTypeRes, sitesRes ] = await Promise.all( [
 					fetch( `${ API_NAMESPACE }/site-type`, {
-						headers: { 'Content-Type': 'application/json', 'X-WP-NONCE': token },
+						headers: { 'Content-Type': 'application/json', 'X-WP-NONCE': NONCE },
 					} ),
 					fetch( `${ API_NAMESPACE }/shared-sites`, {
-						headers: { 'Content-Type': 'application/json', 'X-WP-NONCE': token },
+						headers: { 'Content-Type': 'application/json', 'X-WP-NONCE': NONCE },
 					} ),
 				] );
 
@@ -68,13 +67,12 @@ const OneLogsSettingsPage = () => {
 			? sites.map( ( item, i ) => ( i === editingIndex ? formData : item ) )
 			: [ ...sites, formData ];
 
-		const token = ( NONCE );
 		try {
 			const response = await fetch( `${ API_NAMESPACE }/shared-sites`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-NONCE': token,
+					'X-WP-NONCE': NONCE,
 				},
 				body: JSON.stringify( { sites_data: updated } ),
 			} );
@@ -106,14 +104,13 @@ const OneLogsSettingsPage = () => {
 
 	const handleDelete = async ( index ) => {
 		const updated = sites.filter( ( _, i ) => i !== index );
-		const token = ( NONCE );
 
 		try {
 			const response = await fetch( `${ API_NAMESPACE }/shared-sites`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-NONCE': token,
+					'X-WP-NONCE': NONCE,
 				},
 				body: JSON.stringify( { sites_data: updated } ),
 			} );
