@@ -1,3 +1,100 @@
+/* onelogs admin styles */
+
+#onelogs-settings-page {
+
+	&:has(.components-snackbar-list) {
+
+		.components-snackbar-list {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 1000000;
+			align-items: flex-end;
+			justify-content: flex-end;
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	&:not(:has(.components-snackbar-list)) {
+
+		.components-snackbar {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 1000000;
+			width: auto;
+		}
+	}
+
+	.components-notice__content { // stylelint-disable-line -- WordPress generates classnames with underscores
+		white-space: pre-line !important;
+	}
+
+	.onelogs-success-notice {
+		background-color: #16a32d;
+		color: #fff;
+	}
+
+	.onelogs-error-notice {
+		background-color: #e11d1d;
+		color: #fff;
+	}
+
+	.onelogs-site-initials {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #2196F3, #1976D2);
+		color: rgb(255, 255, 255);
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-transform: uppercase;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	}
+
+}
+
+
+
+body {
+
+	&.onelogs-missing-brand-sites,
+	&.onelogs-brand-site {
+
+		.wp-first-item:has(.onelogs-plugin-manager-page) {
+			display: none;
+		}
+	}
+
+}
+
+[id="onelogs-site-selection-modal"] {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 10000;
+	min-width: 40vw;
+}
+
+body.onelogs-site-selection-modal {
+
+	&::before {
+		content: "";
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 9999;
+	}
+}
+
 [id="toplevel_page_onelogs"] {
 
 	.dashicons-admin-generic::before {
