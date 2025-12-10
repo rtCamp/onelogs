@@ -846,8 +846,8 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 			foreach ( $response['data'] as &$log ) {
 				$site_info        = Utils::get_shared_site_data_by_url( $brand_site );
-				$log['site_name'] = $site_info['siteName'] ?? $brand_site;
-				$log['site_url']  = $site_info['siteName'] ?? $brand_site;
+				$log['site_name'] = $site_info['name'] ?? $brand_site;
+				$log['site_url']  = $site_info['name'] ?? $brand_site;
 				$log['is_remote'] = true;
 			}
 
