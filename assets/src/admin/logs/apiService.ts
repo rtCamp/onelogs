@@ -1,16 +1,10 @@
-import type { APIResponse, fetchReturn, FilterOptions } from './types';
+import type { APIResponse, fetchReturn, FilterOptions, OneLogsDataType } from './types';
 import apiFetch from '@wordpress/api-fetch';
 import { NONCE, API_KEY } from '../../js/constants';
 
-interface OneLogsDataType {
-	restUrl: string;
-	restNonce: string;
-	apiKey: string;
-}
-
 declare global {
 	interface Window {
-		OneLogsData: OneLogsDataType;
+		OneLogsData?: OneLogsDataType;
 	}
 }
 

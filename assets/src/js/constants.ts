@@ -3,8 +3,15 @@
  *
  * @package
  */
+import type { SiteType } from '../admin/onboarding/page';
 
-let settings = {};
+let settings: {
+	restUrl?: string;
+	restNonce?: string;
+	apiKey?: string;
+	settingsLink?: string;
+	site_type?: SiteType | '';
+} = {};
 
 if ( typeof window.OneLogsSettings !== 'undefined' ) {
 	settings = window.OneLogsSettings;

@@ -84,3 +84,9 @@ export interface SharedSite {
 	name: string;
 	url: string;
 }
+
+export interface OneLogsDataType {
+	restUrl: string;
+	restNonce: string;
+	apiKey: string;
+}
