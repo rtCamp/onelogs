@@ -58,20 +58,6 @@
 
 }
 
-
-
-body {
-
-	&.onelogs-missing-brand-sites,
-	&.onelogs-brand-site {
-
-		.wp-first-item:has(.onelogs-plugin-manager-page) {
-			display: none;
-		}
-	}
-
-}
-
 [id="onelogs-site-selection-modal"] {
 	position: fixed;
 	top: 50%;

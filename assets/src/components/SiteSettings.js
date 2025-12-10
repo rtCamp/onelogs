@@ -160,7 +160,7 @@ const SiteSettings = () => {
 	useEffect( () => {
 		fetchApiKey();
 		fetchCurrentGoverningSite();
-	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [ fetchApiKey, fetchCurrentGoverningSite ] );
 
 	if ( isLoading ) {
 		return <Spinner />;
