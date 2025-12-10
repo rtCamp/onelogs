@@ -114,7 +114,7 @@ final class Admin implements Registrable {
 			return;
 		}
 
-		if ( ( 'plugins.php' === $hook || str_contains( $hook, 'plugins' ) || str_contains( $hook, 'onelogs' ) ) && 'plugins-network' !== $current_screen->id ) {
+		if ( ( 'plugins.php' === $hook || str_contains( $hook, 'plugins' ) || str_contains( $hook, 'onelogs' ) ) ) {
 			// Enqueue the onboarding modal.
 			$this->enqueue_onboarding_scripts();
 		}

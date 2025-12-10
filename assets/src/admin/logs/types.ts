@@ -79,8 +79,6 @@ export type fetchReturn = APIResponse | StringArrayResponse | string | SharedSit
 export interface SharedSite {
 	api_key: string;
 	id: string;
-	logo: string;
-	logo_id: number;
 	name: string;
 	url: string;
 }

@@ -9,66 +9,6 @@
 	}
 }
 
-// WordPress generates classnames with underscores, so we need to disable stylelint for this line.
-#toplevel_page_onelogs-main { /* stylelint-disable-line */
-
-	.dashicons-admin-generic {
-
-		&::before {
-			content: url(../images/logo.svg) !important;
-		}
-	}
-}
-
-.onelogs-settings-page {
-	margin: 0 auto;
-	max-width: 100%;
-	padding: 20px 0;
-
-	h1 {
-		margin-bottom: 30px;
-	}
-
-	&:has(.components-snackbar-list) {
-
-		.components-snackbar-list {
-			position: fixed;
-			bottom: 20px;
-			right: 20px;
-			z-index: 1000000;
-			align-items: flex-end;
-			justify-content: flex-end;
-			display: flex;
-			flex-direction: column;
-		}
-	}
-
-	&:not(:has(.components-snackbar-list)) {
-
-		.components-snackbar {
-			position: fixed;
-			bottom: 20px;
-			right: 20px;
-			z-index: 1000000;
-			width: auto;
-		}
-	}
-
-	.components-notice__content { // stylelint-disable-line -- WordPress generates classnames with underscores
-		white-space: pre-line !important;
-	}
-
-	.onelogs-success-notice {
-		background-color: #16a32d;
-		color: #fff;
-	}
-
-	.onelogs-error-notice {
-		background-color: #e11d1d;
-		color: #fff;
-	}
-}
-
 .onelogs-primary-filters {
 	display: flex;
 	gap: 16px;

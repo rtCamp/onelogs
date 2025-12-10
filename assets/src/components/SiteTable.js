@@ -6,11 +6,6 @@ import { Button, Card, CardHeader, CardBody, Modal } from '@wordpress/components
 import { __ } from '@wordpress/i18n';
 
 /**
- * Internal dependencies
- */
-import { getInitials } from '../js/utils';
-
-/**
  * SiteTable component to display and manage brand sites.
  *
  * @param {Object}   props              - Component properties.
@@ -62,7 +57,6 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 						<tr>
 							<th>{ __( 'Site Name', 'onelogs' ) }</th>
 							<th>{ __( 'Site URL', 'onelogs' ) }</th>
-							<th>{ __( 'Logo', 'onelogs' ) }</th>
 							<th>{ __( 'API Key', 'onelogs' ) }</th>
 							<th>{ __( 'Actions', 'onelogs' ) }</th>
 						</tr>
@@ -79,19 +73,6 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 							<tr key={ index }>
 								<td>{ site?.name }</td>
 								<td>{ site?.url }</td>
-								<td>
-									{ site?.logo ? (
-										<img
-											src={ site.logo }
-											alt={ __( 'Site Logo', 'onelogs' ) }
-											style={ { maxWidth: '100px', maxHeight: '50px' } }
-											loading="lazy"
-											decoding="async"
-										/>
-									) : (
-										<span className="onelogs-site-initials">{ getInitials( site?.name ) }</span>
-									) }
-								</td>
 								<td><code>{ site?.api_key.substring( 0, 10 ) }...</code></td>
 								<td>
 									<Button

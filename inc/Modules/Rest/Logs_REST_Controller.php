@@ -82,7 +82,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		);
 
 		register_rest_route(
-			Abstract_REST_Controller::NAMESPACE,
+			self::NAMESPACE,
 			'/' . $this->rest_base . '/(?P<id>\d+)',
 			[
 				[
@@ -102,7 +102,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		// Endpoint for available contexts.
 		register_rest_route(
-			Abstract_REST_Controller::NAMESPACE,
+			self::NAMESPACE,
 			'/' . $this->rest_base . '/contexts',
 			[
 				[
@@ -115,7 +115,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		// Endpoint for available connectors.
 		register_rest_route(
-			Abstract_REST_Controller::NAMESPACE,
+			self::NAMESPACE,
 			'/' . $this->rest_base . '/connectors',
 			[
 				[
@@ -128,7 +128,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		// Endpoint for users.
 		register_rest_route(
-			Abstract_REST_Controller::NAMESPACE,
+			self::NAMESPACE,
 			'/' . $this->rest_base . '/users',
 			[
 				[
@@ -148,7 +148,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		// Endpoint for available actions.
 		register_rest_route(
-			Abstract_REST_Controller::NAMESPACE,
+			self::NAMESPACE,
 			'/' . $this->rest_base . '/actions',
 			[
 				[
@@ -818,7 +818,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		);
 		$include_shared_sites = filter_var( $params['include_shared_sites'] ?? false, FILTER_VALIDATE_BOOLEAN );
 		$include_current_site = filter_var( $params['current_site_logs'] ?? false, FILTER_VALIDATE_BOOLEAN );
-		$brand_site           = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL );
+		$brand_site           = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		$all_logs    = [];
 		$errors      = [];
@@ -1052,7 +1052,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	public function get_contexts( WP_REST_Request $request ): WP_REST_Response {
 		$params     = $request->get_params();
 		$contexts   = [];
-		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL );
+		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		if ( $brand_site ) {
 			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/contexts' );
@@ -1128,7 +1128,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$params  = $request->get_params();
 		$actions = [];
 
-		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL );
+		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		if ( $brand_site ) {
 			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/actions' );
@@ -1177,7 +1177,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		$params     = $request->get_params();
 		$search     = trim( wp_strip_all_tags( $params['search'] ?? '' ) );
-		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL );
+		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		// If brand site is provided, fetch remote users.
 		if ( $brand_site ) {
@@ -1279,7 +1279,11 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		if ( 'GET' === strtoupper( $method ) && ! empty( $args ) ) {
 			$endpoint = add_query_arg( $args, $endpoint );
 		} elseif ( in_array( strtoupper( $method ), [ 'POST', 'PUT', 'PATCH' ], true ) ) {
-			$request_args['body']                    = wp_json_encode( $args );
+			$body = wp_json_encode( $args );
+
+			if ( false !== $body ) {
+				$request_args['body'] = $body;
+			}
 			$request_args['headers']['Content-Type'] = 'application/json';
 		}
 
