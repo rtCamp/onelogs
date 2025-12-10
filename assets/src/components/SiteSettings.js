@@ -236,7 +236,7 @@ const SiteSettings = () => {
 						variant="secondary"
 						isDestructive
 						onClick={ handleDisconnectGoverningSite }
-						disabled={ governingSite?.trim().length === 0 || isLoading }
+						disabled={ governingSite.trim().length === 0 || isLoading }
 					>
 						{ __( 'Disconnect Governing Site', 'onelogs' ) }
 					</Button>
