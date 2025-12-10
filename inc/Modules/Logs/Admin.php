@@ -181,8 +181,6 @@ class Admin implements Registrable {
 		if ( ! Settings::is_governing_site() ) {
 			return;
 		}
-
-		wp_enqueue_media();
 	}
 
 	/**

@@ -41,15 +41,13 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 		<Card style={ { marginTop: '30px' } }>
 			<CardHeader>
 				<h3>{ __( 'Brand Sites', 'onelogs' ) }</h3>
-				<div style={ { display: 'flex', gap: '16px' } }>
-					<Button
-						style={ { width: 'fit-content' } }
-						variant="primary"
-						onClick={ () => setShowModal( true ) }
-					>
-						{ __( 'Add Brand Site', 'onelogs' ) }
-					</Button>
-				</div>
+				<Button
+					style={ { width: 'fit-content' } }
+					variant="primary"
+					onClick={ () => setShowModal( true ) }
+				>
+					{ __( 'Add Brand Site', 'onelogs' ) }
+				</Button>
 			</CardHeader>
 			<CardBody>
 				<table className="wp-list-table widefat fixed striped">
@@ -64,7 +62,7 @@ const SiteTable = ( { sites, onEdit, onDelete, setFormData, setShowModal } ) => 
 					<tbody>
 						{ sites.length === 0 && (
 							<tr>
-								<td colSpan="5" style={ { textAlign: 'center' } }>
+								<td colSpan="4" style={ { textAlign: 'center' } }>
 									{ __( 'No Brand Sites found.', 'onelogs' ) }
 								</td>
 							</tr>
