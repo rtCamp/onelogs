@@ -5,7 +5,7 @@
  * @package OneLogs\Contracts\Traits
  */
 
-declare(strict_types = 1);
+declare( strict_types = 1 );
 
 namespace OneLogs\Contracts\Traits;
 

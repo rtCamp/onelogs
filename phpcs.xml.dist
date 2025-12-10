@@ -6,8 +6,7 @@
 >
 	<description>Sniffs for OneLogs plugin</description>
 
-	<!--
-		What to scan: include any root-level PHP files, and the /inc folder -->
+	<!-- What to scan: include any root-level PHP files, and the /inc folder -->
 	<file>./inc/</file>
 	<file>./onelogs.php</file>
 	<file>./uninstall.php</file>
@@ -41,13 +40,13 @@
 
 	<!--
 		Tests for PHP version compatibility.
-	https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards#Recomended-additional-rulesets
+		@see: https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards#Recomended-additional-rulesets
 	-->
 	<config name="testVersion" value="8.0-" />
 
 	<!--
 		Tests for WordPress version compatibility.
-	https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties
+		@see: https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties
 	-->
 	<config name="minimum_wp_version" value="6.8" />
 
@@ -120,7 +119,7 @@
 
 	<!--
 		Slevomat Coding Standards to keep our code clean and modern.
-		See: https://github.com/slevomat/coding-standard/tree/master#alphabetical-list-of-sniffs
+		@see: https://github.com/slevomat/coding-standard/tree/master#alphabetical-list-of-sniffs
 	-->
 	<rule ref="SlevomatCodingStandard.Arrays.ArrayAccess" />
 	<rule ref="SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation" />

@@ -2,7 +2,7 @@
 /**
  * Bootstrap the PHPUnit tests.
  *
- * @package abilities-api
+ * @package OneLogs
  *
  * phpcs:disable WordPressVIPMinimum.Files.IncludingFile.UsingVariable
  */

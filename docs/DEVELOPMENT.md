@@ -1,10 +1,10 @@
-# Development Guidelines - OneLogs
+# Contributing to the OneLogs as a Developer
 
 Code contributions, bug reports, and feature requests are welcome! The following sections provide guidelines for contributing to this project, as well as information about development processes and testing.
 
 ## Table of Contents
 
-- [Development Guidelines - OneLogs](#development-guidelines---onelogs)
+- [Contributing to the OneLogs as a Developer](#contributing-to-the-onelogs-as-a-developer)
   - [Table of Contents](#table-of-contents)
   - [Directory Structure](#directory-structure)
   - [Local setup](#local-setup)
@@ -19,12 +19,12 @@ Code contributions, bug reports, and feature requests are welcome! The following
   - [Code Contributions (Pull Requests)](#code-contributions-pull-requests)
     - [Workflow](#workflow)
     - [Code Quality / Code Standards](#code-quality--code-standards)
-      - [PHP\_CodeSniffer](#php_codesniffer)
+      - [PHP_CodeSniffer](#php_codesniffer)
       - [PHPStan](#phpstan)
       - [ESLint](#eslint)
       - [Stylelint](#stylelint)
+      - [TypeScript](#typescript)
   - [Releasing](#releasing)
-    - [Release Commands](#release-commands)
 
 ## Directory Structure
 
@@ -34,10 +34,41 @@ Code contributions, bug reports, and feature requests are welcome! The following
 ```bash
 .
 ├── .github/ # GitHub-specific files and CI/CD workflows.
-│
+├── LICENSE
 │   # Non-php plugin assets.
-├── assets/ 
-│   └── @todo
+├── assets
+│   └── src
+│       ├── admin
+│       │   ├── logs
+│       │   │   ├── apiService.ts
+│       │   │   ├── components
+│       │   │   │   ├── FiltersPanel.tsx
+│       │   │   │   ├── LogsDashboard.tsx
+│       │   │   │   ├── LogsTable.tsx
+│       │   │   │   └── Pagination.tsx
+│       │   │   ├── index.ts
+│       │   │   ├── types.ts
+│       │   │   └── utils.ts
+│       │   ├── onboarding
+│       │   │   ├── index.tsx
+│       │   │   └── page.tsx
+│       │   └── settings
+│       │       └── index.js
+│       ├── components
+│       │   ├── Dashicons.js
+│       │   ├── MultiSites.js
+│       │   ├── SiteModal.js
+│       │   ├── SiteSettings.js
+│       │   └── SiteTable.js
+│       ├── css
+│       │   ├── admin.scss
+│       │   ├── logs-dashboard.scss
+│       │   └── onboarding.scss
+│       ├── images
+│       │   └── logo.svg
+│       └── js
+│           ├── constants.ts
+│           └── utils.ts
 │
 │   # Project documentation.
 ├── docs/
@@ -47,23 +78,32 @@ Code contributions, bug reports, and feature requests are welcome! The following
 │   └── SECURITY.md
 │
 │   # PHP source files.
-├── inc/ @todo
+├── inc
+│   ├── Autoloader.php
 │   ├── Contracts
 │   │   ├── Interfaces
-│   │   │  └── Registrable.php # Classes that hook into WordPress.
+│   │   │   └── Registrable.php
 │   │   └── Traits
-│   │      └── Singleton.php  # Singleton anti-pattern. Use sparingly.
-│   │
+│   │       └── Singleton.php
+│   ├── Dependencies.php
+│   ├── Encryptor.php
+│   ├── Main.php
 │   ├── Modules
 │   │   ├── Core
-│   │   │  └── Assets.php # Manages asset registration.
-│   │   └── @todo
-│   │
-│   ├── Rest
-│   │  └── Abstract_REST_Controller.php # Base class for REST controllers.
-│   │
-│   ├── Autoloader.php # Wraps autoloader for WordPress.
-│   └── Main.php  # Main plugin class, initializes modules.
+│   │   │   ├── Assets.php
+│   │   │   └── Rest.php
+│   │   ├── Multisite
+│   │   │   ├── Admin.php
+│   │   │   └── Settings.php
+│   │   ├── Rest
+│   │   │   ├── Abstract_REST_Controller.php
+│   │   │   ├── API_Key_REST_Controller.php
+│   │   │   ├── Basic_Options_Controller.php
+│   │   │   └── Logs_REST_Controller.php
+│   │   └── Settings
+│   │       ├── Admin.php
+│   │       └── Settings.php
+│   └── Utils.php
 │
 │   # Tests
 ├── tests/
@@ -71,13 +111,19 @@ Code contributions, bug reports, and feature requests are welcome! The following
 │   ├── phpunit/ # PHPUnit tests.
 │   │
 │   └── bootstrap.php # PHPUnit bootstrapper
-
+│
+├── languages
+│   └── onelogs.pot
+│
 │   # Build directories
 ├── build/        # assets built by webpack
 ├── node_modules/ # Node.js dependencies
 ├── vendor/       # Composer dependencies
 │
+├── wp-assets/    # WordPress plugin assets (banners, screenshots)
+│
 ├── onelogs.php # Root plugin entrypoint.
+├── uninstall.php # The plugin uninstaller.
 │
 │   # Important config files.
 │   # .dist suffixes mean there may be a user-customized version without the suffix.
@@ -87,11 +133,15 @@ Code contributions, bug reports, and feature requests are welcome! The following
 ├── .wp-env.json
 ├── babel.config.js
 ├── composer.json
+├── composer.lock
 ├── package.json
+├── package-lock.json
 ├── phpcs.xml.dist
 ├── phpstan.neon.dist
 ├── README.md
+├── tsconfig.json
 └── webpack.config.js
+
 ```
 
 </details>
@@ -113,7 +163,7 @@ You can use Docker and the `wp-env` tool to set up a local development environme
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/rtCamp/onelogs.git
+   git clone https://github.com/rtCamp/OneLogs.git
    ```
 
 2. Change into the project folder and install the development dependencies:
@@ -179,7 +229,6 @@ npm run test:php
 ```
 
 You should see the html coverage report in the `tests/_output/html` directory and the clover XML report in `tests/_output/php-coverage.xml`.
-
 
 ### Building the plugin for distribution
 
@@ -286,24 +335,6 @@ npm run lint:js:types
 ## Releasing
 
 1. Ensure all changes are committed and tested.
-2. Update changelogs and version numbers.
-3. Merge to main branch.
-4. Tag release and push to remote.
-5. Publish packages if needed.
-
-### Release Commands
-
-Command to create a tag and push it:
-
-```bash
-git tag -a vx.x.x -m "Release vx.x.x"
-git push --tags
-```
-
-Command to delete the tag (Locally) incase wanted to release same tag:
-
-```bash
-git tag --delete vx.x.x
-```
-
-Release will be auto generated and kept in draft once pushed a tag.
+2. Update changelogs, version numbers, and `n.e.x.t` tags.
+3. Push `develop` branch to `main`.
+4. Create a new GitHub release draft with the new tag.

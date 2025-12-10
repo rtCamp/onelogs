@@ -10,7 +10,7 @@ namespace OneLogs;
 /**
  * Class Dependencies
  */
-class Dependencies {
+final class Dependencies {
 
 	/**
 	 * Required plugins.

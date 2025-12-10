@@ -15,12 +15,45 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 /**
- * Function to delete plugin options.
- *
- * @return void
+ * Multisite loop for uninstalling from all sites.
+ */
+function multisite_uninstall(): void {
+	if ( ! is_multisite() ) {
+		uninstall();
+		return;
+	}
+
+	$site_ids = get_sites(
+		[
+			'fields' => 'ids',
+			'number' => 0,
+		]
+	) ?: [];
+
+	foreach ( $site_ids as $site_id ) {
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+		if ( ! switch_to_blog( (int) $site_id ) ) {
+			continue;
+		}
+
+		uninstall();
+		restore_current_blog();
+	}
+}
+
+/**
+ * The (site-specific) uninstall function.
+ */
+function uninstall(): void {
+	delete_plugin_data();
+}
+
+/**
+ * Deletes meta, options, transients, etc.
  */
 function delete_plugin_data(): void {
-	$options_to_delete = [
+
+	$options = [
 		// Common site options.
 		'onelogs_site_type',
 		'onelogs_show_onboarding',
@@ -29,48 +62,14 @@ function delete_plugin_data(): void {
 		'onelogs_shared_sites',
 
 		// Brand site options.
-		'onelogs_governing_site_url',
-		'onelogs_child_site_api_key',
+		'onelogs_parent_site_url',
+		'onelogs_consumer_api_key',
 	];
 
-	foreach ( $options_to_delete as $option ) {
+	foreach ( $options as $option ) {
 		delete_option( $option );
 	}
-
-	delete_transient( 'onelogs_site_type_transient' );
 }
 
-/**
- * Function to clean up options when the plugin is uninstalled.
- *
- * @return void
- */
-function multisite_uninstall(): void {
-	// if it's multisite, delete site options as well.
-	if ( ! is_multisite() ) {
-		delete_plugin_data();
-		return;
-	}
-
-	// for each site delete options.
-	$all_sites = get_sites( [ 'fields' => 'ids' ] );
-
-	foreach ( $all_sites as $site_id ) {
-		/** Safe usage: We only switch DB context to delete options & posts.
-		 * No hooks, filters, or theme/plugin code required.
-		 */
-		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
-		if ( ! switch_to_blog( (int) $site_id ) ) {
-			continue;
-		}
-
-		delete_plugin_data();
-
-		restore_current_blog();
-	}
-}
-
-/**
- * Uninstall the plugin and clean up options.
- */
+// Run the uninstaller.
 multisite_uninstall();
