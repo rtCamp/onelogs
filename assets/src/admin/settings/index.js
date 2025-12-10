@@ -142,14 +142,14 @@ const OneLogsSettingsPage = () => {
 	return (
 		<>
 			{ notice?.message?.length > 0 &&
-			<Snackbar
-				status={ notice?.type ?? 'success' }
-				isDismissible={ true }
-				onRemove={ () => setNotice( null ) }
-				className={ notice?.type === 'error' ? 'onelogs-error-notice' : 'onelogs-success-notice' }
-			>
-				{ notice?.message }
-			</Snackbar>
+				<Snackbar
+					status={ notice?.type ?? 'success' }
+					isDismissible={ true }
+					onRemove={ () => setNotice( null ) }
+					className={ notice?.type === 'error' ? 'onelogs-error-notice' : 'onelogs-success-notice' }
+				>
+					{ notice?.message }
+				</Snackbar>
 			}
 
 			{
