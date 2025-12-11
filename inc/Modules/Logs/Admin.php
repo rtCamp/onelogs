@@ -64,7 +64,7 @@ class Admin implements Registrable {
 
 		$current_screen = get_current_screen();
 
-		if ( ! $current_screen instanceof \WP_Screen || 'onelogs' !== $current_screen->id ) {
+		if ( ! $current_screen instanceof \WP_Screen || strpos( $current_screen->id, 'onelogs' ) === false ) {
 			return;
 		}
 

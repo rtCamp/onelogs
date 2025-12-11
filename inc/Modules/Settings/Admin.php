@@ -204,13 +204,6 @@ final class Admin implements Registrable {
 
 		wp_enqueue_script( Assets::SETTINGS_SCRIPT_HANDLE );
 		wp_enqueue_style( Assets::SETTINGS_SCRIPT_HANDLE );
-
-		// only load media uploader in governing site settings page.
-		if ( ! Settings::is_governing_site() ) {
-			return;
-		}
-
-		wp_enqueue_media();
 	}
 
 	/**
