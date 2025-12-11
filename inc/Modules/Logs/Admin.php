@@ -27,7 +27,7 @@ class Admin implements Registrable {
 	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
-		add_action( 'admin_menu', [ $this, 'add_submenu' ] );
+		add_action( 'admin_menu', [ $this, 'add_submenu' ], 20 ); // 20 priority to make sure settings page respect its position.
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ], 20, 1 );
 	}
 
