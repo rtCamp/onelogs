@@ -58,13 +58,13 @@ class Admin implements Registrable {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_scripts( string $hook ): void {
-		if ( strpos( $hook, 'onelogs' ) === false ) {
+		if ( str_contains( $hook, 'onelogs' ) === false ) {
 			return;
 		}
 
 		$current_screen = get_current_screen();
 
-		if ( ! $current_screen instanceof \WP_Screen || strpos( $current_screen->id, 'onelogs' ) === false ) {
+		if ( ! $current_screen instanceof \WP_Screen || str_contains( $current_screen->id, Settings_Admin::MENU_SLUG ) === false ) {
 			return;
 		}
 
