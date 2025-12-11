@@ -27,7 +27,7 @@ class Admin implements Registrable {
 	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
-		add_action( 'admin_menu', [ $this, 'add_submenu' ] );
+		add_action( 'admin_menu', [ $this, 'add_submenu' ], 20 ); // 20 priority to make sure settings page respect its position.
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ], 20, 1 );
 	}
 
@@ -58,13 +58,13 @@ class Admin implements Registrable {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_scripts( string $hook ): void {
-		if ( strpos( $hook, 'onelogs' ) === false ) {
+		if ( str_contains( $hook, 'onelogs' ) === false ) {
 			return;
 		}
 
 		$current_screen = get_current_screen();
 
-		if ( ! $current_screen instanceof \WP_Screen || 'onelogs' !== $current_screen->id ) {
+		if ( ! $current_screen instanceof \WP_Screen || str_contains( $current_screen->id, Settings_Admin::MENU_SLUG ) === false ) {
 			return;
 		}
 
