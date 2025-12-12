@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import type { LogEntry, SortState, UserOption, fetchReturn } from '../types';
+import type { LogEntry, SortState, UserOption } from '../types';
 import { formatDate } from '../../../js/utils';
 import { fetchSiteType } from '../apiService';
 
@@ -16,12 +16,12 @@ export const LogsTable: React.FC<LogsTableProps> = ( {
 	currentSort,
 	handleSort,
 } ) => {
-	const [ siteType, setSiteType ] = useState<string | fetchReturn>( '' );
+	const [ siteType, setSiteType ] = useState<string>( '' );
 
 	const loadSiteType = async () => {
 		try {
 			const data = await fetchSiteType();
-			setSiteType( data );
+			setSiteType( String( data ) );
 		} catch ( err ) {
 			// eslint-disable-next-line no-console
 			console.log( err );
