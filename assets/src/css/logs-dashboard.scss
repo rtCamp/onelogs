@@ -169,8 +169,12 @@
 		}
 	}
 
-	.onelogs-column-user {
-		width: 115px;
+	.onelogs-user-column {
+		width: 125px;
+
+		div {
+			overflow-wrap: anywhere;
+		}
 	}
 
 	.onelogs-ip-column {

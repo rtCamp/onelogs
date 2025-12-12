@@ -2,6 +2,7 @@ import React from 'react';
 import { __ } from '@wordpress/i18n';
 import type { LogEntry, SortState, UserOption } from '../types';
 import { formatDate } from '../../../js/utils';
+import { SITE_TYPE, SITE_NAME } from '../../../js/constants';
 
 interface LogsTableProps {
 	logs: LogEntry[];
@@ -59,7 +60,7 @@ export const LogsTable: React.FC<LogsTableProps> = ( {
 							</th>
 							<th
 								onClick={ () => handleSort( 'user_id' ) }
-								className={ `onelogs-column-user ${ currentSort.field === 'user_id' ? `sorted-${ currentSort.direction }` : '' }` }
+								className={ `onelogs-user-column ${ currentSort.field === 'user_id' ? `sorted-${ currentSort.direction }` : '' }` }
 							>
 								{ __( 'User', 'onelogs' ) }
 							</th>
@@ -89,7 +90,7 @@ export const LogsTable: React.FC<LogsTableProps> = ( {
 											</a>
 										) : (
 											<span
-												className="onelogs-site-local">{ __( 'Governing Site', 'onelogs' ) }</span>
+												className="onelogs-site-local">{ SITE_TYPE === 'governing-site' ? __( 'Governing Site', 'onelogs' ) : SITE_NAME }</span>
 										) }
 									</td>
 									<td className="onelogs-summary-column">
