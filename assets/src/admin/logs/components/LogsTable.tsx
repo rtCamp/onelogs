@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { __ } from '@wordpress/i18n';
 import type { LogEntry, SortState, UserOption } from '../types';
 import { formatDate } from '../../../js/utils';
-import { fetchSiteType } from '../apiService';
+import { SITE_TYPE, SITE_NAME } from '../../../js/constants';
 
 interface LogsTableProps {
 	logs: LogEntry[];
@@ -16,22 +16,6 @@ export const LogsTable: React.FC<LogsTableProps> = ( {
 	currentSort,
 	handleSort,
 } ) => {
-	const [ siteType, setSiteType ] = useState<string>( '' );
-
-	const loadSiteType = async () => {
-		try {
-			const data = await fetchSiteType();
-			setSiteType( String( data ) );
-		} catch ( err ) {
-			// eslint-disable-next-line no-console
-			console.log( err );
-		}
-	};
-
-	useEffect( () => {
-		loadSiteType();
-	}, [ ] );
-
 	return (
 		<div className="onelogs-logs-table-container">
 			{ logs?.length > 0 ? (
@@ -106,7 +90,7 @@ export const LogsTable: React.FC<LogsTableProps> = ( {
 											</a>
 										) : (
 											<span
-												className="onelogs-site-local">{ siteType === 'governing-site' ? __( 'Governing Site', 'onelogs' ) : log.current_site_name }</span>
+												className="onelogs-site-local">{ SITE_TYPE === 'governing-site' ? __( 'Governing Site', 'onelogs' ) : SITE_NAME }</span>
 										) }
 									</td>
 									<td className="onelogs-summary-column">

@@ -518,27 +518,24 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$object_data  = $should_populate_object_data ? $this->get_object_data( $object_type, $result->object_id, $result->connector, $result->context ) : null;
 		$action_title = $should_populate_object_data ? $this->get_action_title( $result->action, $object_type, $result->context ) : '';
 
-		$current_site_name = get_bloginfo( 'name' );
-
 		return [
-			'ID'                => (int) $result->ID,
-			'site_id'           => (int) $result->site_id,
-			'blog_id'           => (int) $result->blog_id,
-			'current_site_name' => $current_site_name,
-			'user_id'           => (int) $result->user_id,
-			'user_role'         => $result->user_role,
-			'object_id'         => $result->object_id ? (int) $result->object_id : null,
-			'connector'         => $result->connector,
-			'context'           => $result->context,
-			'action'            => $result->action,
-			'summary'           => wp_kses_post( html_entity_decode( $result->summary, ENT_QUOTES, 'UTF-8' ) ),
-			'created'           => $result->created,
-			'ip'                => $result->ip,
-			'meta'              => $meta,
-			'user'              => $user_data,
-			'object_type'       => $object_type,
-			'object_data'       => $object_data,
-			'action_title'      => $action_title,
+			'ID'           => (int) $result->ID,
+			'site_id'      => (int) $result->site_id,
+			'blog_id'      => (int) $result->blog_id,
+			'user_id'      => (int) $result->user_id,
+			'user_role'    => $result->user_role,
+			'object_id'    => $result->object_id ? (int) $result->object_id : null,
+			'connector'    => $result->connector,
+			'context'      => $result->context,
+			'action'       => $result->action,
+			'summary'      => wp_kses_post( html_entity_decode( $result->summary, ENT_QUOTES, 'UTF-8' ) ),
+			'created'      => $result->created,
+			'ip'           => $result->ip,
+			'meta'         => $meta,
+			'user'         => $user_data,
+			'object_type'  => $object_type,
+			'object_data'  => $object_data,
+			'action_title' => $action_title,
 		];
 	}
 
