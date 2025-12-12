@@ -10,6 +10,7 @@ export interface LogEntry {
 	ID: number;
 	site_id: number;
 	blog_id: number;
+	current_site_name: string;
 	user_id: number;
 	user_role: string;
 	object_id: number | null;
