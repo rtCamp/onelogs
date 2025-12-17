@@ -92,7 +92,7 @@ While Stream provides detailed local logging, OneLogs takes it a step further, a
     - Governing Site logs
     - Any connected Brand Site logs
 
-3. On the Governing site, Governing site will be selected by default, on the Brand sites, the respective Brand site will be selected by default.
+3. On the Governing Site, Governing Site will be selected by default, on the Brand Sites, the respective Brand Site will be selected by default.
 4. Use the Search field to find events by summary text.
 5. Apply filters for Context, Action, Date, or User to narrow results.
 
