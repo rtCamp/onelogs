@@ -134,14 +134,14 @@ Yes. You can export filtered or complete log datasets to CSV directly from the d
 
 1. **No brand site logs visible on the Governing Site**
 
-- Ensure both `Stream` and `OneLogs` plugins are active on each Brand Site.
-- Verify API keys and REST endpoints are correctly configured.
-- Verify any customizations made to REST API permissions.
+    - Ensure both `Stream` and `OneLogs` plugins are active on each Brand Site.
+    - Verify API keys and REST endpoints are correctly configured.
+    - Verify any customizations made to REST API permissions.
 
-3. **CSV export missing data**
+2. **CSV export missing data**
 
-- Try exporting without filters to confirm the data is correctly fetched.
-- Verify configured filters aren't too restrictive.
+    - Try exporting without filters to confirm the data is correctly fetched.
+    - Verify configured filters aren't too restrictive.
 
 ## Get Involved
 
