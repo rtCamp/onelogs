@@ -32,7 +32,7 @@ function constants(): void {
 	/**
 	 * Version of the plugin.
 	 */
-	define( 'ONELOGS_VERSION', '0.1.0' );
+	define( 'ONELOGS_VERSION', '1.0.0-beta.1' );
 
 	/**
 	 * Root path to the plugin directory.
