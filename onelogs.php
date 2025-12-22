@@ -13,7 +13,7 @@
  * Version:             1.0.0-beta.1
  * Requires PHP:        8.0
  * Requires at least:   6.8
- * Tested up to:        6.8.2
+ * Tested up to:        6.9
  *
  * @package OneLogs
  */
@@ -32,7 +32,7 @@ function constants(): void {
 	/**
 	 * Version of the plugin.
 	 */
-	define( 'ONELOGS_VERSION', '0.1.0' );
+	define( 'ONELOGS_VERSION', '1.0.0-beta.1' );
 
 	/**
 	 * Root path to the plugin directory.
