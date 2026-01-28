@@ -23,8 +23,8 @@ OneLogs solves this by:
 
 * **Centralizing Log Management:** Single dashboard to monitor activity across all brand sites
 * **Stream-Powered Logging:** Built on top of the reliable Stream plugin for robust event tracking
-* **Network-Wide Governance:** Distinguish between governing and brand site activity with easy filtering
-* **Compliance & Audit:** Maintain complete audit trails of all site actions across users and contexts
+* **Enabling Network-Wide Governance:** Distinguish between governing and brand site activity with easy filtering
+* **Supporting Compliance & Audit:** Maintain complete audit trails of all site actions across users and contexts
 
 **Key Benefits:**
 
