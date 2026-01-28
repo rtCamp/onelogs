@@ -100,26 +100,6 @@ Logs are synchronized in real-time using secure REST API communication. Updates 
 
 See <a href="https://github.com/rtCamp/OneLogs/blob/main/CHANGELOG.md" target="_blank">CHANGELOG.md</a> for detailed changelog.
 
-= 1.0.0 =
-* Initial public release of OneLogs
-* Unified dashboard for cross-site activity log monitoring
-* Stream plugin integration for reliable event tracking
-* Site selector for filtering by Governing or Brand Sites
-* Advanced filtering by user, context, action, and date range
-* CSV export functionality for filtered or complete datasets
-* Real-time log synchronization across connected sites
-
-== Upgrade Notice ==
-
-= 1.0.0 =
-Initial release of OneLogs. Perfect for enterprises requiring unified activity log visibility and governance monitoring across multiple WordPress sites.
-
-== Requirements ==
-
-* WordPress 6.8 or higher
-* PHP 8.0 or higher
-* Stream plugin installed and active on all sites
-
 == Troubleshooting ==
 
 **No brand site logs visible on the Governing Site**
