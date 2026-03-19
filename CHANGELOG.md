@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Fix: Update NPM dependencies to resolve vulnerabilities
+
 ## 1.0.2
 
 - Feat: update NPM dependencies
