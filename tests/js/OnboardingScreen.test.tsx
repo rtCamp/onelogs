@@ -16,10 +16,10 @@ describe( 'OnboardingScreen', () => {
 
 	beforeEach( () => {
 		mockedApiFetch.mockReset();
-		window.OneSearchOnboarding = {
-			nonce: 'onboarding-nonce',
+		window.OneLogsSettings = {
+			...window.OneLogsSettings,
+			restNonce: 'onboarding-nonce',
 			site_type: '',
-			setup_url: '',
 		};
 		// Suppress WordPress component deprecation warnings (outside our control)
 		consoleWarnSpy = jest
@@ -33,7 +33,7 @@ describe( 'OnboardingScreen', () => {
 
 	it( 'loads the current site type from settings', async () => {
 		mockedApiFetch.mockResolvedValueOnce( {
-			onesearch_site_type: 'brand-site',
+			onelogs_site_type: 'brand-site',
 		} );
 
 		render( <OnboardingScreen /> );
@@ -58,7 +58,7 @@ describe( 'OnboardingScreen', () => {
 
 	it( 'saves the chosen site type', async () => {
 		mockedApiFetch.mockResolvedValueOnce( {} ).mockResolvedValueOnce( {
-			onesearch_site_type: 'governing-site',
+			onelogs_site_type: 'governing-site',
 		} );
 
 		render( <OnboardingScreen /> );
@@ -74,7 +74,7 @@ describe( 'OnboardingScreen', () => {
 			expect( mockedApiFetch ).toHaveBeenLastCalledWith( {
 				path: '/wp/v2/settings',
 				method: 'POST',
-				data: { onesearch_site_type: 'governing-site' },
+				data: { onelogs_site_type: 'governing-site' },
 			} );
 		} );
 	} );

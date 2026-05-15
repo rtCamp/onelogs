@@ -1,5 +1,5 @@
 /**
- * Jest configuration for OneSearch.
+ * Jest configuration for OneLogs.
  *
  * Extends @wordpress/scripts default configuration with:
  * - Custom test setup for WordPress mocks
@@ -18,7 +18,7 @@ module.exports = {
 	...defaultConfig,
 
 	// Display name for clarity in multi-project setups
-	displayName: 'onesearch',
+	displayName: 'onelogs',
 
 	// Root directory for tests
 	rootDir: '.',

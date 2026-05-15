@@ -2,12 +2,12 @@
 /**
  * Provide a base class for all unit tests by extending WP_UnitTestCase.
  *
- * @package OneSearch\Tests
+ * @package OneLogs\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Tests;
+namespace OneLogs\Tests;
 
 use WP_UnitTestCase;
 

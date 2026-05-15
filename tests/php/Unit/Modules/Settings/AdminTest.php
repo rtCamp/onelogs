@@ -2,22 +2,22 @@
 /**
  * Admin settings screen unit tests.
  *
- * @package OneSearch\Tests\Unit\Modules\Settings
+ * @package OneLogs\Tests\Unit\Modules\Settings
  */
 
 declare(strict_types = 1);
 
-namespace OneSearch\Tests\Unit\Modules\Settings;
+namespace OneLogs\Tests\Unit\Modules\Settings;
 
-use OneSearch\Modules\Settings\Admin;
-use OneSearch\Modules\Settings\Settings;
-use OneSearch\Tests\TestCase;
+use OneLogs\Modules\Settings\Admin;
+use OneLogs\Modules\Settings\Settings;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the settings admin screen.
  */
-#[CoversClass( \OneSearch\Modules\Settings\Admin::class )]
+#[CoversClass( \OneLogs\Modules\Settings\Admin::class )]
 final class AdminTest extends TestCase {
 	/**
 	 * {@inheritDoc}
@@ -121,7 +121,7 @@ final class AdminTest extends TestCase {
 		( new Admin() )->screen_callback();
 		$output = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'onesearch-settings-page', $output );
+		$this->assertStringContainsString( 'onelogs-settings-page', $output );
 		$this->assertStringContainsString( 'wrap', $output );
 	}
 
@@ -151,8 +151,8 @@ final class AdminTest extends TestCase {
 		$classes = $admin->add_body_classes( '' );
 
 		$this->assertIsString( $classes );
-		$this->assertStringContainsString( 'onesearch-site-selection-modal', $classes );
-		$this->assertStringContainsString( 'onesearch-missing-brand-sites', $classes );
+		$this->assertStringContainsString( 'onelogs-site-selection-modal', $classes );
+		$this->assertStringContainsString( 'onelogs-missing-brand-sites', $classes );
 
 		// Test with already configured which should remove the missing-brand-sites class and keep the modal class.
 		update_option( Settings::OPTION_SITE_TYPE, Settings::SITE_TYPE_GOVERNING );
@@ -168,8 +168,8 @@ final class AdminTest extends TestCase {
 		);
 		$classes = $admin->add_body_classes( '' );
 		$this->assertIsString( $classes );
-		$this->assertStringNotContainsString( 'onesearch-site-selection-modal', $classes );
-		$this->assertStringNotContainsString( 'onesearch-missing-brand-sites', $classes );
+		$this->assertStringNotContainsString( 'onelogs-site-selection-modal', $classes );
+		$this->assertStringNotContainsString( 'onelogs-missing-brand-sites', $classes );
 
 		// Test with a bad current screen which should return the original classes unmodified.
 		set_current_screen( 'not-a-real-screen' );
@@ -187,8 +187,8 @@ final class AdminTest extends TestCase {
 		( new Admin() )->inject_site_selection_modal();
 		$output = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'onesearch-site-selection-modal', $output );
-		$this->assertStringContainsString( 'onesearch-modal', $output );
+		$this->assertStringContainsString( 'onelogs-site-selection-modal', $output );
+		$this->assertStringContainsString( 'onelogs-modal', $output );
 	}
 
 	/**

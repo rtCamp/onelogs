@@ -31,9 +31,9 @@
 		},
 		"strauss": {
 			"target_directory": "vendor-prefixed",
-			"namespace_prefix": "OneSearch\\Vendor\\",
-			"classmap_prefix": "OneSearch_Vendor_",
-			"constant_prefix": "ONESEARCH_VENDOR_",
+			"namespace_prefix": "OneLogs\\Vendor\\",
+			"classmap_prefix": "OneLogs_Vendor_",
+			"constant_prefix": "ONELOGS_VENDOR_",
 			"update_call_sites": true,
 			"delete_vendor_packages": true,
 			"packages": [

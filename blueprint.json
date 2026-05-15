@@ -1,14 +1,14 @@
 {
 	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
 	"meta": {
-		"title": "OneSearch Demo",
-		"description": "Cross-site, brand-aware search across a multi-brand WordPress network, powered by Algolia.",
+		"title": "OneLogs Demo",
+		"description": "Unified activity log dashboard across OnePress connected sites, extending Stream to display logs from governing and brand sites in one place.",
 		"author": "rtCamp",
 		"categories": [
 			"plugin",
-			"search",
+			"logs",
 			"multisite",
-			"algolia",
+			"stream",
 			"enterprise"
 		]
 	},
@@ -29,7 +29,7 @@
 			"step": "installPlugin",
 			"pluginData": {
 				"resource": "url",
-				"url": "https://github.com/rtCamp/OneSearch/releases/latest/download/onesearch.zip"
+				"url": "https://github.com/rtCamp/OneLogs/releases/latest/download/onelogs.zip"
 			},
 			"options": {
 				"activate": true

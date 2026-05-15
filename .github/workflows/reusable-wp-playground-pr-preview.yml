@@ -8,15 +8,15 @@ on:
         required: true
         type: string
       artifact-prefix:
-        description: 'Prefix for the artifact name (e.g., onesearch-pr)'
+        description: 'Prefix for the artifact name (e.g., onelogs-pr)'
         required: false
         type: string
-        default: 'onesearch-pr'
+        default: 'onelogs-pr'
       artifact-filename:
         description: 'Filename of the zip inside the artifact'
         required: false
         type: string
-        default: 'onesearch.zip'
+        default: 'onelogs.zip'
       artifacts-to-keep:
         description: 'Number of artifacts to keep per PR'
         required: false

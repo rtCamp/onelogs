@@ -167,7 +167,7 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       php-version: '8.3'
-      artifact-name: onesearch-pr${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+      artifact-name: onelogs-pr${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
     secrets: inherit
 
   playground-preview:
@@ -181,5 +181,5 @@ jobs:
       pull-requests: write
     with:
       run-id: ${{ github.run_id }}
-      artifact-prefix: 'onesearch-pr'
-      artifact-filename: 'onesearch.zip'
+      artifact-prefix: 'onelogs-pr'
+      artifact-filename: 'onelogs.zip'

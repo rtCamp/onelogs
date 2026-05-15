@@ -2,18 +2,18 @@
 /**
  * Autoloader unit tests.
  *
- * @package OneSearch\Tests\Unit
+ * @package OneLogs\Tests\Unit
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Tests\Unit;
+namespace OneLogs\Tests\Unit;
 
-use OneSearch\Autoloader;
-use OneSearch\Tests\TestCase;
+use OneLogs\Autoloader;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass( \OneSearch\Autoloader::class )]
+#[CoversClass( \OneLogs\Autoloader::class )]
 /**
  * Class AutoloaderTest
  */
@@ -53,10 +53,10 @@ final class AutoloaderTest extends TestCase {
 		$method = new \ReflectionMethod( Autoloader::class, 'missing_autoloader_notice' );
 		$method->invoke( null );
 
-		$this->expectOutputRegex( '/OneSearch: The Composer autoloader was not found./' );
+		$this->expectOutputRegex( '/OneLogs: The Composer autoloader was not found./' );
 		do_action( 'admin_notices' );
 
-		$this->expectOutputRegex( '/OneSearch: The Composer autoloader was not found./' );
+		$this->expectOutputRegex( '/OneLogs: The Composer autoloader was not found./' );
 		do_action( 'network_admin_notices' );
 	}
 

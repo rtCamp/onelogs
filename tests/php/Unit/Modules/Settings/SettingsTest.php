@@ -2,22 +2,22 @@
 /**
  * Settings unit tests.
  *
- * @package OneSearch\Tests\Unit\Modules\Settings
+ * @package OneLogs\Tests\Unit\Modules\Settings
  */
 
 declare(strict_types = 1);
 
-namespace OneSearch\Tests\Unit\Modules\Settings;
+namespace OneLogs\Tests\Unit\Modules\Settings;
 
-use OneSearch\Encryptor;
-use OneSearch\Modules\Settings\Settings;
-use OneSearch\Tests\TestCase;
+use OneLogs\Encryptor;
+use OneLogs\Modules\Settings\Settings;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /** Class SettingsTest */
 #[CoversClass( Settings::class )]
 final class SettingsTest extends TestCase {
-	/** @var \OneSearch\Modules\Settings\Settings */
+	/** @var \OneLogs\Modules\Settings\Settings */
 	private Settings $settings;
 
 	/** {@inheritDoc} */

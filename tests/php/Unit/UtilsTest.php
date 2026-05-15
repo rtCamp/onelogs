@@ -2,22 +2,22 @@
 /**
  * Utils unit tests.
  *
- * @package OneSearch\Tests\Unit
+ * @package OneLogs\Tests\Unit
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Tests\Unit;
+namespace OneLogs\Tests\Unit;
 
-use OneSearch\Tests\TestCase;
-use OneSearch\Utils;
+use OneLogs\Tests\TestCase;
+use OneLogs\Utils;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class UtilsTest
  */
-#[CoversClass( \OneSearch\Utils::class )]
+#[CoversClass( \OneLogs\Utils::class )]
 final class UtilsTest extends TestCase {
 	/**
 	 * Ensures provider cases normalize as expected.

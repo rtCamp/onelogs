@@ -2,22 +2,22 @@
 /**
  * Asset registration unit tests.
  *
- * @package OneSearch\Tests\Unit\Modules\Core
+ * @package OneLogs\Tests\Unit\Modules\Core
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Tests\Unit\Modules\Core;
+namespace OneLogs\Tests\Unit\Modules\Core;
 
-use OneSearch\Modules\Core\Assets;
-use OneSearch\Modules\Settings\Settings;
-use OneSearch\Tests\TestCase;
+use OneLogs\Modules\Core\Assets;
+use OneLogs\Modules\Settings\Settings;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for asset registration and localization.
  */
-#[CoversClass( \OneSearch\Modules\Core\Assets::class )]
+#[CoversClass( \OneLogs\Modules\Core\Assets::class )]
 final class AssetsTest extends TestCase {
 	/**
 	 * Tests no errors on class instantiation.

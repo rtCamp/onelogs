@@ -57,12 +57,12 @@ const styles = {
 const scripts = {
 	...sharedConfig,
 	entry: {
-		search: path.resolve(
+		'logs-dashboard': path.resolve(
 			process.cwd(),
 			'assets',
 			'src',
-			'admin/search',
-			'index.tsx'
+			'admin/logs',
+			'index.ts'
 		),
 		onboarding: path.resolve(
 			process.cwd(),
@@ -76,7 +76,7 @@ const scripts = {
 			'assets',
 			'src',
 			'admin/settings',
-			'index.tsx'
+			'index.js'
 		),
 	},
 	module: {

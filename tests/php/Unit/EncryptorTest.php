@@ -2,22 +2,22 @@
 /**
  * Encryptor unit tests.
  *
- * @package OneSearch\Tests\Unit
+ * @package OneLogs\Tests\Unit
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Tests\Unit;
+namespace OneLogs\Tests\Unit;
 
-use OneSearch\Encryptor;
-use OneSearch\Tests\TestCase;
+use OneLogs\Encryptor;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class EncryptorTest
  */
-#[CoversClass( \OneSearch\Encryptor::class )]
+#[CoversClass( \OneLogs\Encryptor::class )]
 class EncryptorTest extends TestCase {
 	/**
 	 * Test encrypt/decrypt roundtrip with various inputs.
@@ -74,7 +74,7 @@ class EncryptorTest extends TestCase {
 			'random string' => [ 'Sensitive data: ' . uniqid( '', true ) ],
 			'unicode'       => [ 'こんにちは 👋 Привет مرحبا café' ],
 			'empty string'  => [ '' ],
-			'long string'   => [ str_repeat( 'OneSearch long string 12345 ', 500 ) ],
+			'long string'   => [ str_repeat( 'OneLogs long string 12345 ', 500 ) ],
 		];
 	}
 

@@ -2,21 +2,21 @@
 /**
  * Main unit tests.
  *
- * @package OneSearch\Tests\Unit
+ * @package OneLogs\Tests\Unit
  */
 
 declare(strict_types = 1);
 
-namespace OneSearch\Tests\Unit;
+namespace OneLogs\Tests\Unit;
 
-use OneSearch\Main;
-use OneSearch\Tests\TestCase;
+use OneLogs\Main;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the Main bootstrap class.
  */
-#[CoversClass( \OneSearch\Main::class )]
+#[CoversClass( \OneLogs\Main::class )]
 final class MainTest extends TestCase {
 	/**
 	 * @var string|false|null
@@ -64,10 +64,10 @@ final class MainTest extends TestCase {
 
 		Main::instance();
 
-		$this->expectOutputRegex( '/OneSearch: The plugin requires pretty permalinks to be enabled./' );
+		$this->expectOutputRegex( '/OneLogs: The plugin requires pretty permalinks to be enabled./' );
 		do_action( 'admin_notices' );
 
-		$this->expectOutputRegex( '/OneSearch: The plugin requires pretty permalinks to be enabled./' );
+		$this->expectOutputRegex( '/OneLogs: The plugin requires pretty permalinks to be enabled./' );
 		do_action( 'network_admin_notices' );
 	}
 

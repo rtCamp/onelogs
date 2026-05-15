@@ -13,20 +13,19 @@ Object.defineProperty( global, 'fetch', {
 	writable: true,
 } );
 
-Object.defineProperty( window, 'OneSearchSettings', {
+Object.defineProperty( window, 'OneLogsSettings', {
 	value: {
-		restUrl: 'https://example.com/wp-json/',
-		restNamespace: 'onesearch/v1',
-		nonce: 'nonce',
+		restUrl: 'https://example.com/wp-json',
+		restNonce: 'nonce',
 		api_key: 'api-key',
 		currentSiteUrl: 'https://governing.example.com/',
 		siteType: 'governing-site',
-		setupUrl: '/wp-admin/admin.php?page=onesearch-settings',
+		setupUrl: '/wp-admin/admin.php?page=onelogs-settings',
 	},
 	writable: true,
 } );
 
-Object.defineProperty( window, 'OneSearchOnboarding', {
+Object.defineProperty( window, 'OneLogsOnboarding', {
 	value: {
 		nonce: 'onboarding-nonce',
 		site_type: '',
@@ -43,7 +42,7 @@ Object.defineProperty( navigator, 'clipboard', {
 } );
 
 /**
- * Jest test setup for OneSearch.
+ * Jest test setup for OneLogs.
  *
  * @package
  */

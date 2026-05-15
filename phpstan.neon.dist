@@ -20,11 +20,11 @@ parameters:
 		min: 80200
 		max: 80500
 	bootstrapFiles:
-		- onesearch.php
+		- onelogs.php
 	stubFiles:
 		- phpstan/stubs/wordpress-extended.php
 	paths:
-		- onesearch.php
+		- onelogs.php
 		- uninstall.php
 		- inc/
 	excludePaths:

@@ -1,4 +1,4 @@
-# Development Guidelines - OneSearch
+# Development Guidelines - OneLogs
 
 Code contributions, bug reports, and feature requests are welcome! The following sections provide guidelines for contributing to this project, as well as information about development processes and testing.
 
@@ -136,7 +136,7 @@ Code contributions, bug reports, and feature requests are welcome! The following
 │       ├── bootstrap.php     # PHPUnit bootstrapper.
 │       └── TestCase.php      # Base test case class.
 │
-├── onesearch.php # Root plugin entrypoint.
+├── onelogs.php # Root plugin entrypoint.
 ├── uninstall.php # Plugin uninstall script.
 │
 ├── readme.txt   # WordPress plugin readme.
@@ -197,7 +197,7 @@ You can use Docker and the `wp-env` tool to set up a local development environme
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/rtCamp/OneSearch.git
+   git clone https://github.com/rtCamp/OneLogs.git
    ```
 
 2. Change into the project folder and install the NPM dependencies.
@@ -275,8 +275,8 @@ You should now have a fully functional local development environment with the pl
 - `npm run wp-env:child start`: Start the local development environment (brand site on port 8890).
 - `npm run wp-env:test start`: Start the local test environment (on port 8889).
 - `npm run wp-env stop`: Stop the local development environment.
-- `npm run wp-env run cli -- --env-cwd=wp-content/plugins/onesearch {YOUR_CMD_HERE}`: Run WP-CLI commands in the local environment.
-- `npm run wp-env:test run cli -- --env-cwd=wp-content/plugins/onesearch {YOUR_CMD_HERE}`: Run Composer/PHP tooling in the tests container.
+- `npm run wp-env run cli -- --env-cwd=wp-content/plugins/onelogs {YOUR_CMD_HERE}`: Run WP-CLI commands in the local environment.
+- `npm run wp-env:test run cli -- --env-cwd=wp-content/plugins/onelogs {YOUR_CMD_HERE}`: Run Composer/PHP tooling in the tests container.
 
 For more information on using `wp-env`, see the [wp-env documentation](https://developer.wordpress.org/block-editor/packages/packages-env/).
 
@@ -446,7 +446,7 @@ You should see the html coverage report in the `tests/_output/html` directory an
 
 ### Jest (JavaScript Unit Tests)
 
-OneSearch uses [Jest](https://jestjs.io/) for JavaScript/TypeScript unit testing, configured via [`jest.config.js`](../jest.config.js) and extending `@wordpress/scripts` defaults.
+OneLogs uses [Jest](https://jestjs.io/) for JavaScript/TypeScript unit testing, configured via [`jest.config.js`](../jest.config.js) and extending `@wordpress/scripts` defaults.
 
 #### Running Tests
 

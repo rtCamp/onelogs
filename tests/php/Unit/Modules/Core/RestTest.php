@@ -2,21 +2,21 @@
 /**
  * Rest unit tests.
  *
- * @package OneSearch\Tests\Unit\Modules\Core
+ * @package OneLogs\Tests\Unit\Modules\Core
  */
 
 declare(strict_types = 1);
 
-namespace OneSearch\Tests\Unit\Modules\Core;
+namespace OneLogs\Tests\Unit\Modules\Core;
 
-use OneSearch\Modules\Core\Rest;
-use OneSearch\Tests\TestCase;
+use OneLogs\Modules\Core\Rest;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the Rest core module.
  */
-#[CoversClass( \OneSearch\Modules\Core\Rest::class )]
+#[CoversClass( \OneLogs\Modules\Core\Rest::class )]
 final class RestTest extends TestCase {
 	/**
 	 * Tests no errors on class instantiation.
@@ -30,20 +30,20 @@ final class RestTest extends TestCase {
 	}
 
 	/**
-	 * Tests that the OneSearch token header is added once.
+	 * Tests that the OneLogs token header is added once.
 	 */
-	public function test_allowed_cors_headers_adds_OneSearch_token_once(): void {
+	public function test_allowed_cors_headers_adds_OneLogs_token_once(): void {
 		$rest = new Rest();
 
 		$this->assertSame(
-			[ 'X-WP-Nonce', 'X-OneSearch-Token' ],
+			[ 'X-WP-Nonce', 'X-OneLogs-Token' ],
 			$rest->allowed_cors_headers( [ 'X-WP-Nonce' ] ),
 			'Token should be added to headers'
 		);
 
 		$this->assertSame(
-			[ 'X-OneSearch-Token' ],
-			$rest->allowed_cors_headers( [ 'X-OneSearch-Token' ] ),
+			[ 'X-OneLogs-Token' ],
+			$rest->allowed_cors_headers( [ 'X-OneLogs-Token' ] ),
 			'Token should not be readded'
 		);
 	}

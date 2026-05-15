@@ -12,9 +12,9 @@ test.describe( 'plugin activation', () => {
 
 		// Helper to dismiss the onboarding modal if present.
 		const dismissOnboardingModal = async () => {
-			const modal = page.locator( '#onesearch-site-selection-modal' );
+			const modal = page.locator( '#onelogs-site-selection-modal' );
 			const backdrop = page.locator(
-				'body.onesearch-site-selection-modal'
+				'body.onelogs-site-selection-modal'
 			);
 
 			if ( await modal.isVisible() ) {
@@ -25,13 +25,13 @@ test.describe( 'plugin activation', () => {
 
 			if ( await backdrop.isVisible() ) {
 				await backdrop.evaluate( ( el ) => {
-					el.classList.remove( 'onesearch-site-selection-modal' );
+					el.classList.remove( 'onelogs-site-selection-modal' );
 				} );
 			}
 		};
 
 		const pluginRow = page.locator(
-			'tr[data-plugin="onesearch/onesearch.php"]'
+			'tr[data-plugin="onelogs/onelogs.php"]'
 		);
 		await expect( pluginRow ).toBeVisible();
 

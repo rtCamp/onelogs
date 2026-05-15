@@ -2,15 +2,15 @@
 /**
  * Singleton trait unit tests.
  *
- * @package OneSearch\Tests\Unit\Contracts\Traits
+ * @package OneLogs\Tests\Unit\Contracts\Traits
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Tests\Unit\Contracts\Traits;
+namespace OneLogs\Tests\Unit\Contracts\Traits;
 
-use OneSearch\Contracts\Traits\Singleton;
-use OneSearch\Tests\TestCase;
+use OneLogs\Contracts\Traits\Singleton;
+use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -30,7 +30,7 @@ final class SingletonTestDouble {
 /**
  * Class SingletonTest
  */
-#[CoversClass( \OneSearch\Contracts\Traits\Singleton::class )]
+#[CoversClass( \OneLogs\Contracts\Traits\Singleton::class )]
 final class SingletonTest extends TestCase {
 	/**
 	 * Tests that instance returns the same object.

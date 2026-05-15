@@ -1,26 +1,26 @@
 <?php
 /**
- * Plugin Name: OneSearch - Localhost Helper
- * Description: Rewrites localhost URLs to host.docker.internal for inter-container HTTP requests in wp-env Docker environments. Only affects URLs containing "onesearch/v1".
+ * Plugin Name: OneLogs - Localhost Helper
+ * Description: Rewrites localhost URLs to host.docker.internal for inter-container HTTP requests in wp-env Docker environments. Only affects URLs containing "onelogs/v1".
  * Version: 1.0.0
  * Author: rtCamp
  * License: GPL-2.0-or-later
  *
- * @package OneSearch\Dev
+ * @package OneLogs\Dev
  */
 
 declare( strict_types = 1 );
 
-namespace OneSearch\Localhost_Helper;
+namespace OneLogs\Localhost_Helper;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-// Bypass URL validation for onesearch endpoints.
+// Bypass URL validation for onelogs endpoints.
 add_filter( // phpcs:ignore WordPressVIPMinimum.Hooks.RestrictedHooks.http_request_args
 	'http_request_args',
 	static function ( array $args, string $url ): array {
-		if ( false === strpos( $url, 'onesearch/v1' ) ) {
+		if ( false === strpos( $url, 'onelogs/v1' ) ) {
 			return $args;
 		}
 
@@ -31,11 +31,11 @@ add_filter( // phpcs:ignore WordPressVIPMinimum.Hooks.RestrictedHooks.http_reque
 	2,
 );
 
-// Reroute localhost requests to host.docker.internal for onesearch endpoints.
+// Reroute localhost requests to host.docker.internal for onelogs endpoints.
 add_filter(
 	'pre_http_request',
 	static function ( $preempt, array $args, string $url ) {
-		if ( false === strpos( $url, 'onesearch/v1' ) || false === strpos( $url, '://localhost' ) ) {
+		if ( false === strpos( $url, 'onelogs/v1' ) || false === strpos( $url, '://localhost' ) ) {
 			return $preempt;
 		}
 

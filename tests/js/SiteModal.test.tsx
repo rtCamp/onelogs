@@ -5,27 +5,36 @@ import { useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import SiteModal from '@/components/SiteModal';
-import { defaultBrandSite } from '@/admin/settings/page';
 
-const baseFormData = {
-	...defaultBrandSite,
+type SiteData = { name: string; url: string; api_key: string };
+
+const defaultBrandSite: SiteData = { name: '', url: '', api_key: '' };
+
+const baseFormData: SiteData = {
 	name: 'Brand Site',
 	url: 'https://brand.example.com',
 	api_key: 'secret-key',
 };
 
+const okResponse = () =>
+	( { ok: true, json: jest.fn().mockResolvedValue( {} ) } ) as unknown as Response;
+
+const errorResponse = ( message = 'An error occurred while saving the site. Please try again.' ) =>
+	( {
+		ok: false,
+		json: jest.fn().mockResolvedValue( { message } ),
+	} ) as unknown as Response;
+
 function SiteModalHarness( {
 	initialData = baseFormData,
 	editing = false,
-	sites = [],
 	originalData,
-	onSubmit = jest.fn().mockResolvedValue( true ),
+	onSubmit = jest.fn().mockResolvedValue( okResponse() ),
 }: {
-	initialData?: typeof defaultBrandSite;
+	initialData?: SiteData;
 	editing?: boolean;
-	sites?: Array< typeof defaultBrandSite >;
-	originalData?: typeof defaultBrandSite;
-	onSubmit?: jest.Mock< Promise< boolean >, [] >;
+	originalData?: SiteData;
+	onSubmit?: jest.Mock< Promise< Response >, [] >;
 } ) {
 	const [ formData, setFormData ] = useState( initialData );
 
@@ -36,7 +45,6 @@ function SiteModalHarness( {
 			onSubmit={ onSubmit }
 			onClose={ jest.fn() }
 			editing={ editing }
-			sites={ sites }
 			originalData={ originalData }
 		/>
 	);
@@ -78,38 +86,8 @@ describe( 'SiteModal', () => {
 		).toHaveLength( 2 );
 	} );
 
-	it( 'prevents duplicate site urls after a successful health check', async () => {
-		const onSubmit = jest.fn().mockResolvedValue( true );
-		global.fetch = jest.fn().mockResolvedValue( {
-			json: jest.fn().mockResolvedValue( { success: true } ),
-		} ) as typeof fetch;
-
-		render(
-			<SiteModalHarness
-				onSubmit={ onSubmit }
-				sites={ [
-					{
-						name: 'Existing',
-						url: 'https://brand.example.com/',
-						api_key: 'existing-key',
-					},
-				] }
-			/>
-		);
-
-		fireEvent.click( screen.getByRole( 'button', { name: 'Add Site' } ) );
-
-		// WordPress renders notices in both accessibility region and visible content
-		expect(
-			await screen.findAllByText(
-				'Site URL already exists. Please use a different URL.'
-			)
-		).toHaveLength( 2 );
-		expect( onSubmit ).not.toHaveBeenCalled();
-	} );
-
 	it( 'shows a health check error when the remote site rejects the credentials', async () => {
-		const onSubmit = jest.fn().mockResolvedValue( true );
+		const onSubmit = jest.fn().mockResolvedValue( okResponse() );
 		global.fetch = jest.fn().mockResolvedValue( {
 			json: jest.fn().mockResolvedValue( { success: false } ),
 		} ) as typeof fetch;
@@ -121,14 +99,14 @@ describe( 'SiteModal', () => {
 		// WordPress renders notices in both accessibility region and visible content
 		expect(
 			await screen.findAllByText(
-				"Health check failed, please verify API key and make sure there's no governing site connected."
+				'Health check failed. Please ensure the site is accessible and the api key is correct.'
 			)
 		).toHaveLength( 2 );
 		expect( onSubmit ).not.toHaveBeenCalled();
 	} );
 
 	it( 'shows an error when saving the site fails', async () => {
-		const onSubmit = jest.fn().mockResolvedValue( false );
+		const onSubmit = jest.fn().mockResolvedValue( errorResponse() );
 		global.fetch = jest.fn().mockResolvedValue( {
 			json: jest.fn().mockResolvedValue( { success: true } ),
 		} ) as typeof fetch;
@@ -164,7 +142,7 @@ describe( 'SiteModal', () => {
 	} );
 
 	it( 'submits after a successful health check', async () => {
-		const onSubmit = jest.fn().mockResolvedValue( true );
+		const onSubmit = jest.fn().mockResolvedValue( okResponse() );
 		global.fetch = jest.fn().mockResolvedValue( {
 			json: jest.fn().mockResolvedValue( { success: true } ),
 		} ) as typeof fetch;
@@ -175,11 +153,11 @@ describe( 'SiteModal', () => {
 
 		await waitFor( () => {
 			expect( global.fetch ).toHaveBeenCalledWith(
-				'https://brand.example.com/wp-json/onesearch/v1/health-check',
+				'https://brand.example.com/wp-json/onelogs/v1/health-check',
 				expect.objectContaining( {
 					method: 'GET',
 					headers: expect.objectContaining( {
-						'X-OneSearch-Token': 'secret-key',
+						'X-OneLogs-Token': 'secret-key',
 					} ),
 				} )
 			);
