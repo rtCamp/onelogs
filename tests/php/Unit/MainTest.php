@@ -59,13 +59,22 @@ final class MainTest extends TestCase {
 	/**
 	 * Ensures setup does not load registrable classes when permalinks are disabled.
 	 */
-	public function test_setup_does_not_load_when_permalinks_disabled(): void {
+	public function test_setup_does_not_load_when_permalinks_disabled_admin_notices(): void {
 		update_option( 'permalink_structure', '' );
 
 		Main::instance();
 
 		$this->expectOutputRegex( '/OneLogs: The plugin requires pretty permalinks to be enabled./' );
 		do_action( 'admin_notices' );
+	}
+
+	/**
+	 * Ensures setup does not load registrable classes when permalinks are disabled (network admin).
+	 */
+	public function test_setup_does_not_load_when_permalinks_disabled_network_admin_notices(): void {
+		update_option( 'permalink_structure', '' );
+
+		Main::instance();
 
 		$this->expectOutputRegex( '/OneLogs: The plugin requires pretty permalinks to be enabled./' );
 		do_action( 'network_admin_notices' );

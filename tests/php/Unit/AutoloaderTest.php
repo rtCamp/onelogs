@@ -47,14 +47,22 @@ final class AutoloaderTest extends TestCase {
 	}
 
 	/**
-	 * Ensures missing autoloader notice registers both admin hooks.
+	 * Ensures missing autoloader notice registers on admin_notices hook.
 	 */
-	public function test_missing_autoloader_notice_adds_admin_notices(): void {
+	public function test_missing_autoloader_notice_fires_on_admin_notices(): void {
 		$method = new \ReflectionMethod( Autoloader::class, 'missing_autoloader_notice' );
 		$method->invoke( null );
 
 		$this->expectOutputRegex( '/OneLogs: The Composer autoloader was not found./' );
 		do_action( 'admin_notices' );
+	}
+
+	/**
+	 * Ensures missing autoloader notice registers on network_admin_notices hook.
+	 */
+	public function test_missing_autoloader_notice_fires_on_network_admin_notices(): void {
+		$method = new \ReflectionMethod( Autoloader::class, 'missing_autoloader_notice' );
+		$method->invoke( null );
 
 		$this->expectOutputRegex( '/OneLogs: The Composer autoloader was not found./' );
 		do_action( 'network_admin_notices' );
