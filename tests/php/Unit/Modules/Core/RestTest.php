@@ -32,7 +32,7 @@ final class RestTest extends TestCase {
 	/**
 	 * Tests that the OneLogs token header is added once.
 	 */
-	public function test_allowed_cors_headers_adds_OneLogs_token_once(): void {
+	public function test_allowed_cors_headers_adds_onelogs_token_once(): void {
 		$rest = new Rest();
 
 		$this->assertSame(

@@ -840,7 +840,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 			$request_params                         = $params;
 			$request_params['include_shared_sites'] = false;
 			$request_params['current_site_logs']    = true;
-			$response                               = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs', $request_params );
+			$response                               = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs', $request_params );
 
 			foreach ( $response['data'] as &$log ) {
 				$site_info        = Utils::get_shared_site_data_by_url( $brand_site );
@@ -1053,7 +1053,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		if ( $brand_site ) {
-			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/contexts' );
+			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/contexts' );
 
 			return new WP_REST_Response( $response, 200 );
 		}
@@ -1129,7 +1129,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		if ( $brand_site ) {
-			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/actions' );
+			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/actions' );
 
 			return new WP_REST_Response( $response, 200 );
 		}
@@ -1179,7 +1179,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		// If brand site is provided, fetch remote users.
 		if ( $brand_site ) {
-			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/users' );
+			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/users' );
 
 			return rest_ensure_response( $response );
 		}
@@ -1260,7 +1260,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param array  $args     Request arguments (query parameters or body data).
 	 * @param string $method   HTTP method (GET, POST, etc.). Default is 'GET'.
 	 */
-	private function onepress_remote_request( string $site_url, string $path, array $args = [], string $method = 'GET' ): array {
+	private function onelogs_remote_request( string $site_url, string $path, array $args = [], string $method = 'GET' ): array {
 		$api_key  = Utils::get_shared_site_api_key_by_url( $site_url );
 		$endpoint = trailingslashit( $site_url ) . 'wp-json/' . ltrim( $path, '/' );
 

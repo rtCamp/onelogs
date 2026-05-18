@@ -14,10 +14,10 @@ Object.defineProperty(window, 'OneLogsSettings', {
 	value: {
 		restUrl: 'https://example.com/wp-json',
 		restNonce: 'nonce',
-		api_key: 'api-key',
-		currentSiteUrl: 'https://governing.example.com/',
+		apiKey: 'api-key',
 		siteType: 'governing-site',
-		setupUrl: '/wp-admin/admin.php?page=onelogs-settings',
+		siteName: 'Example Site',
+		settingsLink: '/wp-admin/admin.php?page=onelogs-settings',
 	},
 	writable: true,
 });

@@ -144,7 +144,7 @@ const LogsDashboard: React.FC = () => {
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = `onepress-logs-${new Date().toISOString().split('T')[0]}.csv`;
+			link.download = `onelogs-${new Date().toISOString().split('T')[0]}.csv`;
 			link.style.display = 'none';
 			document.body.appendChild(link);
 			link.click();
@@ -289,7 +289,7 @@ const LogsDashboard: React.FC = () => {
 			<CardHeader>
 				<div>
 					<h1 style={{ margin: 0 }}>
-						{__('OneLogs', 'onepress-logs')}
+						{__('OneLogs', 'onelogs')}
 					</h1>
 				</div>
 			</CardHeader>

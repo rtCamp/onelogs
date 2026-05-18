@@ -13,10 +13,10 @@ use OneLogs\Autoloader;
 use OneLogs\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass( \OneLogs\Autoloader::class )]
 /**
  * Class AutoloaderTest
  */
+#[CoversClass( \OneLogs\Autoloader::class )]
 final class AutoloaderTest extends TestCase {
 	/**
 	 * Reset static state before each test.

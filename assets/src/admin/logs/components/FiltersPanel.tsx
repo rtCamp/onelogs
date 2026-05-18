@@ -204,7 +204,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({
 					}}
 				>
 					<Button variant="secondary" onClick={() => resetFilters()}>
-						{__('Clear Filters', 'onepress-logs')}
+						{__('Clear Filters', 'onelogs')}
 					</Button>
 				</div>
 			</div>
@@ -238,7 +238,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({
 							className="dashicons dashicons-update"
 							style={{ marginRight: '4px' }}
 						></span>
-						{__('Refresh', 'onepress-logs')}
+						{__('Refresh', 'onelogs')}
 					</Button>
 					<Button
 						isBusy={exportLoading}
@@ -247,7 +247,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({
 						onClick={() => exportData()}
 						style={{ marginLeft: '8px' }}
 					>
-						{__('Export CSV', 'onepress-logs')}
+						{__('Export CSV', 'onelogs')}
 					</Button>
 				</div>
 			</div>

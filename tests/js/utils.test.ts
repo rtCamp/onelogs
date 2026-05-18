@@ -27,6 +27,6 @@ describe('utils', () => {
 		expect(API_KEY).toBe('api-key');
 		expect(NONCE).toBe('nonce');
 		expect(SITE_TYPE).toBe('governing-site');
-		expect(SITE_NAME).toBe('');
+		expect(SITE_NAME).toBe('Example Site');
 	});
 });

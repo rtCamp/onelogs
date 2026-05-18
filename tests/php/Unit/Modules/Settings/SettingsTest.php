@@ -236,7 +236,11 @@ final class SettingsTest extends TestCase {
 		$api_key = Settings::get_api_key();
 
 		$this->assertNotSame( '', $api_key );
-		$this->assertNotSame( $api_key, get_option( Settings::OPTION_CONSUMER_API_KEY, '' ) );
+
+		$stored = get_option( Settings::OPTION_CONSUMER_API_KEY, '' );
+		$this->assertNotSame( '', $stored );
+		$this->assertSame( $api_key, Encryptor::decrypt( $stored ) );
+
 		$this->assertSame( $api_key, Settings::get_api_key() );
 	}
 
