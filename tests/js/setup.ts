@@ -16,6 +16,7 @@ Object.defineProperty(window, 'OneLogsSettings', {
 		restNonce: 'nonce',
 		apiKey: 'api-key',
 		siteType: 'governing-site',
+		site_type: 'governing-site',
 		siteName: 'Example Site',
 		settingsLink: '/wp-admin/admin.php?page=onelogs-settings',
 	},

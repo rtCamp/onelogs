@@ -21,8 +21,6 @@ parameters:
 		max: 80500
 	bootstrapFiles:
 		- onelogs.php
-	stubFiles:
-		- phpstan/stubs/wordpress-extended.php
 	paths:
 		- onelogs.php
 		- uninstall.php
