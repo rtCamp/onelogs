@@ -6,9 +6,9 @@
 		"rootDir": ".",
 		"outDir": "./build",
 		"paths": {
-			"@/*": [ "./assets/src/*" ]
+			"@/*": ["./assets/src/*"]
 		},
-		"types": [ "jest", "node" ]
+		"types": ["jest", "node"]
 	},
 	"include": [
 		"**/*.d.ts",

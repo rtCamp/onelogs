@@ -4,13 +4,7 @@
 		"title": "OneLogs Demo",
 		"description": "Unified activity log dashboard across OnePress connected sites, extending Stream to display logs from governing and brand sites in one place.",
 		"author": "rtCamp",
-		"categories": [
-			"plugin",
-			"logs",
-			"multisite",
-			"stream",
-			"enterprise"
-		]
+		"categories": ["plugin", "logs", "multisite", "stream", "enterprise"]
 	},
 	"landingPage": "/wp-admin/plugins.php",
 	"preferredVersions": {

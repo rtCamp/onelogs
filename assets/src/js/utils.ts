@@ -5,9 +5,9 @@
  *
  * @return {boolean} True if the string is a valid URL, false otherwise.
  */
-const isURL = ( str:string ) => {
+const isURL = (str: string) => {
 	try {
-		new URL( str );
+		new URL(str);
 		return true;
 	} catch {
 		return false;
@@ -21,11 +21,11 @@ const isURL = ( str:string ) => {
  *
  * @return {boolean} True if the URL is valid, false otherwise.
  */
-const isValidUrl = ( url:string ) => {
+const isValidUrl = (url: string) => {
 	try {
-		const parsedUrl = new URL( url );
-		return isURL( parsedUrl.href );
-	} catch ( e ) {
+		const parsedUrl = new URL(url);
+		return isURL(parsedUrl.href);
+	} catch (e) {
 		return false;
 	}
 };
@@ -37,19 +37,15 @@ const isValidUrl = ( url:string ) => {
  *
  * @return {string} The formatted date string.
  */
-const formatDate = ( dateString:string ) => {
-	return new Date( dateString ).toLocaleString( 'en-US', {
+const formatDate = (dateString: string) => {
+	return new Date(dateString).toLocaleString('en-US', {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',
 		hour: 'numeric',
 		minute: '2-digit',
 		hour12: true,
-	} );
+	});
 };
 
-export {
-	isURL,
-	isValidUrl,
-	formatDate,
-};
+export { isURL, isValidUrl, formatDate };

@@ -12,7 +12,7 @@
 /**
  * WordPress dependencies
  */
-const defaultConfig = require( '@wordpress/scripts/config/jest-unit.config' );
+const defaultConfig = require('@wordpress/scripts/config/jest-unit.config');
 
 module.exports = {
 	...defaultConfig,
@@ -22,11 +22,11 @@ module.exports = {
 
 	// Root directory for tests
 	rootDir: '.',
-	roots: [ '<rootDir>', '<rootDir>/tests/js' ],
+	roots: ['<rootDir>', '<rootDir>/tests/js'],
 
 	// Test setup files run after Jest environment is set up
 	setupFilesAfterEnv: [
-		...( defaultConfig.setupFilesAfterEnv || [] ),
+		...(defaultConfig.setupFilesAfterEnv || []),
 		'<rootDir>/tests/js/setup.ts',
 	],
 
@@ -79,7 +79,7 @@ module.exports = {
 	},
 
 	// Coverage reporters for different outputs
-	coverageReporters: [ 'text', 'text-summary', 'lcov', 'html' ],
+	coverageReporters: ['text', 'text-summary', 'lcov', 'html'],
 
 	// Verbose output for CI environments
 	verbose: process.env.CI === 'true',

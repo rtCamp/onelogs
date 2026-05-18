@@ -14,8 +14,8 @@ declare global {
 }
 
 // Render to the target element.
-const target = document.getElementById( 'onelogs-site-selection-modal' );
-if ( target ) {
-	const root = createRoot( target );
-	root.render( <OnboardingScreen /> );
+const target = document.getElementById('onelogs-site-selection-modal');
+if (target) {
+	const root = createRoot(target);
+	root.render(<OnboardingScreen />);
 }

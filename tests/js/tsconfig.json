@@ -4,7 +4,7 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"baseUrl": "../../",
-		"types": [ "jest", "node", "@testing-library/jest-dom" ]
+		"types": ["jest", "node", "@testing-library/jest-dom"]
 	},
 	"include": [
 		"./**/*.ts",

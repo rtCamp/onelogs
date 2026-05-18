@@ -3,17 +3,14 @@
  */
 import '@testing-library/jest-dom';
 
-const fetchMock = jest.fn<
-	ReturnType< typeof fetch >,
-	Parameters< typeof fetch >
->();
+const fetchMock = jest.fn<ReturnType<typeof fetch>, Parameters<typeof fetch>>();
 
-Object.defineProperty( global, 'fetch', {
+Object.defineProperty(global, 'fetch', {
 	value: fetchMock,
 	writable: true,
-} );
+});
 
-Object.defineProperty( window, 'OneLogsSettings', {
+Object.defineProperty(window, 'OneLogsSettings', {
 	value: {
 		restUrl: 'https://example.com/wp-json',
 		restNonce: 'nonce',
@@ -23,23 +20,23 @@ Object.defineProperty( window, 'OneLogsSettings', {
 		setupUrl: '/wp-admin/admin.php?page=onelogs-settings',
 	},
 	writable: true,
-} );
+});
 
-Object.defineProperty( window, 'OneLogsOnboarding', {
+Object.defineProperty(window, 'OneLogsOnboarding', {
 	value: {
 		nonce: 'onboarding-nonce',
 		site_type: '',
 		setup_url: '',
 	},
 	writable: true,
-} );
+});
 
-Object.defineProperty( navigator, 'clipboard', {
+Object.defineProperty(navigator, 'clipboard', {
 	value: {
-		writeText: jest.fn().mockResolvedValue( undefined ),
+		writeText: jest.fn().mockResolvedValue(undefined),
 	},
 	configurable: true,
-} );
+});
 
 /**
  * Jest test setup for OneLogs.
@@ -47,7 +44,7 @@ Object.defineProperty( navigator, 'clipboard', {
  * @package
  */
 
-beforeEach( () => {
+beforeEach(() => {
 	jest.clearAllMocks();
 	fetchMock.mockReset();
-} );
+});

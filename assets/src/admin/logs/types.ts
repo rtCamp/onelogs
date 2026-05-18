@@ -55,7 +55,16 @@ export interface FilterOptions extends Record<string, unknown> {
 	include_shared_sites?: boolean;
 }
 
-export type SortableField = 'ID' | 'summary' | 'connector' | 'context' | 'action' | 'user_id' | 'ip' | 'created' | 'site_name';
+export type SortableField =
+	| 'ID'
+	| 'summary'
+	| 'connector'
+	| 'context'
+	| 'action'
+	| 'user_id'
+	| 'ip'
+	| 'created'
+	| 'site_name';
 
 export interface SortState {
 	field: SortableField | null | string;
@@ -74,7 +83,11 @@ export type APIResponse = {
 
 export type StringArrayResponse = string[];
 
-export type fetchReturn = APIResponse | StringArrayResponse | string | SharedSite[];
+export type fetchReturn =
+	| APIResponse
+	| StringArrayResponse
+	| string
+	| SharedSite[];
 
 export interface SharedSite {
 	api_key: string;
