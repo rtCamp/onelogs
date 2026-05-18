@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /**
  * Shared static utility functions.
  *
@@ -11,7 +14,6 @@ namespace OneLogs;
  * Class Utils
  */
 final class Utils {
-
 	/**
 	 * Get the API key of a shared site by its URL.
 	 *

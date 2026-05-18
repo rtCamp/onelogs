@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /**
  * Dependency checker for OneLogs.
  *
@@ -11,7 +14,6 @@ namespace OneLogs;
  * Class Dependencies
  */
 final class Dependencies {
-
 	/**
 	 * Required plugins.
 	 *
@@ -30,8 +32,6 @@ final class Dependencies {
 
 	/**
 	 * Check if all required plugins are installed and active.
-	 *
-	 * @return bool
 	 */
 	public static function is_ready(): bool {
 

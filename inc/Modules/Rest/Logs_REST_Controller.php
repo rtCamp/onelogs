@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /**
  * REST API Controller for managing WordPress Stream logs.
  *
@@ -31,7 +34,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since   1.0.0
  */
 final class Logs_REST_Controller extends Abstract_REST_Controller {
-
 	/**
 	 * Maximum number of results per page.
 	 *
@@ -55,8 +57,6 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 	/**
 	 * Register WordPress hooks.
-	 *
-	 * @return void
 	 */
 	public function register_hooks(): void {
 		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
@@ -64,8 +64,6 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 	/**
 	 * Register REST API routes.
-	 *
-	 * @return void
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -1261,8 +1259,6 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param string $path     The REST API endpoint path.
 	 * @param array  $args     Request arguments (query parameters or body data).
 	 * @param string $method   HTTP method (GET, POST, etc.). Default is 'GET'.
-	 *
-	 * @return array
 	 */
 	private function onepress_remote_request( string $site_url, string $path, array $args = [], string $method = 'GET' ): array {
 		$api_key  = Utils::get_shared_site_api_key_by_url( $site_url );

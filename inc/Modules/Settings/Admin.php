@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /**
  * Admin class.
  * This class handles the settings page for the OneLogs plugin,
@@ -51,8 +54,6 @@ final class Admin implements Registrable {
 
 	/**
 	 * Add a settings page.
-	 *
-	 * @return void
 	 */
 	public function add_admin_menu(): void {
 		add_menu_page(

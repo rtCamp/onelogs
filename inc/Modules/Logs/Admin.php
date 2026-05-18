@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /**
  * Admin class to handle all the admin functionalities related to logs.
  *
