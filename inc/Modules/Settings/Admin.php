@@ -85,6 +85,10 @@ final class Admin implements Registrable {
 	 * Remove the default submenu added by WordPress.
 	 */
 	public function remove_default_submenu(): void {
+		if ( Settings::is_governing_site() ) {
+			return;
+		}
+
 		remove_submenu_page( self::MENU_SLUG, self::MENU_SLUG );
 	}
 
