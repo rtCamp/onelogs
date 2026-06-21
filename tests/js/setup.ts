@@ -15,7 +15,7 @@ Object.defineProperty( global, 'fetch', {
 
 Object.defineProperty( window, 'OneLogsSettings', {
 	value: {
-		restUrl: 'https://example.com/wp-json/',
+		restUrl: 'https://example.com/wp-json',
 		nonce: 'nonce',
 		apiKey: 'api-key',
 		siteType: 'governing-site',

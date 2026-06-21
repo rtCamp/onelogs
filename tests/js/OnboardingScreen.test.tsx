@@ -13,6 +13,7 @@ const mockedApiFetch = apiFetch as jest.MockedFunction< typeof apiFetch >;
 
 describe( 'OnboardingScreen', () => {
 	let consoleWarnSpy: jest.SpyInstance;
+	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach( () => {
 		mockedApiFetch.mockReset();
@@ -21,14 +22,19 @@ describe( 'OnboardingScreen', () => {
 			nonce: 'onboarding-nonce',
 			siteType: '',
 		};
+
 		// Suppress WordPress component deprecation warnings (outside our control)
 		consoleWarnSpy = jest
 			.spyOn( console, 'warn' )
+			.mockImplementation( () => {} );
+		consoleErrorSpy = jest
+			.spyOn( console, 'error' )
 			.mockImplementation( () => {} );
 	} );
 
 	afterEach( () => {
 		consoleWarnSpy.mockRestore();
+		consoleErrorSpy.mockRestore();
 	} );
 
 	it( 'loads the current site type from settings', async () => {
