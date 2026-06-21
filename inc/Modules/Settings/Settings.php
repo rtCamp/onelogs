@@ -158,6 +158,8 @@ final class Settings implements Registrable {
 	/**
 	 * Ensures the API key is generated when the site type changes to 'consumer'.
 	 *
+	 * @internal Hook callback
+	 *
 	 * @param mixed $old_value The old value.
 	 * @param mixed $new_value The new value.
 	 */
@@ -220,7 +222,7 @@ final class Settings implements Registrable {
 	 */
 
 	/**
-	 * Get brand sites configured for this governing site.
+	 * Get brand sites configured for this governing site, keyed by the (trailing-slash) URL.
 	 *
 	 * @return array<string,array{
 	 *  api_key: string,
@@ -234,15 +236,18 @@ final class Settings implements Registrable {
 
 		$brands_to_return = [];
 		foreach ( $brands as $brand ) {
-			if ( ! is_array( $brand ) ) {
+			if ( empty( $brand['url'] ) ) {
 				continue;
 			}
 
-			$brands_to_return[ $brand['url'] ] = [
+			// Always use a trailing-slash URL.
+			$url = trailingslashit( $brand['url'] );
+
+			$brands_to_return[ $url ] = [
 				'api_key' => $brand['api_key'] ?? '',
 				'id'      => $brand['id'] ?? '',
 				'name'    => $brand['name'] ?? '',
-				'url'     => $brand['url'] ?? '',
+				'url'     => $url,
 			];
 		}
 
@@ -270,20 +275,25 @@ final class Settings implements Registrable {
 	}
 
 	/**
-	 * Set the shared sites.
+	 * Get a single brand site by name
 	 *
-	 * @param array<string,array<string,mixed>> $sites The sites to set.
+	 * @param string $site_name The site name.
 	 *
-	 * @phpstan-param array<string,array{
-	 *   api_key?: string,
-	 *   id?: string,
-	 *   name?: string,
-	 *   url?: string,
-	 *   is_editable?: bool
-	 * }> $sites The sites to set.
+	 * @return ?array{
+	 *   api_key: string,
+	 *   id: string,
+	 *   name: string,
+	 *   url: string,
+	 * }
 	 */
-	public static function set_shared_sites( array $sites ): bool {
-		return update_option( self::OPTION_GOVERNING_SHARED_SITES, array_values( $sites ), false );
+	public static function get_shared_site_by_name( string $site_name ): ?array {
+		$brand_sites = self::get_shared_sites();
+		foreach ( $brand_sites as $site ) {
+			if ( $site['name'] === $site_name ) {
+				return $site;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -311,6 +321,8 @@ final class Settings implements Registrable {
 
 	/**
 	 * Gets the API key, generating a new one if it doesn't exist.
+	 *
+	 * Returns an empty string on failure.
 	 */
 	public static function get_api_key(): string {
 		$api_key = get_option( self::OPTION_CONSUMER_API_KEY, '' );
@@ -322,10 +334,19 @@ final class Settings implements Registrable {
 
 	/**
 	 * Regenerates the API key.
+	 *
+	 * @return string The new (unencrypted) API key.
 	 */
 	public static function regenerate_api_key(): string {
 		$api_key = self::generate_api_key();
-		update_option( self::OPTION_CONSUMER_API_KEY, Encryptor::encrypt( $api_key ) );
+
+		$encrypted_key = Encryptor::encrypt( $api_key );
+
+		if ( ! $encrypted_key ) {
+			return '';
+		}
+
+		update_option( self::OPTION_CONSUMER_API_KEY, $encrypted_key, false );
 
 		return $api_key;
 	}

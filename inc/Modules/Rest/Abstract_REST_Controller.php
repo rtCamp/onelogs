@@ -25,6 +25,15 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * Reuses the namespace constant.
+	 *
+	 * @var string
+	 */
+	protected $namespace = self::NAMESPACE;
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
 		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
@@ -66,10 +75,7 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 			return false;
 		}
 
-		$request_origin = $request->get_header( 'origin' );
-		if ( empty( $request_origin ) ) {
-			$request_origin = $request->get_header( 'referer' );
-		}
+		$request_origin = $request->get_header( 'origin' ) ?: $request->get_header( 'referer' );
 		$request_origin = ! empty( $request_origin ) ? esc_url_raw( wp_unslash( $request_origin ) ) : '';
 		$user_agent     = $request->get_header( 'user-agent' );
 		$user_agent     = ! empty( $user_agent ) ? sanitize_text_field( wp_unslash( $user_agent ) ) : '';
@@ -84,7 +90,7 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 		}
 
 		// If it's the same domain, we're good.
-		if ( self::is_same_domain( get_site_url(), $request_origin ) ) {
+		if ( $this->is_same_domain( get_site_url(), $request_origin ) ) {
 			return true;
 		}
 
@@ -92,7 +98,7 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 
 		// If it's a healthcheck with no governing site, allow it and set the governing site.
 		if ( empty( $governing_site_url ) ) {
-			if ( '/' . self::NAMESPACE . '/health-check' === $request->get_route() ) {
+			if ( '/' . $this->namespace . '/health-check' === $request->get_route() ) {
 				Settings::set_parent_site_url( $request_origin );
 				return true;
 			}
@@ -100,7 +106,7 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 		}
 
 		// if token is valid and request is from different domain then check if it matches governing site url.
-		return self::is_same_domain( $governing_site_url, $request_origin ) || false !== strpos( $user_agent, $governing_site_url );
+		return $this->is_same_domain( $governing_site_url, $request_origin ) || false !== strpos( $user_agent, $governing_site_url );
 	}
 
 	/**

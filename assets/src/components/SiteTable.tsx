@@ -12,7 +12,6 @@ interface BrandSite {
 	name: string;
 	url: string;
 	api_key: string;
-	is_editable?: boolean;
 }
 
 const SiteTable = ( {
@@ -60,7 +59,10 @@ const SiteTable = ( {
 				</Button>
 			</CardHeader>
 			<CardBody>
-				<table className="wp-list-table widefat fixed striped ">
+				<table
+					className="wp-list-table widefat fixed striped "
+					style={ { marginTop: '1rem' } }
+				>
 					<thead>
 						<tr>
 							<th>{ __( 'Site Name', 'onelogs' ) }</th>
@@ -97,7 +99,6 @@ const SiteTable = ( {
 											onEdit( index );
 											setShowModal( true );
 										} }
-										disabled={ site?.is_editable === false }
 										style={ { marginRight: '8px' } }
 									>
 										{ __( 'Edit', 'onelogs' ) }
@@ -138,6 +139,7 @@ const DeleteConfirmationModal = ( {
 		title={ __( 'Delete Brand Site', 'onelogs' ) }
 		onRequestClose={ onCancel }
 		isDismissible
+		shouldCloseOnClickOutside
 	>
 		<p>
 			{ __(

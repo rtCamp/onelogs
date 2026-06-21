@@ -20,6 +20,13 @@ interface NoticeState {
 	message: string;
 }
 
+const { nonce, setupUrl, siteType: initialSiteType } = window.OneLogsSettings;
+
+/**
+ * Create NONCE middleware for apiFetch
+ */
+apiFetch.use( apiFetch.createNonceMiddleware( nonce ) );
+
 const SiteTypeSelector = ( {
 	value,
 	setSiteType,
@@ -37,31 +44,27 @@ const SiteTypeSelector = ( {
 		onChange={ ( v ) => {
 			setSiteType( v );
 		} }
+		__nextHasNoMarginBottom
+		__next40pxDefaultSize
 		options={ [
 			{ label: __( 'Select…', 'onelogs' ), value: '' },
 			{ label: __( 'Brand Site', 'onelogs' ), value: BRAND_SITE },
-			{ label: __( 'Governing site', 'onelogs' ), value: GOVERNING_SITE },
+			{
+				label: __( 'Governing site', 'onelogs' ),
+				value: GOVERNING_SITE,
+			},
 		] }
 	/>
 );
 
 const OnboardingScreen = () => {
-	// WordPress provides snake_case keys here. Using them intentionally.
-
-	const {
-		nonce,
-		setupUrl,
-		siteType: initialSiteType,
-	} = window.OneLogsSettings;
-
 	const [ siteType, setSiteType ] = useState< SiteType | '' >(
 		initialSiteType || ''
 	);
 	const [ notice, setNotice ] = useState< NoticeState | null >( null );
-	const [ isSaving, setIsSaving ] = useState< boolean >( false );
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	useEffect( () => {
-		apiFetch.use( apiFetch.createNonceMiddleware( nonce ) );
 		apiFetch< { onelogs_site_type?: SiteType } >( {
 			path: '/wp/v2/settings',
 		} )
@@ -76,7 +79,7 @@ const OnboardingScreen = () => {
 					message: __( 'Error fetching site type.', 'onelogs' ),
 				} );
 			} );
-	}, [ nonce ] );
+	}, [] );
 
 	const handleSiteTypeChange = async ( value: SiteType | '' ) => {
 		// Optimistically set site type.

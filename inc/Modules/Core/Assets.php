@@ -1,8 +1,8 @@
 <?php
 /**
- * Enqueue assets for OneLogs.
+ * Registers plugin assets.
  *
- * @package OneLogs
+ * @package OneLogs\Modules\Core
  */
 
 declare( strict_types = 1 );
@@ -39,12 +39,12 @@ final class Assets implements Registrable {
 	 * Localized data for scripts.
 	 *
 	 * @var array{
-	 *   restUrl: string,
-	 *   nonce: string,
 	 *   apiKey: string,
+	 *   nonce: string,
+	 *   restUrl: string,
 	 *   setupUrl: string,
-	 *   siteType: ?string,
 	 *   siteName: string,
+	 *   siteType: ?string,
 	 * }
 	 */
 	private static array $localized_data;
@@ -64,26 +64,26 @@ final class Assets implements Registrable {
 	private string $plugin_url;
 
 	/**
-	 * Prepare localized data.
+	 * Get localized data for scripts.
 	 *
 	 * @return array{
-	 *   restUrl: string,
-	 *   nonce: string,
 	 *   apiKey: string,
+	 *   nonce: string,
+	 *   restUrl: string,
 	 *   setupUrl: string,
-	 *   siteType: ?string,
 	 *   siteName: string,
+	 *   siteType: ?string,
 	 * }
 	 */
 	public static function get_localized_data(): array {
 		if ( empty( self::$localized_data ) ) {
 			self::$localized_data = [
-				'restUrl'  => esc_url( home_url( '/wp-json' ) ),
-				'nonce'    => wp_create_nonce( 'wp_rest' ),
 				'apiKey'   => Settings::get_api_key(),
+				'nonce'    => wp_create_nonce( 'wp_rest' ),
+				'restUrl'  => esc_url( home_url( '/wp-json' ) ),
 				'setupUrl' => esc_url( admin_url( 'admin.php?page=onelogs-settings' ) ),
-				'siteType' => Settings::get_site_type(),
 				'siteName' => get_bloginfo( 'name' ),
+				'siteType' => Settings::get_site_type(),
 			];
 		}
 
@@ -102,14 +102,15 @@ final class Assets implements Registrable {
 	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
-		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ], 20, 1 );
+		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
 		// Add defer attribute to certain plugin bundles to improve admin load performance.
 		add_filter( 'script_loader_tag', [ $this, 'defer_scripts' ], 10, 2 );
 	}
 
 	/**
-	 * Register admin assets to WordPress.
+	 * Register all scripts and styles.
 	 *
 	 * Assets are registered once centrally, and enqueued in the modules that need them.
 	 */
@@ -121,19 +122,27 @@ final class Assets implements Registrable {
 		$this->register_script( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding' );
 		$this->register_style( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding', [ 'wp-components' ] );
 
-		$this->register_style(
-			self::ADMIN_STYLES_HANDLE,
-			'admin',
-		);
-
-		wp_enqueue_style( self::ADMIN_STYLES_HANDLE );
-
 		$this->register_script(
 			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
 			'logs-dashboard',
 		);
 
 		$this->register_style( self::LOGS_DASHBOARD_SCRIPT_HANDLE, 'logs-dashboard', [ 'wp-components' ], );
+
+		$this->register_style(
+			self::ADMIN_STYLES_HANDLE,
+			'admin',
+			[ 'wp-components' ],
+		);
+	}
+
+	/**
+	 * Add scripts and styles to the page.
+	 *
+	 * @todo Only enqueue on OneLogs admin pages.
+	 */
+	public function enqueue_scripts(): void {
+		wp_enqueue_style( self::ADMIN_STYLES_HANDLE );
 	}
 
 	/**
@@ -160,12 +169,13 @@ final class Assets implements Registrable {
 	/**
 	 * Register a script.
 	 *
-	 * @param string   $handle        Name of the script. Should be unique.
-	 * @param string   $filename      Path of the script relative to js directory.
-	 *                                excluding the .js extension.
-	 * @param string[] $deps          Optional. An array of registered script handles this script depends on. If not set, the dependencies will be inherited from the asset file.
-	 * @param ?string  $ver           Optional. String specifying script version number, if not set, the version will be inherited from the asset file.
-	 * @param bool     $in_footer     Optional. Whether to enqueue the script before </body> instead of in the <head>.
+	 * @param string   $handle    Name of the script. Should be unique.
+	 * @param string   $filename  Path of the script relative to js directory, excluding the .js extension.
+	 * @param string[] $deps      Optional. An array of registered script handles this script depends on. If not set, the
+	 *                            dependencies will be inherited from the asset file.
+	 * @param ?string  $ver       Optional. String specifying script version number, if not set, the version will be
+	 *                            inherited from the asset file.
+	 * @param bool     $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 */
 	private function register_script( string $handle, string $filename, array $deps = [], $ver = null, bool $in_footer = true ): bool {
 		$asset_file = sprintf( '%s/%s.asset.php', $this->plugin_dir . untrailingslashit( self::ASSETS_DIR ), $filename );
@@ -193,15 +203,15 @@ final class Assets implements Registrable {
 	/**
 	 * Register a CSS stylesheet
 	 *
-	 * @param string   $handle        Name of the stylesheet. Should be unique.
-	 * @param string   $filename      Path of the stylesheet relative to the css directory,
-	 *                                excluding the .css extension.
-	 * @param string[] $deps          Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
-	 * @param ?string  $ver           Optional. String specifying style version number, if not set, the version will be inherited from the asset file.
-	 *
-	 * @param string   $media         Optional. The media for which this stylesheet has been defined.
-	 *                                Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media queries like
-	 *                                '(orientation: portrait)' and '(max-width: 640px)'.
+	 * @param string   $handle   Name of the stylesheet. Should be unique.
+	 * @param string   $filename Path of the stylesheet relative to the css directory, excluding the .css extension.
+	 * @param string[] $deps     Optional. An array of registered stylesheet handles this stylesheet depends on.
+	 *                           Default empty array.
+	 * @param ?string  $ver      Optional. String specifying style version number, if not set, the version will be
+	 *                           inherited from the asset file.
+	 * @param string   $media    Optional. The media for which this stylesheet has been defined. Default 'all'. Accepts
+	 *                           media types like 'all', 'print' and 'screen', or media queries like
+	 *                           '(orientation: portrait)' and '(max-width: 640px)'.
 	 */
 	private function register_style( string $handle, string $filename, array $deps = [], $ver = null, string $media = 'all' ): bool {
 		// CSS doesnt have a PHP assets file so we infer from the file itself.

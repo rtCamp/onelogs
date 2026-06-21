@@ -49,16 +49,76 @@ final class Main {
 	 * Setup the plugin.
 	 */
 	private function setup(): void {
-		// Ensure all dependencies are met before loading any functionality.
-		$dependencies_ready = Dependencies::is_ready();
-		if ( ! $dependencies_ready ) {
+		// Ensure pretty permalinks are enabled.
+		if ( ! $this->has_pretty_permalinks() ) {
 			return;
 		}
+
+		// Ensure all dependencies are met before loading any functionality.
+		if ( ! Dependencies::is_ready() ) {
+			return;
+		}
+
+		// @todo - remove when submitting to .org, as this is handled by WordPress core.
+		$this->load_textdomain();
 
 		// Load the plugin classes.
 		$this->load();
 
 		// Do other stuff here like dep-checking, telemetry, etc.
+	}
+
+	/**
+	 * Returns whether pretty permalinks are enabled.
+	 *
+	 * Will also render an admin notice if not enabled.
+	 */
+	private function has_pretty_permalinks(): bool {
+		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
+			return true;
+		}
+
+		foreach ( [
+			'admin_notices',
+			'network_admin_notices',
+		] as $hook ) {
+			add_action(
+				$hook,
+				static function () {
+					wp_admin_notice(
+						sprintf(
+						/* translators: 1: Plugin name */
+							__( 'OneLogs: The plugin requires pretty permalinks to be enabled. Please go to <a href="%s">Permalink Settings</a> and enable an option other than <code>Plain</code>.', 'onelogs' ),
+							admin_url( 'options-permalink.php' ),
+						),
+						[
+							'type'        => 'error',
+							'dismissible' => false,
+						]
+					);
+				}
+			);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Load the plugin textdomain.
+	 *
+	 * @todo this should be removed before submitting to .org
+	 */
+	private function load_textdomain(): void {
+		add_action(
+			'init',
+			static function (): void {
+				load_plugin_textdomain(
+					'onelogs',
+					false,
+					dirname( (string) ONELOGS_PLUGIN_BASENAME ) . '/languages/'
+				);
+			}
+		);
 	}
 
 	/**

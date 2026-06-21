@@ -1,9 +1,3 @@
-/**
- * WordPress dependencies
- */
-/**
- * External dependencies
- */
 import { useEffect, useState, useCallback } from 'react';
 import {
 	TextareaControl,
@@ -28,10 +22,8 @@ type NoticeState = {
 	message: string;
 } | null;
 
-const noop = () => {};
-
 const SiteSettings = () => {
-	const [ apiKey, setApiKey ] = useState( '' );
+	const [ apiKey, setApiKey ] = useState( API_KEY );
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ notice, setNotice ] = useState< NoticeState >( null );
 	const [ governingSite, setGoverningSite ] = useState( '' );
@@ -58,7 +50,7 @@ const SiteSettings = () => {
 			setNotice( {
 				type: 'error',
 				message: __(
-					'Failed to fetch api key. Please try again later.',
+					'Failed to fetch API key. Please try again later.',
 					'onelogs'
 				),
 			} );
@@ -94,7 +86,7 @@ const SiteSettings = () => {
 				setNotice( {
 					type: 'error',
 					message: __(
-						'Failed to regenerate api key. Please try again later.',
+						'Failed to regenerate API key. Please try again later.',
 						'onelogs'
 					),
 				} );
@@ -103,7 +95,7 @@ const SiteSettings = () => {
 			setNotice( {
 				type: 'error',
 				message: __(
-					'Error regenerating api key. Please try again later.',
+					'Error regenerating API key. Please try again later.',
 					'onelogs'
 				),
 			} );
@@ -258,7 +250,8 @@ const SiteSettings = () => {
 								'This key is used for secure communication with the Governing site.',
 								'onelogs'
 							) }
-							onChange={ noop }
+							__nextHasNoMarginBottom
+							onChange={ () => {} } // to avoid ts warning
 						/>
 					</div>
 				</CardBody>
@@ -289,7 +282,9 @@ const SiteSettings = () => {
 							'This is the URL of the Governing site this Brand site is connected to.',
 							'onelogs'
 						) }
-						onChange={ noop }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						onChange={ () => {} } // to avoid ts warning
 					/>
 				</CardBody>
 			</Card>

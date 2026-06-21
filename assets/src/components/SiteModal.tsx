@@ -50,7 +50,7 @@ const SiteModal = ( {
 	const [ showNotice, setShowNotice ] = useState( false );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (): Promise< void > => {
 		// Validate inputs
 		let siteUrlError = '';
 		if ( ! formData.url.trim() ) {
@@ -126,8 +126,8 @@ const SiteModal = ( {
 				message?: string;
 			} = await onSubmit();
 
-			if ( ! submitResponse.ok ) {
-				const errorData = await submitResponse.json();
+			if ( ! submitResponse?.ok ) {
+				const errorData = await submitResponse?.json();
 				setErrors( {
 					...newErrors,
 					message:
@@ -162,24 +162,21 @@ const SiteModal = ( {
 			setShowNotice( true );
 			setIsProcessing( false );
 			return;
+		} finally {
+			setIsProcessing( false );
 		}
-
-		setIsProcessing( false );
 	};
 
-	const handleMainModalClose = () => {
-		onClose();
-	};
-
+	// Check if form data has changed from original data (only for editing mode)
 	const hasChanges = useMemo( () => {
 		if ( ! editing ) {
 			return true;
 		} // Always allow submission for new sites
 
 		return (
-			formData?.name !== originalData?.name ||
-			formData?.url !== originalData?.url ||
-			formData?.api_key !== originalData?.api_key
+			formData.name !== originalData?.name ||
+			formData.url !== originalData?.url ||
+			formData.api_key !== originalData?.api_key
 		);
 	}, [ editing, formData, originalData ] );
 
@@ -201,8 +198,9 @@ const SiteModal = ( {
 					? __( 'Edit Brand Site', 'onelogs' )
 					: __( 'Add Brand Site', 'onelogs' )
 			}
-			onRequestClose={ handleMainModalClose }
+			onRequestClose={ onClose }
 			size="medium"
+			shouldCloseOnClickOutside
 		>
 			{ showNotice && (
 				<Notice
@@ -227,6 +225,8 @@ const SiteModal = ( {
 					'This is the name of the site that will be registered.',
 					'onelogs'
 				) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
 			/>
 			<TextControl
 				label={ __( 'Site URL*', 'onelogs' ) }
@@ -235,9 +235,11 @@ const SiteModal = ( {
 					setFormData( { ...formData, url: value } )
 				}
 				help={ __(
-					'It must start with http or https and end with /, like: https://onelogs.com/',
+					'It must start with http or https and end with /, like: https://rtcamp.com/',
 					'onelogs'
 				) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
 			/>
 
 			<TextareaControl
@@ -247,9 +249,10 @@ const SiteModal = ( {
 					setFormData( { ...formData, api_key: value } )
 				}
 				help={ __(
-					'This is the api key that will be used to authenticate the site for onelogs.',
+					'This is the API key that will be used to authenticate the site for OneLogs.',
 					'onelogs'
 				) }
+				__nextHasNoMarginBottom
 			/>
 
 			<Button
