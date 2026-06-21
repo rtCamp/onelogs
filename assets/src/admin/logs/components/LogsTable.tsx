@@ -8,109 +8,141 @@ interface LogsTableProps {
 	logs: LogEntry[];
 	users: UserOption[];
 	currentSort: SortState;
-	handleSort: (field: string) => void;
+	handleSort: ( field: string ) => void;
 }
 
-export const LogsTable: React.FC<LogsTableProps> = ({
+export const LogsTable: React.FC< LogsTableProps > = ( {
 	logs,
 	currentSort,
 	handleSort,
-}) => {
+} ) => {
 	return (
 		<div className="onelogs-logs-table-container">
-			{logs?.length > 0 ? (
+			{ logs?.length > 0 ? (
 				<table className="wp-list-table widefat fixed striped onelogs-logs-table">
 					<thead>
 						<tr>
 							<th
-								onClick={() => handleSort('created')}
-								className={` ${currentSort.field === 'created' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'created' ) }
+								className={ ` ${
+									currentSort.field === 'created'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('Date', 'onelogs')}
+								{ __( 'Date', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('site_name')}
-								className={` ${currentSort.field === 'site_name' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'site_name' ) }
+								className={ ` ${
+									currentSort.field === 'site_name'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('Site', 'onelogs')}
+								{ __( 'Site', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('summary')}
-								className={` ${currentSort.field === 'summary' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'summary' ) }
+								className={ ` ${
+									currentSort.field === 'summary'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('Summary', 'onelogs')}
+								{ __( 'Summary', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('context')}
-								className={`onelogs-context-column  ${currentSort.field === 'context' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'context' ) }
+								className={ `onelogs-context-column  ${
+									currentSort.field === 'context'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('Context', 'onelogs')}
+								{ __( 'Context', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('action')}
-								className={`onelogs-action-column ${currentSort.field === 'action' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'action' ) }
+								className={ `onelogs-action-column ${
+									currentSort.field === 'action'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('Action', 'onelogs')}
+								{ __( 'Action', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('subject')}
-								className={`onelogs-subject-column ${currentSort.field === 'subject' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'subject' ) }
+								className={ `onelogs-subject-column ${
+									currentSort.field === 'subject'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('Subject', 'onelogs')}
+								{ __( 'Subject', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('user_id')}
-								className={`onelogs-user-column ${currentSort.field === 'user_id' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'user_id' ) }
+								className={ `onelogs-user-column ${
+									currentSort.field === 'user_id'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('User', 'onelogs')}
+								{ __( 'User', 'onelogs' ) }
 							</th>
 							<th
-								onClick={() => handleSort('ip')}
-								className={`onelogs-ip-column ${currentSort.field === 'ip' ? `sorted-${currentSort.direction}` : ''}`}
+								onClick={ () => handleSort( 'ip' ) }
+								className={ `onelogs-ip-column ${
+									currentSort.field === 'ip'
+										? `sorted-${ currentSort.direction }`
+										: ''
+								}` }
 							>
-								{__('IP', 'onelogs')}
+								{ __( 'IP', 'onelogs' ) }
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						{logs.length > 0 ? (
-							logs.map((log) => (
-								<tr key={log.ID} className="onelogs-log-row">
+						{ logs.length > 0 ? (
+							logs.map( ( log ) => (
+								<tr key={ log.ID } className="onelogs-log-row">
 									<td className="onelogs-date-column">
-										{formatDate(log.created)}
+										{ formatDate( log.created ) }
 									</td>
 									<td className="onelogs-site-column">
-										{log.is_remote ? (
+										{ log.is_remote ? (
 											<a
-												href={log.site_url}
+												href={ log.site_url }
 												target="_blank"
 												rel="noopener noreferrer"
 												className="onelogs-site-link"
-												title={__(
+												title={ __(
 													'Visit site',
 													'onelogs'
-												)}
+												) }
 											>
 												<span className="onelogs-site-name">
-													{log.site_name}
+													{ log.site_name }
 												</span>
 											</a>
 										) : (
 											<span className="onelogs-site-local">
-												{SITE_TYPE === 'governing-site'
+												{ SITE_TYPE === 'governing-site'
 													? __(
 															'Governing Site',
 															'onelogs'
-														)
-													: SITE_NAME}
+													  )
+													: SITE_NAME }
 											</span>
-										)}
+										) }
 									</td>
 									<td className="onelogs-summary-column">
-										{log.summary}
-										{log.object_data && (
+										{ log.summary }
+										{ log.object_data && (
 											<div>
-												{log.object_data.edit_link && (
+												{ log.object_data.edit_link && (
 													<a
 														href={
 															log.object_data
@@ -124,24 +156,24 @@ export const LogsTable: React.FC<LogsTableProps> = ({
 																.edit_link_text
 														}
 													</a>
-												)}
+												) }
 											</div>
-										)}
+										) }
 									</td>
 									<td className="onelogs-context-column">
-										{log.context}
+										{ log.context }
 									</td>
 									<td
 										className="onelogs-action-column"
-										data-action={log.action}
+										data-action={ log.action }
 									>
-										{log.action}
+										{ log.action }
 									</td>
 									<td className="onelogs-subject-column">
-										{log?.object_data?.title || 'N/A'}
+										{ log?.object_data?.title || 'N/A' }
 									</td>
 									<td className="onelogs-user-column">
-										{(() => {
+										{ ( () => {
 											const user = log.user;
 											return (
 												<div className="onelogs-user-cell">
@@ -150,63 +182,68 @@ export const LogsTable: React.FC<LogsTableProps> = ({
 															user?.avatar_url ??
 															'https://www.gravatar.com/avatar/?d=mp'
 														}
-														alt={user?.display_name}
+														alt={
+															user?.display_name
+														}
 														className="onelogs-user-gravatar"
 													/>
 
 													<div>
 														<div
-															style={{
+															style={ {
 																fontWeight:
 																	'600',
 																color: '#1e293b',
-															}}
+															} }
 														>
-															{user?.display_name ??
-																'Guest User'}
+															{ user?.display_name ??
+																'Guest User' }
 														</div>
 														<div
-															style={{
+															style={ {
 																fontSize:
 																	'12px',
 																color: '#64748b',
-															}}
+															} }
 														>
-															{log.user_role
+															{ log.user_role
 																? log.user_role
-																: 'None'}
+																: 'None' }
 														</div>
 													</div>
-													{/*<span className="onelogs-user-name">{ user?.display_name }</span>*/}
+													{ /*<span className="onelogs-user-name">{ user?.display_name }</span>*/ }
 												</div>
 											);
-										})()}
+										} )() }
 									</td>
 									<td className="onelogs-ip-column">
-										{log.ip}
+										{ log.ip }
 									</td>
 								</tr>
-							))
+							) )
 						) : (
 							<tr>
-								<td colSpan={8} className="onelogs-no-results">
-									{__(
+								<td
+									colSpan={ 8 }
+									className="onelogs-no-results"
+								>
+									{ __(
 										'No logs found matching the current filters.',
 										'onelogs'
-									)}
+									) }
 								</td>
 							</tr>
-						)}
+						) }
 					</tbody>
 				</table>
 			) : (
 				<p>
-					{__(
+					{ __(
 						'No logs found matching the current filters.',
 						'onelogs'
-					)}
+					) }
 				</p>
-			)}
+			) }
 		</div>
 	);
 };

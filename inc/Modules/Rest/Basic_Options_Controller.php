@@ -1,12 +1,11 @@
 <?php
-
-declare(strict_types = 1);
-
 /**
  * This is routes for Settings options.
  *
  * @package OneLogs
  */
+
+declare( strict_types = 1 );
 
 namespace OneLogs\Modules\Rest;
 

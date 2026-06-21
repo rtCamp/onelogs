@@ -1,12 +1,11 @@
 <?php
-
-declare(strict_types = 1);
-
 /**
  * Dependency checker for OneLogs.
  *
  * @package OneLogs
  */
+
+declare( strict_types = 1 );
 
 namespace OneLogs;
 
@@ -34,9 +33,6 @@ final class Dependencies {
 	 * Check if all required plugins are installed and active.
 	 */
 	public static function is_ready(): bool {
-
-		include_once ABSPATH . 'wp-admin/includes/plugin.php';
-
 		$ready = true;
 
 		// Check each dependency.

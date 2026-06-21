@@ -17,7 +17,7 @@ export default {
 		// Only fail if phpcbf itself failed (exit code 3).
 		// Run under a shell so the `||` operator works reliably.
 		return [
-			`sh -c "./vendor/bin/phpcbf ${ relativeFilenames } || [ \$? -eq 3 ]"`,
+			`sh -c "./vendor/bin/phpcbf ${ relativeFilenames }; [ \$? -ne 3 ]"`,
 		];
 	},
 	'**/*.{json,md,css,scss,js,jsx,ts,tsx}': [ 'wp-scripts format --' ],

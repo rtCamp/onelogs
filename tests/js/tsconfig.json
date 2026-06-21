@@ -4,7 +4,7 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"baseUrl": "../../",
-		"types": ["jest", "node", "@testing-library/jest-dom"]
+		"types": [ "jest", "node", "@testing-library/jest-dom" ]
 	},
 	"include": [
 		"./**/*.ts",
@@ -12,10 +12,5 @@
 		"../../assets/src/**/*.ts",
 		"../../assets/src/**/*.tsx"
 	],
-	"exclude": [
-		"../../node_modules",
-		"../../build",
-		"../../vendor",
-		"../../vendor-prefixed"
-	]
+	"exclude": [ "../../node_modules", "../../build", "../../vendor" ]
 }

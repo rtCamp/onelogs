@@ -2,9 +2,9 @@ import { createRoot } from 'react-dom/client';
 import OnboardingScreen, { type SiteType } from './page';
 
 interface OneLogsSettings {
-	restNonce: string;
-	site_type: SiteType | '';
-	settingsLink: string;
+	nonce: string;
+	siteType: SiteType | '';
+	setupUrl: string;
 }
 
 declare global {
@@ -14,8 +14,8 @@ declare global {
 }
 
 // Render to the target element.
-const target = document.getElementById('onelogs-site-selection-modal');
-if (target) {
-	const root = createRoot(target);
-	root.render(<OnboardingScreen />);
+const target = document.getElementById( 'onelogs-site-selection-modal' );
+if ( target ) {
+	const root = createRoot( target );
+	root.render( <OnboardingScreen /> );
 }

@@ -91,27 +91,20 @@ Code contributions, bug reports, and feature requests are welcome! The following
 │   │   ├── Core/
 │   │   │   ├── Assets.php  # JS/CSS asset loader.
 │   │   │   └── Rest.php
+│   │   ├── Logs/
+│   │   │   └── Admin.php
 │   │   ├── Rest/
 │   │   │   ├── Abstract_REST_Controller.php
 │   │   │   ├── Basic_Options_Controller.php
-│   │   │   ├── Governing_Data_Controller.php
-│   │   │   ├── Governing_Data_Handler.php
-│   │   │   └── Search_Controller.php
-│   │   ├── Search/ # Algolia-related functionality.
-│   │   │   ├── Admin.php
-│   │   │   ├── Algolia.php
-│   │   │   ├── Index.php
-│   │   │   ├── Post_Record.php
-│   │   │   ├── Search.php
-│   │   │   ├── Settings.php
-│   │   │   └── Watcher.php
+│   │   │   └── Logs_REST_Controller.php
 │   │   └── Settings/ # Shared site settings.
 │   │       ├── Admin.php
 │   │       └── Settings.php
 │   │
-│   ├── Autoloader.php # PSR-4 autoloader.
-│   ├── Encryptor.php  # Handles db encryption/decryption.
-│   ├── Main.php       # The main plugin class.
+│   ├── Autoloader.php   # PSR-4 autoloader.
+│   ├── Dependencies.php # Handles Plugin dependencies (e.g., Stream).
+│   ├── Encryptor.php    # Handles db encryption/decryption.
+│   ├── Main.php         # The main plugin class.
 │   └── Utils.php
 │
 │   # Tests
@@ -147,8 +140,6 @@ Code contributions, bug reports, and feature requests are welcome! The following
 │   # .dist suffixes mean there may be a user-customized version without the suffix.
 ├── .browserslistrc               # Browserslist configuration.
 ├── .editorconfig                 # Editor configuration.
-├── .eslintignore                 # ESLint ignore patterns.
-├── .eslintrc.js                  # ESLint configuration.
 ├── .gitignore                    # Git ignore rules.
 ├── .gitattributes                # Git attributes.
 ├── .lefthook.yml                 # Git hooks configuration.
@@ -166,6 +157,7 @@ Code contributions, bug reports, and feature requests are welcome! The following
 ├── blueprint.json                # WordPress Playground blueprint configuration.
 ├── babel.config.js               # Babel configuration.
 ├── composer.json                 # PHP dependencies.
+├── eslint.config.mjs             # ESLint configuration.
 ├── jest.config.js                # Jest configuration.
 ├── LICENSE.md                    # License file.
 ├── package.json                  # Node.js dependencies.
@@ -415,14 +407,6 @@ The project uses WordPress Playground to demo the plugin and on pull requests. T
 The [README.md](../README.md) and plugin preview use [`blueprint.json`](../blueprint.json) to load the latest plugin release for testing and demos.
 
 Pull requests automatically generate a Playground preview from the build artifacts of the PR branch, using the [PR preview workflow](../.github/workflows/reusable-wp-playground-pr-preview.yml).
-
-### Strauss - Composer Library Namespace Prefixing
-
-The project uses [`BrianHenryIE/strauss`](https://github.com/BrianHenryIE/strauss/) to prefix Composer dependencies with a unique namespace to avoid conflicts with other plugins.
-
-The configuration is defined in [`composer.json`](../composer.json) under the `extra.strauss` key.
-
-Dependencies are auto-prefixed when running `composer install` or `composer update`. If you need to manually regenerate, run `composer run clean` to remove the `vendor` and `vendor-prefixed` directories, then run `composer install` to reinstall and re-prefix the dependencies.
 
 ## Running Tests
 

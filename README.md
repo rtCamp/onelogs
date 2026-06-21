@@ -59,7 +59,7 @@ While Stream provides detailed local logging, OneLogs takes it a step further, a
 | Requirement   | Version                                                                                   |
 |---------------|-------------------------------------------------------------------------------------------|
 | WordPress     | >= 6.8                                                                                    |
-| PHP           | >= 8.0                                                                                    |
+| PHP           | >= 8.2                                                                                    |
 | Prerequisites | [Stream](https://wordpress.org/plugins/stream/) plugin installed and active on all sites. |
 
 ## Installation

@@ -38,7 +38,14 @@ final class Assets implements Registrable {
 	/**
 	 * Localized data for scripts.
 	 *
-	 * @var array<string,mixed>
+	 * @var array{
+	 *   restUrl: string,
+	 *   nonce: string,
+	 *   apiKey: string,
+	 *   setupUrl: string,
+	 *   siteType: ?string,
+	 *   siteName: string,
+	 * }
 	 */
 	private static array $localized_data;
 
@@ -58,16 +65,25 @@ final class Assets implements Registrable {
 
 	/**
 	 * Prepare localized data.
+	 *
+	 * @return array{
+	 *   restUrl: string,
+	 *   nonce: string,
+	 *   apiKey: string,
+	 *   setupUrl: string,
+	 *   siteType: ?string,
+	 *   siteName: string,
+	 * }
 	 */
 	public static function get_localized_data(): array {
 		if ( empty( self::$localized_data ) ) {
 			self::$localized_data = [
-				'restUrl'      => esc_url( home_url( '/wp-json' ) ),
-				'restNonce'    => wp_create_nonce( 'wp_rest' ),
-				'apiKey'       => Settings::get_api_key(),
-				'settingsLink' => esc_url( admin_url( 'admin.php?page=onelogs-settings' ) ),
-				'siteType'     => Settings::get_site_type(),
-				'siteName'     => get_bloginfo( 'name' ),
+				'restUrl'  => esc_url( home_url( '/wp-json' ) ),
+				'nonce'    => wp_create_nonce( 'wp_rest' ),
+				'apiKey'   => Settings::get_api_key(),
+				'setupUrl' => esc_url( admin_url( 'admin.php?page=onelogs-settings' ) ),
+				'siteType' => Settings::get_site_type(),
+				'siteName' => get_bloginfo( 'name' ),
 			];
 		}
 

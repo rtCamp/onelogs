@@ -1,13 +1,12 @@
 <?php
-
-declare(strict_types = 1);
-
 /**
  * Admin class.
  * This class handles the settings page for the OneLogs plugin,
  *
  * @package OneLogs
  */
+
+declare( strict_types = 1 );
 
 namespace OneLogs\Modules\Settings;
 
@@ -219,12 +218,7 @@ final class Admin implements Registrable {
 		wp_localize_script(
 			Assets::ONBOARDING_SCRIPT_HANDLE,
 			'OneLogsSettings',
-			array_merge(
-				[
-					'site_type' => Settings::get_site_type(),
-				],
-				Assets::get_localized_data()
-			)
+			Assets::get_localized_data(),
 		);
 
 		wp_enqueue_script( Assets::ONBOARDING_SCRIPT_HANDLE );

@@ -3,7 +3,6 @@
 /node_modules
 /tests
 /vendor
-/vendor-prefixed
 
 ## Allow only CSS and SCSS files
 *.*

@@ -50,8 +50,8 @@ If you can't do everything, that's okay too.
 [Development Guidelines](../docs/DEVELOPMENT.md)
 -->
 
-- [ ] I have read the [Contribution Guidelines](https://github.com/rtCamp/OneLogs/blob/main/docs/CONTRIBUTING.md).
-- [ ] I have read the [Development Guidelines](https://github.com/rtCamp/OneLogs/blob/main/docs/DEVELOPMENT.md).
+- [ ] I have read the [Contribution Guidelines](https://github.com/rtCamp/onelogs/blob/main/docs/CONTRIBUTING.md).
+- [ ] I have read the [Development Guidelines](https://github.com/rtCamp/onelogs/blob/main/docs/DEVELOPMENT.md).
 - [ ] I have added necessary tests to cover my changes.
 - [ ] I have updated the project documentation as needed.
 - [ ] My code has detailed inline documentation.

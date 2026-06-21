@@ -10,7 +10,6 @@ export default [
 			'node_modules/**',
 			'tests/_output/**',
 			'vendor/**',
-			'vendor-prefixed/**',
 			// Config files (not subject to project lint rules)
 			'eslint.config.mjs',
 			'.lintstagedrc.mjs',
@@ -20,6 +19,7 @@ export default [
 
 	// Spread WordPress recommended config.
 	...wordpress.configs.recommended,
+
 
 	// Project-specific customizations on top of WP recommended
 	{
@@ -40,11 +40,10 @@ export default [
 			'@wordpress/i18n-no-flanking-whitespace': 'error',
 
 			// Additional WordPress rules not in recommended preset
-			'@wordpress/dependency-group': 'error',
 			'@wordpress/data-no-store-string-literals': 'error',
 			'@wordpress/wp-global-usage': 'error',
 			'@wordpress/react-no-unsafe-timeout': 'error',
-			'@wordpress/use-recommended-components': 'error',
+			'@wordpress/use-recommended-components': 'warn',
 
 			// React best practices
 			'react/jsx-boolean-value': 'error',

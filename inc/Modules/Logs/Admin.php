@@ -1,12 +1,11 @@
 <?php
-
-declare(strict_types = 1);
-
 /**
  * Admin class to handle all the admin functionalities related to logs.
  *
  * @package OneLogs\Modules\Post_Types;
  */
+
+declare( strict_types = 1 );
 
 namespace OneLogs\Modules\Logs;
 

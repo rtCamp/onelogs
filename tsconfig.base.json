@@ -32,7 +32,7 @@
 
 		// Language and Environment
 		"jsx": "react-jsx",
-		"lib": ["ES2022", "DOM.Iterable", "DOM"],
+		"lib": [ "ES2022", "DOM.Iterable", "DOM" ],
 		"moduleDetection": "force",
 		"target": "ES2022",
 

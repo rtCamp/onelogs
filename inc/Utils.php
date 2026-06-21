@@ -1,12 +1,11 @@
 <?php
-
-declare(strict_types = 1);
-
 /**
  * Shared static utility functions.
  *
  * @package OneLogs
  */
+
+declare( strict_types = 1 );
 
 namespace OneLogs;
 
@@ -61,7 +60,7 @@ final class Utils {
 	 *
 	 * @param string $url The URL to match (can be with/without http/https or trailing slash).
 	 *
-	 * @return array|false The shared site data if found, or false if no match.
+	 * @return array<string, mixed>|false The shared site data if found, or false if no match.
 	 */
 	public static function get_shared_site_data_by_url( string $url ): bool|array {
 		if ( empty( $url ) ) {

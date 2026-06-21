@@ -10,14 +10,14 @@ declare( strict_types = 1 );
 namespace OneLogs;
 
 // If uninstall not called from WordPress, exit.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	exit;
-}
+defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
+
+const PLUGIN_PREFIX = 'onelogs_';
 
 /**
  * Multisite loop for uninstalling from all sites.
  */
-function multisite_uninstall(): void {
+function run_uninstaller(): void {
 	if ( ! is_multisite() ) {
 		uninstall();
 		return;
@@ -31,7 +31,7 @@ function multisite_uninstall(): void {
 	) ?: [];
 
 	foreach ( $site_ids as $site_id ) {
-		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- The state doesn't matter during uninstall.
 		if ( ! switch_to_blog( (int) $site_id ) ) {
 			continue;
 		}
@@ -55,15 +55,15 @@ function delete_plugin_data(): void {
 
 	$options = [
 		// Common site options.
-		'onelogs_site_type',
-		'onelogs_show_onboarding',
+		PLUGIN_PREFIX . 'site_type',
+		PLUGIN_PREFIX . 'show_onboarding',
 
 		// Governing site options.
-		'onelogs_shared_sites',
+		PLUGIN_PREFIX . 'shared_sites',
 
 		// Brand site options.
-		'onelogs_parent_site_url',
-		'onelogs_consumer_api_key',
+		PLUGIN_PREFIX . 'parent_site_url',
+		PLUGIN_PREFIX . 'consumer_api_key',
 	];
 
 	foreach ( $options as $option ) {
@@ -72,4 +72,4 @@ function delete_plugin_data(): void {
 }
 
 // Run the uninstaller.
-multisite_uninstall();
+run_uninstaller();
