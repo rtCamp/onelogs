@@ -109,8 +109,6 @@ final class SettingsTest extends TestCase {
 					'id'      => ' site-id ',
 					'name'    => ' Demo Site ',
 					'url'     => 'https://example.com/path/',
-					'logo'    => 'https://example.com/logo.png',
-					'logo_id' => '42',
 					'api_key' => ' secret-key ',
 				],
 			]
@@ -122,8 +120,6 @@ final class SettingsTest extends TestCase {
 					'id'      => 'site-id',
 					'name'    => 'Demo Site',
 					'url'     => 'https://example.com/path',
-					'logo'    => 'https://example.com/logo.png',
-					'logo_id' => 42,
 					'api_key' => 'secret-key',
 				],
 			],
@@ -176,8 +172,6 @@ final class SettingsTest extends TestCase {
 				'id'      => 'brand-1',
 				'name'    => 'Brand One',
 				'url'     => 'https://brand-one.example',
-				'logo'    => 'https://brand-one.example/logo.png',
-				'logo_id' => 11,
 				'api_key' => 'brand-one-key',
 			],
 		];
@@ -192,8 +186,6 @@ final class SettingsTest extends TestCase {
 				'https://brand-one.example/' => [
 					'api_key' => 'brand-one-key',
 					'id'      => 'brand-1',
-					'logo'    => 'https://brand-one.example/logo.png',
-					'logo_id' => 11,
 					'name'    => 'Brand One',
 					'url'     => 'https://brand-one.example/',
 				],
@@ -210,8 +202,6 @@ final class SettingsTest extends TestCase {
 					'id'      => 'brand-1',
 					'name'    => 'Brand One',
 					'url'     => 'https://brand-one.example',
-					'logo'    => '',
-					'logo_id' => 0,
 					'api_key' => 'brand-one-key',
 				],
 			]
