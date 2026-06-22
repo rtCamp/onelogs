@@ -13,33 +13,41 @@ import {
 import { FiltersPanel } from './FiltersPanel';
 import { LogsTable } from './LogsTable';
 import { Pagination } from './Pagination';
-import type { FilterOptions, LogEntry, SharedSite, SortState, UserOption } from '../types';
+import type {
+	FilterOptions,
+	LogEntry,
+	SharedSite,
+	SortState,
+	UserOption,
+} from '../types';
 
 const LogsDashboard: React.FC = () => {
-	const [ logs, setLogs ] = useState<LogEntry[]>( [] );
-	const [ contexts, setContexts ] = useState<string[]>( [] );
-	const [ actions, setActions ] = useState<string[]>( [] );
-	const [ connectors, setConnectors ] = useState<string[]>( [] );
-	const [ users, setUsers ] = useState<UserOption[]>( [] );
-	const [ sharedSites, setSharedSites ] = useState<SharedSite[]>( [] );
-	const [ showSharedSitesLogs, setShowSharedSitesLogs ] = useState<boolean>( false );
-	const [ filters, setFilters ] = useState<FilterOptions>( {
+	const [ logs, setLogs ] = useState< LogEntry[] >( [] );
+	const [ contexts, setContexts ] = useState< string[] >( [] );
+	const [ actions, setActions ] = useState< string[] >( [] );
+	const [ connectors, setConnectors ] = useState< string[] >( [] );
+	const [ users, setUsers ] = useState< UserOption[] >( [] );
+	const [ sharedSites, setSharedSites ] = useState< SharedSite[] >( [] );
+	const [ showSharedSitesLogs, setShowSharedSitesLogs ] =
+		useState< boolean >( false );
+	const [ filters, setFilters ] = useState< FilterOptions >( {
 		page: 1,
 		per_page: 20,
 		current_site_logs: true,
 		site_url: 'governing-site',
 	} );
-	const [ localSearch, setLocalSearch ] = useState<string>( '' );
-	const [ loading, setLoading ] = useState<boolean>( false );
-	const [ exportLoading, setExportLoading ] = useState<boolean>( false );
-	const [ totalPages, setTotalPages ] = useState<number>( 1 );
-	const [ totalLogs, setTotalLogs ] = useState<number>( 0 );
-	const [ error, setError ] = useState<string | null>( null );
-	const [ currentSort, setCurrentSort ] = useState<SortState>( {
+	const [ localSearch, setLocalSearch ] = useState< string >( '' );
+	const [ loading, setLoading ] = useState< boolean >( false );
+	const [ exportLoading, setExportLoading ] = useState< boolean >( false );
+	const [ totalPages, setTotalPages ] = useState< number >( 1 );
+	const [ totalLogs, setTotalLogs ] = useState< number >( 0 );
+	const [ error, setError ] = useState< string | null >( null );
+	const [ currentSort, setCurrentSort ] = useState< SortState >( {
 		field: null,
 		direction: null,
 	} );
-	const [ showAdvancedFilters, setShowAdvancedFilters ] = useState<boolean>( true );
+	const [ showAdvancedFilters, setShowAdvancedFilters ] =
+		useState< boolean >( true );
 
 	const fetchLogsData = useCallback( async () => {
 		setLoading( true );
@@ -52,11 +60,20 @@ const LogsDashboard: React.FC = () => {
 			setTotalPages( result.pages );
 
 			if ( result.errors && result.errors.length > 0 ) {
-				/* translators: %s is replaced with selected site url */
-				setError( sprintf( __( 'Site %s returned errors:', 'onelogs' ), filters.site_url ) );
+				setError(
+					sprintf(
+						/* translators: %s: site url */
+						__( 'Site %s returned errors:', 'onelogs' ),
+						filters.site_url ?? ''
+					)
+				);
 			}
 		} catch ( err ) {
-			setError( err instanceof Error ? err.message : __( 'An error occurred while fetching logs', 'onelogs' ) );
+			setError(
+				err instanceof Error
+					? err.message
+					: __( 'An error occurred while fetching logs', 'onelogs' )
+			);
 		} finally {
 			setLoading( false );
 		}
@@ -77,13 +94,13 @@ const LogsDashboard: React.FC = () => {
 			// Fetch the first page.
 			const initialResult = await apiFetchLogs( filtersForExport );
 			const totalPagesForExport = initialResult.pages || 1;
-			allLogs = [ ...initialResult.logs as LogEntry[] ];
+			allLogs = [ ...( initialResult.logs as LogEntry[] ) ];
 
 			// Fetch remaining pages (if any).
 			for ( page = 2; page <= totalPagesForExport; page++ ) {
 				const pagedFilters = { ...filtersForExport, page, perPage };
 				const pageResult = await apiFetchLogs( pagedFilters );
-				allLogs.push( ...pageResult.logs as LogEntry[] );
+				allLogs.push( ...( pageResult.logs as LogEntry[] ) );
 			}
 
 			// Define CSV headers.
@@ -111,7 +128,8 @@ const LogsDashboard: React.FC = () => {
 			] );
 
 			// Escape double quotes and wrap fields in quotes.
-			const escapeCSV = ( value:string ) => `"${ String( value ).replace( /"/g, '""' ) }"`;
+			const escapeCSV = ( value: string ) =>
+				`"${ String( value ).replace( /"/g, '""' ) }"`;
 
 			// Combine CSV content.
 			const csvContent = [
@@ -120,18 +138,23 @@ const LogsDashboard: React.FC = () => {
 			].join( '\n' );
 
 			// Trigger CSV download.
-			const blob = new Blob( [ csvContent ], { type: 'text/csv;charset=utf-8;' } );
+			const blob = new Blob( [ csvContent ], {
+				type: 'text/csv;charset=utf-8;',
+			} );
 			const url = URL.createObjectURL( blob );
 			const link = document.createElement( 'a' );
 			link.href = url;
-			link.download = `onepress-logs-${ new Date().toISOString().split( 'T' )[ 0 ] }.csv`;
+			link.download = `onelogs-${
+				new Date().toISOString().split( 'T' )[ 0 ]
+			}.csv`;
 			link.style.display = 'none';
 			document.body.appendChild( link );
 			link.click();
 			document.body.removeChild( link );
 			URL.revokeObjectURL( url );
-		} catch ( err : unknown ) {
-			const message = err instanceof Error ? err.message : 'Failed to export logs.';
+		} catch ( err: unknown ) {
+			const message =
+				err instanceof Error ? err.message : 'Failed to export logs.';
 			setError( message );
 		} finally {
 			setExportLoading( false );
@@ -142,7 +165,7 @@ const LogsDashboard: React.FC = () => {
 		try {
 			const data = await apiFetchContexts( filters );
 			setContexts( data );
-		} catch ( err ) {
+		} catch {
 			setError( __( 'Error fetching contexts:', 'onelogs' ) );
 		}
 	}, [ filters ] );
@@ -151,7 +174,7 @@ const LogsDashboard: React.FC = () => {
 		try {
 			const data = await apiFetchConnectors( filters );
 			setConnectors( data );
-		} catch ( err ) {
+		} catch {
 			setError( __( 'Error fetching connectors:', 'onelogs' ) );
 		}
 	}, [ filters ] );
@@ -160,7 +183,7 @@ const LogsDashboard: React.FC = () => {
 		try {
 			const response = await apiFetchUsers( filters );
 			setUsers( response.data as UserOption[] );
-		} catch ( err ) {
+		} catch {
 			setError( __( 'Error fetching users:', 'onelogs' ) );
 		}
 	}, [ filters ] );
@@ -169,7 +192,7 @@ const LogsDashboard: React.FC = () => {
 		try {
 			const response = await apiFetchSharedSites();
 			setSharedSites( response as SharedSite[] );
-		} catch ( err ) {
+		} catch {
 			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
 		}
 	}, [] );
@@ -178,7 +201,7 @@ const LogsDashboard: React.FC = () => {
 		try {
 			const data = await fetchActions( filters );
 			setActions( data );
-		} catch ( err ) {
+		} catch {
 			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
 		}
 	}, [ filters ] );
@@ -191,30 +214,40 @@ const LogsDashboard: React.FC = () => {
 		loadActions();
 		fetchLogsData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ ] ); // Run only once on mount, do not include fetchLogsData in deps to avoid infinite loop.
+	}, [] ); // Run only once on mount, do not include fetchLogsData in deps to avoid infinite loop.
 
 	useEffect( () => {
 		fetchLogsData();
 		loadUsers();
 		loadContexts();
 		loadActions();
-	}, [ filters, showSharedSitesLogs, fetchLogsData, loadActions, loadContexts, loadUsers ] );
+	}, [
+		filters,
+		showSharedSitesLogs,
+		fetchLogsData,
+		loadActions,
+		loadContexts,
+		loadUsers,
+	] );
 
 	useEffect( () => {
 		setLocalSearch( filters.search || '' );
 	}, [ filters.search ] );
 
-	const handleFilterChange = useCallback( ( key: keyof FilterOptions, value: string | number ) => {
-		setFilters( ( prev ) => {
-			if ( value === '' || value === null || value === undefined ) {
-				delete prev[ key ];
-			} else {
-				prev[ key ] = value;
-			}
+	const handleFilterChange = useCallback(
+		( key: keyof FilterOptions, value: string | number ) => {
+			setFilters( ( prev ) => {
+				if ( value === '' || value === null || value === undefined ) {
+					delete prev[ key ];
+				} else {
+					prev[ key ] = value;
+				}
 
-			return { ...prev, page: 1 };
-		} );
-	}, [] );
+				return { ...prev, page: 1 };
+			} );
+		},
+		[]
+	);
 
 	const resetFilters = () => {
 		setFilters( {
@@ -258,7 +291,7 @@ const LogsDashboard: React.FC = () => {
 			<CardHeader>
 				<div>
 					<h1 style={ { margin: 0 } }>
-						{ __( 'OneLogs', 'onepress-logs' ) }
+						{ __( 'OneLogs', 'onelogs' ) }
 					</h1>
 				</div>
 			</CardHeader>

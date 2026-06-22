@@ -1,0 +1,33 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "OneLogs Demo",
+		"description": "Unified activity log dashboard across OnePress connected sites, extending Stream to display logs from governing and brand sites in one place.",
+		"author": "rtCamp",
+		"categories": [ "plugin", "logs", "multisite", "stream", "enterprise" ]
+	},
+	"landingPage": "/wp-admin/plugins.php",
+	"preferredVersions": {
+		"php": "8.4",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"steps": [
+		{
+			"step": "login",
+			"username": "admin"
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "url",
+				"url": "https://github.com/rtCamp/OneLogs/releases/latest/download/onelogs.zip"
+			},
+			"options": {
+				"activate": true
+			}
+		}
+	]
+}

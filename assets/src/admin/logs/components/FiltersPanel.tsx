@@ -2,14 +2,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { debounce } from '@wordpress/compose';
-import type { fetchReturn, FilterOptions, SharedSite, UserOption } from '../types';
 import { fetchSiteType } from '../apiService';
+import type {
+	fetchReturn,
+	FilterOptions,
+	SharedSite,
+	UserOption,
+} from '../types';
 
 interface FiltersPanelProps {
 	localSearch: string;
 	setLocalSearch: ( value: string ) => void;
 	filters: FilterOptions;
-	handleFilterChange: ( key: keyof FilterOptions, value: string | number ) => void;
+	handleFilterChange: (
+		key: keyof FilterOptions,
+		value: string | number
+	) => void;
 	connectors: string[];
 	contexts: string[];
 	actions: string[];
@@ -25,7 +33,7 @@ interface FiltersPanelProps {
 	exportLoading: boolean;
 }
 
-export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
+export const FiltersPanel: React.FC< FiltersPanelProps > = ( {
 	localSearch,
 	setLocalSearch,
 	filters,
@@ -39,9 +47,11 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 	exportData,
 	exportLoading,
 } ) => {
-	const debouncedSearchRef = useRef<( ( searchValue: string | undefined ) => void ) | null>( null );
+	const debouncedSearchRef = useRef<
+		( ( searchValue: string | undefined ) => void ) | null
+	>( null );
 
-	const [ siteType, setSiteType ] = useState<string | fetchReturn>( '' );
+	const [ siteType, setSiteType ] = useState< string | fetchReturn >( '' );
 	const today = new Date().toISOString().split( 'T' )[ 0 ];
 
 	const loadSiteType = async () => {
@@ -72,15 +82,23 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__nextHasNoMarginBottom
 						label={ __( 'Site', 'onelogs' ) }
 						value={ filters.site_url || '' }
-						onChange={ ( value ) => handleFilterChange( 'site_url', value ) }
+						onChange={ ( value ) =>
+							handleFilterChange( 'site_url', value )
+						}
 						options={ [
-							{ label: __( 'Governing Site', 'onelogs' ), value: 'governing-site' },
-							...sharedSites.map( ( site: {name: string; url: string} ) => ( {
-								label: site.name || site.url,
-								value: site.url,
-							} ) ),
+							{
+								label: __( 'Governing Site', 'onelogs' ),
+								value: 'governing-site',
+							},
+							...sharedSites.map(
+								( site: { name: string; url: string } ) => ( {
+									label: site.name || site.url,
+									value: site.url,
+								} )
+							),
 						] }
-					/> ) }
+					/>
+				) }
 
 				<div style={ { flex: 1 } }>
 					<SelectControl
@@ -88,11 +106,18 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__nextHasNoMarginBottom
 						label={ __( 'Context', 'onelogs' ) }
 						value={ filters.context || '' }
-						onChange={ ( value ) => handleFilterChange( 'context', value ) }
+						onChange={ ( value ) =>
+							handleFilterChange( 'context', value )
+						}
 						options={ [
-							{ label: __( 'All Contexts', 'onelogs' ), value: '' },
+							{
+								label: __( 'All Contexts', 'onelogs' ),
+								value: '',
+							},
 							...contexts.map( ( context ) => ( {
-								label: context.charAt( 0 ).toUpperCase() + context.slice( 1 ),
+								label:
+									context.charAt( 0 ).toUpperCase() +
+									context.slice( 1 ),
 								value: context,
 							} ) ),
 						] }
@@ -106,11 +131,18 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						style={ { flex: 1 } }
 						label={ __( 'Action', 'onelogs' ) }
 						value={ filters.action || '' }
-						onChange={ ( value ) => handleFilterChange( 'action', value ) }
+						onChange={ ( value ) =>
+							handleFilterChange( 'action', value )
+						}
 						options={ [
-							{ label: __( 'All Actions', 'onelogs' ), value: '' },
+							{
+								label: __( 'All Actions', 'onelogs' ),
+								value: '',
+							},
 							...actions.map( ( action ) => ( {
-								label: action.charAt( 0 ).toUpperCase() + action.slice( 1 ),
+								label:
+									action.charAt( 0 ).toUpperCase() +
+									action.slice( 1 ),
 								value: action,
 							} ) ),
 						] }
@@ -123,7 +155,12 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						__nextHasNoMarginBottom
 						label={ __( 'User', 'onelogs' ) }
 						value={ filters.user_id?.toString() || '' }
-						onChange={ ( value ) => handleFilterChange( 'user_id', value ? parseInt( value, 10 ) : '' ) }
+						onChange={ ( value ) =>
+							handleFilterChange(
+								'user_id',
+								value ? parseInt( value, 10 ) : ''
+							)
+						}
 						options={ [
 							{ label: __( 'All Users', 'onelogs' ), value: '' },
 							...users.map( ( user ) => ( {
@@ -141,7 +178,9 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						label={ __( 'Date From', 'onelogs' ) }
 						type="date"
 						value={ filters.date_from || '' }
-						onChange={ ( value ) => handleFilterChange( 'date_from', value || '' ) }
+						onChange={ ( value ) =>
+							handleFilterChange( 'date_from', value || '' )
+						}
 						max={ today }
 					/>
 				</div>
@@ -153,29 +192,33 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						label={ __( 'Date To', 'onelogs' ) }
 						type="date"
 						value={ filters.date_to || '' }
-						onChange={ ( value ) => handleFilterChange( 'date_to', value || '' ) }
+						onChange={ ( value ) =>
+							handleFilterChange( 'date_to', value || '' )
+						}
 						min={ filters.date_from || undefined }
 						max={ today }
 					/>
 				</div>
-				<div style={ {
-					gridColumn: 'auto / -1',
-					width: '100%',
-					flex: 1,
-					display: 'flex',
-					justifyContent: 'flex-end',
-					alignItems: 'flex-end',
-				} }>
+				<div
+					style={ {
+						gridColumn: 'auto / -1',
+						width: '100%',
+						flex: 1,
+						display: 'flex',
+						justifyContent: 'flex-end',
+						alignItems: 'flex-end',
+					} }
+				>
 					<Button
 						variant="secondary"
 						onClick={ () => resetFilters() }
 					>
-						{ __( 'Clear Filters', 'onepress-logs' ) }
+						{ __( 'Clear Filters', 'onelogs' ) }
 					</Button>
 				</div>
 			</div>
 
-			<div className={ 'onelogs-filters-panel-footer' }>
+			<div className="onelogs-filters-panel-footer">
 				<div style={ { width: '25%' } }>
 					<TextControl
 						__next40pxDefaultSize
@@ -185,20 +228,28 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						onChange={ ( value ) => {
 							setLocalSearch( value || '' );
 							if ( debouncedSearchRef.current ) {
-								debouncedSearchRef.current( value || undefined );
+								debouncedSearchRef.current(
+									value || undefined
+								);
 							}
 						} }
 						placeholder={ __( 'Search by summary', 'onelogs' ) }
 					/>
 				</div>
 
-				<div style={ { display: 'flex', alignItems: 'flex-end', marginBottom: '8px' } }>
-					<Button
-						variant="primary"
-						onClick={ () => fetchLogsData() }
-					>
-						<span className="dashicons dashicons-update" style={ { marginRight: '4px' } }></span>
-						{ __( 'Refresh', 'onepress-logs' ) }
+				<div
+					style={ {
+						display: 'flex',
+						alignItems: 'flex-end',
+						marginBottom: '8px',
+					} }
+				>
+					<Button variant="primary" onClick={ () => fetchLogsData() }>
+						<span
+							className="dashicons dashicons-update"
+							style={ { marginRight: '4px' } }
+						></span>
+						{ __( 'Refresh', 'onelogs' ) }
 					</Button>
 					<Button
 						isBusy={ exportLoading }
@@ -207,11 +258,10 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ( {
 						onClick={ () => exportData() }
 						style={ { marginLeft: '8px' } }
 					>
-						{ __( 'Export CSV', 'onepress-logs' ) }
+						{ __( 'Export CSV', 'onelogs' ) }
 					</Button>
 				</div>
 			</div>
-
 		</div>
 	);
 };

@@ -31,9 +31,11 @@ final class Settings implements Registrable {
 	 */
 	// Shared settings.
 	public const OPTION_SITE_TYPE = self::SETTING_PREFIX . 'site_type';
+
 	// Consumer settings.
 	public const OPTION_CONSUMER_API_KEY         = self::SETTING_PREFIX . 'consumer_api_key';
 	public const OPTION_CONSUMER_PARENT_SITE_URL = self::SETTING_PREFIX . 'parent_site_url';
+
 	// Governing settings.
 	public const OPTION_GOVERNING_SHARED_SITES = self::SETTING_PREFIX . 'shared_sites';
 
@@ -156,10 +158,12 @@ final class Settings implements Registrable {
 	/**
 	 * Ensures the API key is generated when the site type changes to 'consumer'.
 	 *
+	 * @internal Hook callback
+	 *
 	 * @param mixed $old_value The old value.
 	 * @param mixed $new_value The new value.
 	 */
-	public function on_site_type_change( $old_value, $new_value ): void {
+	public function on_site_type_change( $old_value, $new_value ): void { // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 		if ( self::SITE_TYPE_CONSUMER !== $new_value ) {
 			return;
 		}
@@ -218,7 +222,7 @@ final class Settings implements Registrable {
 	 */
 
 	/**
-	 * Get brand sites configured for this governing site.
+	 * Get brand sites configured for this governing site, keyed by the (trailing-slash) URL.
 	 *
 	 * @return array<string,array{
 	 *  api_key: string,
@@ -232,15 +236,25 @@ final class Settings implements Registrable {
 
 		$brands_to_return = [];
 		foreach ( $brands as $brand ) {
-			if ( ! is_array( $brand ) ) {
+			if ( empty( $brand['url'] ) ) {
 				continue;
 			}
 
-			$brands_to_return[ $brand['url'] ] = [
-				'api_key' => $brand['api_key'] ?? '',
-				'id'      => $brand['id'] ?? '',
+			// Always use a trailing-slash URL.
+			$url = trailingslashit( $brand['url'] );
+
+			// API keys are stored encrypted — decrypt on read.
+			$api_key = '';
+			if ( ! empty( $brand['api_key'] ) ) {
+				$decrypted = Encryptor::decrypt( (string) $brand['api_key'] );
+				$api_key   = is_string( $decrypted ) ? $decrypted : '';
+			}
+
+			$brands_to_return[ $url ] = [
+				'api_key' => $api_key,
+				'id'      => isset( $brand['id'] ) ? (string) $brand['id'] : '',
 				'name'    => $brand['name'] ?? '',
-				'url'     => $brand['url'] ?? '',
+				'url'     => $url,
 			];
 		}
 
@@ -268,6 +282,28 @@ final class Settings implements Registrable {
 	}
 
 	/**
+	 * Get a single brand site by name
+	 *
+	 * @param string $site_name The site name.
+	 *
+	 * @return ?array{
+	 *   api_key: string,
+	 *   id: string,
+	 *   name: string,
+	 *   url: string,
+	 * }
+	 */
+	public static function get_shared_site_by_name( string $site_name ): ?array {
+		$brand_sites = self::get_shared_sites();
+		foreach ( $brand_sites as $site ) {
+			if ( $site['name'] === $site_name ) {
+				return $site;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Set the shared sites.
 	 *
 	 * @param array<string,array<string,mixed>> $sites The sites to set.
@@ -277,10 +313,27 @@ final class Settings implements Registrable {
 	 *   id?: string,
 	 *   name?: string,
 	 *   url?: string,
-	 *   is_editable?: bool
 	 * }> $sites The sites to set.
 	 */
 	public static function set_shared_sites( array $sites ): bool {
+		foreach ( $sites as &$site ) {
+			if ( empty( $site['api_key'] ) || empty( $site['url'] ) ) {
+				continue;
+			}
+			// Ensure URLs are trailing-slashed.
+			$site['url'] = trailingslashit( $site['url'] );
+
+			// Encrypt API keys before saving.
+			$encrypted_key = Encryptor::encrypt( $site['api_key'] );
+
+			// Bail if encryption fails.
+			if ( false === $encrypted_key ) {
+				return false;
+			}
+
+			$site['api_key'] = $encrypted_key;
+		}
+
 		return update_option( self::OPTION_GOVERNING_SHARED_SITES, array_values( $sites ), false );
 	}
 
@@ -309,6 +362,8 @@ final class Settings implements Registrable {
 
 	/**
 	 * Gets the API key, generating a new one if it doesn't exist.
+	 *
+	 * Returns an empty string on failure.
 	 */
 	public static function get_api_key(): string {
 		$api_key = get_option( self::OPTION_CONSUMER_API_KEY, '' );
@@ -320,10 +375,19 @@ final class Settings implements Registrable {
 
 	/**
 	 * Regenerates the API key.
+	 *
+	 * @return string The new (unencrypted) API key.
 	 */
 	public static function regenerate_api_key(): string {
 		$api_key = self::generate_api_key();
-		update_option( self::OPTION_CONSUMER_API_KEY, Encryptor::encrypt( $api_key ) );
+
+		$encrypted_key = Encryptor::encrypt( $api_key );
+
+		if ( ! $encrypted_key ) {
+			return '';
+		}
+
+		update_option( self::OPTION_CONSUMER_API_KEY, $encrypted_key, false );
 
 		return $api_key;
 	}

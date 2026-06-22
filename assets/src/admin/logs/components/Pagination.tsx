@@ -9,18 +9,26 @@ interface PaginationProps {
 	totalLogs: number;
 }
 
-export const Pagination: React.FC<PaginationProps> = ( {
+export const Pagination: React.FC< PaginationProps > = ( {
 	currentPage,
 	totalPages,
 	onPageChange,
 	totalLogs,
 } ) => {
 	return (
-		<div style={ { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' } }>
+		<div
+			style={ {
+				display: 'flex',
+				justifyContent: 'space-between',
+				alignItems: 'center',
+				marginTop: '16px',
+			} }
+		>
 			<div>
 				{ totalLogs > 0 && (
 					<div className="onelogs-total-count">
-						{ __( 'Total logs:', 'onelogs' ) } <strong>{ totalLogs.toLocaleString() }</strong>
+						{ __( 'Total logs:', 'onelogs' ) }{ ' ' }
+						<strong>{ totalLogs.toLocaleString() }</strong>
 					</div>
 				) }
 			</div>
@@ -42,9 +50,12 @@ export const Pagination: React.FC<PaginationProps> = ( {
 				</Button>
 			</div>
 
-			<div><span>
-				{ __( 'Page', 'onelogs' ) } { currentPage } { __( 'of', 'onelogs' ) } { totalPages }
-			</span></div>
+			<div>
+				<span>
+					{ __( 'Page', 'onelogs' ) } { currentPage }{ ' ' }
+					{ __( 'of', 'onelogs' ) } { totalPages }
+				</span>
+			</div>
 		</div>
 	);
 };

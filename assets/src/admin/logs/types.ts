@@ -19,7 +19,7 @@ export interface LogEntry {
 	summary: string;
 	created: string;
 	ip: string;
-	meta: Record<string, []>;
+	meta: Record< string, [] >;
 	user_display_name?: string;
 	site_name?: string;
 	site_url?: string;
@@ -35,7 +35,7 @@ export interface LogEntry {
 	};
 }
 
-export interface FilterOptions extends Record<string, unknown> {
+export interface FilterOptions extends Record< string, unknown > {
 	page: number;
 	per_page: number;
 	orderby?: string;
@@ -55,7 +55,16 @@ export interface FilterOptions extends Record<string, unknown> {
 	include_shared_sites?: boolean;
 }
 
-export type SortableField = 'ID' | 'summary' | 'connector' | 'context' | 'action' | 'user_id' | 'ip' | 'created' | 'site_name';
+export type SortableField =
+	| 'ID'
+	| 'summary'
+	| 'connector'
+	| 'context'
+	| 'action'
+	| 'user_id'
+	| 'ip'
+	| 'created'
+	| 'site_name';
 
 export interface SortState {
 	field: SortableField | null | string;
@@ -63,7 +72,7 @@ export interface SortState {
 }
 
 export type APIResponse = {
-	[key: string]: unknown;
+	[ key: string ]: unknown;
 	data: object[] | LogEntry[] | UserOption[];
 	meta: {
 		total: number;
@@ -74,7 +83,11 @@ export type APIResponse = {
 
 export type StringArrayResponse = string[];
 
-export type fetchReturn = APIResponse | StringArrayResponse | string | SharedSite[];
+export type fetchReturn =
+	| APIResponse
+	| StringArrayResponse
+	| string
+	| SharedSite[];
 
 export interface SharedSite {
 	api_key: string;
@@ -85,6 +98,6 @@ export interface SharedSite {
 
 export interface OneLogsDataType {
 	restUrl: string;
-	restNonce: string;
+	nonce: string;
 	apiKey: string;
 }

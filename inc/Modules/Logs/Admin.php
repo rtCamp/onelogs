@@ -5,6 +5,8 @@
  * @package OneLogs\Modules\Post_Types;
  */
 
+declare( strict_types = 1 );
+
 namespace OneLogs\Modules\Logs;
 
 use OneLogs\Contracts\Interfaces\Registrable;

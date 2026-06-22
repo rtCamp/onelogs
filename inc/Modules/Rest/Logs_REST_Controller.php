@@ -10,6 +10,8 @@
  * @since   1.0.0
  */
 
+declare( strict_types = 1 );
+
 namespace OneLogs\Modules\Rest;
 
 use OneLogs\Utils;
@@ -22,16 +24,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * REST API Controller for managing WordPress Stream logs.
- *
- * This class provides REST API endpoints to access and filter WordPress Stream plugin logs.
- * It supports pagination, filtering, searching, and individual log retrieval with metadata.
- *
- * @package Onelogs\Modules\Admin
- * @since   1.0.0
+ * Class -  Logs_REST_Controller
  */
 final class Logs_REST_Controller extends Abstract_REST_Controller {
-
 	/**
 	 * Maximum number of results per page.
 	 *
@@ -55,8 +50,6 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 	/**
 	 * Register WordPress hooks.
-	 *
-	 * @return void
 	 */
 	public function register_hooks(): void {
 		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
@@ -64,8 +57,6 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 	/**
 	 * Register REST API routes.
-	 *
-	 * @return void
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -163,7 +154,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	/**
 	 * Get the schema for GET /logs endpoint arguments.
 	 *
-	 * @return array Argument schema.
+	 * @return array<string, array<string, mixed>> Argument schema.
 	 */
 	private function get_logs_args_schema(): array {
 		return [
@@ -426,10 +417,10 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	/**
 	 * Build WHERE clauses for SQL query.
 	 *
-	 * @param array $args     The query arguments.
-	 * @param array $sql_args Reference to SQL arguments array.
+	 * @param array<string, mixed> $args     The query arguments.
+	 * @param array<int, mixed>    $sql_args Reference to SQL arguments array.
 	 *
-	 * @return array WHERE clauses.
+	 * @return array<int, string> WHERE clauses.
 	 */
 	private function build_where_clauses( array $args, array &$sql_args ): array {
 		$where_clauses = [];
@@ -489,9 +480,9 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * Format log data for API response.
 	 *
 	 * @param object{ID: int, site_id: int, blog_id: int, user_id: int, user_role: string, object_id: int|null, connector: string, context: string, action: string, summary: string, created: string, ip: string} $result Database result object.
-	 * @param array                                                                                                                                                                                               $meta   Optional metadata array.
+	 * @param array<string, mixed>                                                                                                                                                                                $meta   Optional metadata array.
 	 *
-	 * @return array Formatted log data.
+	 * @return array<string, mixed> Formatted log data.
 	 */
 	private function format_log_data( $result, array $meta = [] ): array {
 
@@ -545,7 +536,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param string $connector The connector name.
 	 * @param string $context   The context name.
 	 */
-	private function get_custom_object_type( string $connector, string $context ): string {
+	private function get_custom_object_type( string $connector, string $context ): string { // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 		// Map connector/context to object types.
 		$type_map = [
 			'posts'      => 'post',
@@ -571,8 +562,10 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param int|null $object_id   The ID of the object.
 	 * @param string   $connector   The connector name.
 	 * @param string   $context     The context name.
+	 *
+	 * @return array<string, mixed>|null Object data or null.
 	 */
-	private function get_object_data( string $object_type, int|null $object_id, string $connector, string $context ): ?array {
+	private function get_object_data( string $object_type, int|null $object_id, string $connector, string $context ): ?array { // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 		if ( ! $object_id ) {
 			return null;
 		}
@@ -735,7 +728,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param string $object_type The type of the object.
 	 * @param string $context     The context of the action.
 	 */
-	private function get_action_title( string $action, string $object_type, string $context ): string {
+	private function get_action_title( string $action, string $object_type, string $context ): string { // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 		// Action verb mapping.
 		$action_verbs = [
 			'created'      => 'Created',
@@ -842,7 +835,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 			$request_params                         = $params;
 			$request_params['include_shared_sites'] = false;
 			$request_params['current_site_logs']    = true;
-			$response                               = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs', $request_params );
+			$response                               = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs', $request_params );
 
 			foreach ( $response['data'] as &$log ) {
 				$site_info        = Utils::get_shared_site_data_by_url( $brand_site );
@@ -885,7 +878,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param \WP_REST_Request $request      The request object.
 	 * @param bool             $return_count Whether to return count or just logs.
 	 *
-	 * @return array|\WP_Error Response array or error.
+	 * @return array<string, mixed>|\WP_Error Response array or error.
 	 */
 	private function get_local_logs( WP_REST_Request $request, bool $return_count = true ): array|\WP_Error {
 		global $wpdb;
@@ -1055,7 +1048,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		if ( $brand_site ) {
-			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/contexts' );
+			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/contexts' );
 
 			return new WP_REST_Response( $response, 200 );
 		}
@@ -1094,7 +1087,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 */
-	public function get_connectors( WP_REST_Request $request ): WP_REST_Response {
+	public function get_connectors( WP_REST_Request $request ): WP_REST_Response { // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 		$connectors = [];
 
 		global $wpdb;
@@ -1131,7 +1124,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
 
 		if ( $brand_site ) {
-			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/actions' );
+			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/actions' );
 
 			return new WP_REST_Response( $response, 200 );
 		}
@@ -1181,7 +1174,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		// If brand site is provided, fetch remote users.
 		if ( $brand_site ) {
-			$response = $this->onepress_remote_request( $brand_site, 'onelogs/v1/logs/users' );
+			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/users' );
 
 			return rest_ensure_response( $response );
 		}
@@ -1257,14 +1250,14 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * This function is wrapper for wp_remote_request to make authenticated requests to remote OnePress sites.
 	 * Wrapped to ensure consistent return format, and simplify usage.
 	 *
-	 * @param string $site_url The base URL of the remote site.
-	 * @param string $path     The REST API endpoint path.
-	 * @param array  $args     Request arguments (query parameters or body data).
-	 * @param string $method   HTTP method (GET, POST, etc.). Default is 'GET'.
+	 * @param string               $site_url The base URL of the remote site.
+	 * @param string               $path     The REST API endpoint path.
+	 * @param array<string, mixed> $args    Request arguments (query parameters or body data).
+	 * @param string               $method   HTTP method (GET, POST, etc.). Default is 'GET'.
 	 *
-	 * @return array
+	 * @return array<string, mixed> Response data.
 	 */
-	private function onepress_remote_request( string $site_url, string $path, array $args = [], string $method = 'GET' ): array {
+	private function onelogs_remote_request( string $site_url, string $path, array $args = [], string $method = 'GET' ): array {
 		$api_key  = Utils::get_shared_site_api_key_by_url( $site_url );
 		$endpoint = trailingslashit( $site_url ) . 'wp-json/' . ltrim( $path, '/' );
 
