@@ -185,8 +185,9 @@ final class Assets implements Registrable {
 			return false;
 		}
 
+		// Not `require_once`, which returns true instead of the asset data when assets are registered again.
 		// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- The file is checked for existence above.
-		$asset = require_once $asset_file;
+		$asset = require $asset_file;
 
 		$version   = $ver ?? ( $asset['version'] ?? filemtime( $asset_file ) );
 		$asset_src = sprintf( '%s/%s.js', $this->plugin_url . untrailingslashit( self::ASSETS_DIR ), $filename );

@@ -505,8 +505,10 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$trashable_contexts          = [ 'post', 'page', 'attachment' ];
 		$should_populate_object_data = ! ( in_array( $result->context, $trashable_contexts, true ) && 'trashed' === $result->action );
 
-		$object_type  = $should_populate_object_data ? $this->get_custom_object_type( $result->connector, $result->context ) : '';
-		$object_data  = $should_populate_object_data ? $this->get_object_data( $object_type, $result->object_id, $result->connector, $result->context ) : null;
+		$object_type = $should_populate_object_data ? $this->get_custom_object_type( $result->connector, $result->context ) : '';
+		// The database returns the ID as a string, and strict types would reject it.
+		$object_id    = isset( $result->object_id ) && '' !== $result->object_id ? (int) $result->object_id : null;
+		$object_data  = $should_populate_object_data ? $this->get_object_data( $object_type, $object_id, $result->connector, $result->context ) : null;
 		$action_title = $should_populate_object_data ? $this->get_action_title( $result->action, $object_type, $result->context ) : '';
 
 		return [
@@ -942,8 +944,9 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 			$count_sql .= ' AND ' . implode( ' AND ', $where_clauses );
 		}
 
+		// Only prepare queries with placeholders, or wpdb::prepare() flags it as incorrect usage.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-		$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $sql_args ) );
+		$total = (int) $wpdb->get_var( ! empty( $sql_args ) ? $wpdb->prepare( $count_sql, $sql_args ) : $count_sql );
 
 		if ( ! $return_count ) {
 			$offset     = ( $page - 1 ) * $per_page;
@@ -957,7 +960,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		 * We have not added caching here as logs can change frequently.
 		 */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $sql_args ) );
+		$results = $wpdb->get_results( ! empty( $sql_args ) ? $wpdb->prepare( $sql, $sql_args ) : $sql );
 
 		if ( false === $results ) {
 			return new \WP_Error(
