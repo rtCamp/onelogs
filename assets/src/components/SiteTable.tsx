@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { useState } from 'react';
+
+/**
+ * WordPress dependencies
+ */
 import {
 	Button,
 	Card,
@@ -8,11 +15,10 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-interface BrandSite {
-	name: string;
-	url: string;
-	api_key: string;
-}
+/**
+ * Internal dependencies
+ */
+import type { BrandSite, EditingIndex } from '@/admin/settings/page';
 
 const SiteTable = ( {
 	sites,
@@ -28,7 +34,7 @@ const SiteTable = ( {
 	setShowModal: ( show: boolean ) => void;
 } ) => {
 	const [ showDeleteModal, setShowDeleteModal ] = useState( false );
-	const [ deleteIndex, setDeleteIndex ] = useState< number | null >( null );
+	const [ deleteIndex, setDeleteIndex ] = useState< EditingIndex >( null );
 
 	const handleDeleteClick = ( index: number ) => {
 		setDeleteIndex( index );
@@ -87,15 +93,18 @@ const SiteTable = ( {
 								<td>{ site?.name }</td>
 								<td>{ site?.url }</td>
 								<td>
-									<code>
-										{ site?.api_key?.substring( 0, 10 ) }...
-									</code>
+									{ /* The stored key never reaches the browser. */ }
+									<code>••••••••</code>
 								</td>
 								<td>
 									<Button
 										variant="secondary"
 										onClick={ () => {
-											setFormData( site );
+											// The key field starts empty, which keeps the stored key.
+											setFormData( {
+												...site,
+												api_key: '',
+											} );
 											onEdit( index );
 											setShowModal( true );
 										} }

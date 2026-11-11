@@ -1,17 +1,18 @@
+/**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+
+/**
+ * Internal dependencies
+ */
 import type {
 	APIResponse,
 	fetchReturn,
 	FilterOptions,
-	OneLogsDataType,
+	SharedSite,
 } from './types';
-import apiFetch from '@wordpress/api-fetch';
-import { NONCE, API_KEY } from '../../js/constants';
-
-declare global {
-	interface Window {
-		OneLogsData?: OneLogsDataType;
-	}
-}
+import { REST_NAMESPACE, SHARED_SITES } from '../../js/constants';
 
 type FetchOptions = {
 	filters?: {
@@ -19,7 +20,6 @@ type FetchOptions = {
 	};
 	queryParams?: URLSearchParams;
 	returnKey?: string;
-	headers?: Record< string, string >;
 };
 
 export const fetchLogs = async ( filters: FilterOptions ) => {
@@ -31,39 +31,23 @@ export const fetchLogs = async ( filters: FilterOptions ) => {
 		date_to: filters.date_to ? `${ filters.date_to } 23:59:59` : undefined,
 	};
 
-	if ( filters.site_url === 'governing-site' ) {
-		formattedFilters.current_site_logs = true;
+	const isBrandSite =
+		!! filters.site_url && filters.site_url !== 'governing-site';
+
+	// The governing site fetches a selected brand site's logs for the browser.
+	formattedFilters.current_site_logs = ! isBrandSite;
+	formattedFilters.include_shared_sites = isBrandSite;
+	if ( ! isBrandSite ) {
 		formattedFilters.site_url = undefined;
-		formattedFilters.include_shared_sites = false;
-	} else {
-		formattedFilters.current_site_logs = false;
-		formattedFilters.include_shared_sites = true;
 	}
 
-	if ( ! formattedFilters.current_site_logs ) {
-		const queryParams = new URLSearchParams();
-		formattedFilters.include_shared_sites = true;
-
-		Object.entries( formattedFilters ).forEach( ( [ key, value ] ) => {
-			if ( value !== undefined && value !== null && key !== 'site_id' ) {
-				queryParams.append( key, String( value ) );
-			}
-		} );
-
-		const apiResponse = await oneLogsFetch< APIResponse >( 'logs', {
-			queryParams,
-		} );
-
-		return {
-			logs: apiResponse?.data || [],
-			total: apiResponse?.meta.total || 0,
-			pages: apiResponse?.meta.total_pages || 1,
-			errors: apiResponse?.meta.errors,
-		};
-	}
 	const queryParams = new URLSearchParams();
 	Object.entries( formattedFilters ).forEach( ( [ key, value ] ) => {
-		if ( value !== undefined && value !== null ) {
+		if (
+			value !== undefined &&
+			value !== null &&
+			! ( isBrandSite && key === 'site_id' )
+		) {
 			queryParams.append( key, String( value ) );
 		}
 	} );
@@ -73,10 +57,11 @@ export const fetchLogs = async ( filters: FilterOptions ) => {
 	} );
 
 	return {
-		logs: apiResponse.data,
-		total: apiResponse.meta.total,
-		pages: apiResponse.meta.total_pages,
-		errors: null,
+		// A missing list is no logs, never a crash.
+		logs: Array.isArray( apiResponse?.data ) ? apiResponse.data : [],
+		total: apiResponse?.meta?.total || 0,
+		pages: apiResponse?.meta?.total_pages || 1,
+		errors: isBrandSite ? apiResponse?.meta?.errors : null,
 	};
 };
 
@@ -104,12 +89,21 @@ export const fetchUsers = async (
 	filters: FilterOptions
 ): Promise< APIResponse > => oneLogsFetch( 'logs/users', { filters } );
 
-export const fetchSharedSites = async () =>
-	oneLogsFetch( 'shared-sites', { returnKey: 'shared_sites' } );
+/**
+ * Gets the governing site's brand sites, which the page already has.
+ */
+export const fetchSharedSites = async (): Promise< SharedSite[] > =>
+	SHARED_SITES;
 
-export const fetchSiteType = async () =>
-	oneLogsFetch( 'site-type', { returnKey: 'site_type' } );
-
+/**
+ * Requests a OneLogs route on this site.
+ *
+ * WordPress sets up apiFetch with the REST root and nonce, so requests only need the path.
+ * Rejects with the REST error, like `{ code, message }`, when the route fails.
+ *
+ * @param endpoint The route, relative to the OneLogs namespace.
+ * @param options  The query, and the key of the response to return.
+ */
 const oneLogsFetch = async < T extends fetchReturn >(
 	endpoint: string,
 	options: FetchOptions = {}
@@ -121,25 +115,15 @@ const oneLogsFetch = async < T extends fetchReturn >(
 	if ( queryParams ) {
 		query = `?${ queryParams.toString() }`;
 	} else if ( filters?.site_url && filters.site_url !== 'governing-site' ) {
-		query = `?site_url=${ filters.site_url }`;
+		query = `?${ new URLSearchParams( {
+			site_url: filters.site_url,
+		} ).toString() }`;
 	}
 
-	apiFetch.use( apiFetch.createNonceMiddleware( NONCE ) );
-
-	apiFetch.use( ( fetchOptions, next ) => {
-		fetchOptions.headers = {
-			...( fetchOptions.headers || {} ),
-			'X-OneLogs-Token': API_KEY,
-		};
-		return next( fetchOptions );
-	} );
-
-	const apiResponse = await apiFetch( {
-		path: `/onelogs/v1/${ endpoint }${ query }`,
+	const result = await apiFetch< APIResponse >( {
+		path: `/${ REST_NAMESPACE }/${ endpoint }${ query }`,
 		method: 'GET',
 	} );
 
-	const result = apiResponse as APIResponse;
-
-	return ( returnKey ? result[ returnKey ] ?? [] : result ) as T;
+	return ( returnKey ? result?.[ returnKey ] ?? [] : result ) as T;
 };

@@ -20,6 +20,7 @@ import type {
 	SortState,
 	UserOption,
 } from '../types';
+import { getErrorMessage } from '../../../js/utils';
 
 const LogsDashboard: React.FC = () => {
 	const [ logs, setLogs ] = useState< LogEntry[] >( [] );
@@ -55,7 +56,7 @@ const LogsDashboard: React.FC = () => {
 
 		try {
 			const result = await apiFetchLogs( filters );
-			setLogs( result.logs as LogEntry[] );
+			setLogs( ( result.logs ?? [] ) as LogEntry[] );
 			setTotalLogs( result.total );
 			setTotalPages( result.pages );
 
@@ -69,10 +70,15 @@ const LogsDashboard: React.FC = () => {
 				);
 			}
 		} catch ( err ) {
+			// Clear the previous site's logs, so they're not shown under this error.
+			setLogs( [] );
+			setTotalLogs( 0 );
+			setTotalPages( 1 );
 			setError(
-				err instanceof Error
-					? err.message
-					: __( 'An error occurred while fetching logs', 'onelogs' )
+				getErrorMessage(
+					err,
+					__( 'An error occurred while fetching logs', 'onelogs' )
+				)
 			);
 		} finally {
 			setLoading( false );
@@ -164,27 +170,46 @@ const LogsDashboard: React.FC = () => {
 	const loadContexts = useCallback( async () => {
 		try {
 			const data = await apiFetchContexts( filters );
-			setContexts( data );
-		} catch {
-			setError( __( 'Error fetching contexts:', 'onelogs' ) );
+			setContexts( Array.isArray( data ) ? data : [] );
+		} catch ( err ) {
+			setContexts( [] );
+			setError(
+				getErrorMessage(
+					err,
+					__( 'Error fetching contexts.', 'onelogs' )
+				)
+			);
 		}
 	}, [ filters ] );
 
 	const loadConnectors = useCallback( async () => {
 		try {
 			const data = await apiFetchConnectors( filters );
-			setConnectors( data );
-		} catch {
-			setError( __( 'Error fetching connectors:', 'onelogs' ) );
+			setConnectors( Array.isArray( data ) ? data : [] );
+		} catch ( err ) {
+			setConnectors( [] );
+			setError(
+				getErrorMessage(
+					err,
+					__( 'Error fetching connectors.', 'onelogs' )
+				)
+			);
 		}
 	}, [ filters ] );
 
 	const loadUsers = useCallback( async () => {
 		try {
 			const response = await apiFetchUsers( filters );
-			setUsers( response.data as UserOption[] );
-		} catch {
-			setError( __( 'Error fetching users:', 'onelogs' ) );
+			setUsers(
+				Array.isArray( response?.data )
+					? ( response.data as UserOption[] )
+					: []
+			);
+		} catch ( err ) {
+			setUsers( [] );
+			setError(
+				getErrorMessage( err, __( 'Error fetching users.', 'onelogs' ) )
+			);
 		}
 	}, [ filters ] );
 
@@ -193,16 +218,22 @@ const LogsDashboard: React.FC = () => {
 			const response = await apiFetchSharedSites();
 			setSharedSites( response as SharedSite[] );
 		} catch {
-			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
+			setError( __( 'Error fetching shared sites.', 'onelogs' ) );
 		}
 	}, [] );
 
 	const loadActions = useCallback( async () => {
 		try {
 			const data = await fetchActions( filters );
-			setActions( data );
-		} catch {
-			setError( __( 'Error fetching shared sites:', 'onelogs' ) );
+			setActions( Array.isArray( data ) ? data : [] );
+		} catch ( err ) {
+			setActions( [] );
+			setError(
+				getErrorMessage(
+					err,
+					__( 'Error fetching actions.', 'onelogs' )
+				)
+			);
 		}
 	}, [ filters ] );
 
