@@ -1,95 +1,60 @@
 <?php
 /**
- * Shared static utility functions.
+ * Shared utilities functions for internal plugin use.
+ *
+ * Utilities are a domain antipattern - where ever possible, colocate methods with their related classes.
  *
  * @package OneLogs
  */
 
-declare( strict_types = 1 );
+declare(strict_types = 1);
 
 namespace OneLogs;
 
 /**
- * Class Utils
+ * Class - Utils
  */
 final class Utils {
 	/**
-	 * Get the API key of a shared site by its URL.
+	 * Normalize a URL so different spellings of the same site URL compare equal.
 	 *
-	 * @param string $url The URL to match (can be with/without http/https or trailing slash).
+	 * Trims whitespace, lowercases the scheme and host (which are case-insensitive), and ensures a trailing slash.
 	 *
-	 * @return string|false The API key if found, or false if no match.
+	 * @param string $url The URL to normalize.
 	 */
-	public static function get_shared_site_api_key_by_url( $url ) {
-		if ( empty( $url ) ) {
-			return false;
-		}
+	public static function normalize_url( string $url ): string {
+		$url = trim( $url );
 
-		$url = untrailingslashit( esc_url_raw( $url ) );
-		if ( empty( $url ) ) {
-			return false;
-		}
+		// Lowercase everything up to the path, e.g. `HTTPS://Example.COM/Path` => `https://example.com/Path`.
+		$url = (string) preg_replace_callback(
+			'#^([a-z][a-z0-9+.-]*://[^/?\#]*)#i',
+			static fn ( array $matches ): string => strtolower( $matches[1] ),
+			$url
+		);
 
-		$shared_sites = get_option( 'onelogs_shared_sites', [] );
-
-		if ( empty( $shared_sites ) || ! is_array( $shared_sites ) ) {
-			return false;
-		}
-
-		foreach ( $shared_sites as $site ) {
-			if (
-				! is_array( $site ) ||
-				empty( $site['url'] ) ||
-				empty( $site['api_key'] )
-			) {
-				continue;
-			}
-
-			$site_url = untrailingslashit( esc_url_raw( $site['url'] ) );
-
-			if ( $site_url && $site_url === $url ) {
-				return $site['api_key'];
-			}
-		}
-
-		return false;
+		return (string) trailingslashit( $url );
 	}
 
 	/**
-	 * Get the shared site data by its URL.
+	 * Gets the normalized URL that identifies the current site across the network.
 	 *
-	 * @param string $url The URL to match (can be with/without http/https or trailing slash).
-	 *
-	 * @return array<string, mixed>|false The shared site data if found, or false if no match.
+	 * Uses `get_option( 'home' )` since `get_home_url()` changes the scheme per the current request.
 	 */
-	public static function get_shared_site_data_by_url( string $url ): bool|array {
-		if ( empty( $url ) ) {
-			return false;
+	public static function get_current_site_url(): string {
+		return self::normalize_url( (string) get_option( 'home' ) );
+	}
+
+	/**
+	 * Logs a message to the PHP error log when debugging is enabled.
+	 *
+	 * @param string $message The message to log. Will be prefixed with the plugin name.
+	 */
+	public static function log( string $message ): void {
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+			return;
 		}
 
-		$url = untrailingslashit( esc_url_raw( $url ) );
-		if ( empty( $url ) ) {
-			return false;
-		}
-
-		$shared_sites = get_option( 'onelogs_shared_sites', [] );
-
-		if ( empty( $shared_sites ) || ! is_array( $shared_sites ) ) {
-			return false;
-		}
-
-		foreach ( $shared_sites as $site ) {
-			if ( empty( $site['url'] ) ) {
-				continue;
-			}
-
-			$site_url = untrailingslashit( esc_url_raw( $site['url'] ) );
-
-			if ( $site_url && $site_url === $url ) {
-				return $site;
-			}
-		}
-
-		return false;
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug-only logging.
+		error_log( 'OneLogs: ' . $message );
 	}
 }

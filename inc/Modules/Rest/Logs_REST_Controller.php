@@ -14,7 +14,7 @@ declare( strict_types = 1 );
 
 namespace OneLogs\Modules\Rest;
 
-use OneLogs\Utils;
+use OneLogs\Modules\Settings\Settings;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -66,7 +66,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_logs' ],
-					'permission_callback' => [ $this, 'check_api_permissions' ],
+					'permission_callback' => [ $this, 'can_read_logs' ],
 					'args'                => $this->get_logs_args_schema(),
 				],
 			]
@@ -79,7 +79,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_log' ],
-					'permission_callback' => [ $this, 'check_api_permissions' ],
+					'permission_callback' => [ $this, 'can_read_logs' ],
 					'args'                => [
 						'id' => [
 							'type'     => 'integer',
@@ -99,7 +99,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_contexts' ],
-					'permission_callback' => [ $this, 'check_api_permissions' ],
+					'permission_callback' => [ $this, 'can_read_logs' ],
 				],
 			]
 		);
@@ -112,7 +112,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_connectors' ],
-					'permission_callback' => [ $this, 'check_api_permissions' ],
+					'permission_callback' => [ $this, 'can_read_logs' ],
 				],
 			]
 		);
@@ -125,7 +125,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_users' ],
-					'permission_callback' => [ $this, 'check_api_permissions' ],
+					'permission_callback' => [ $this, 'can_read_logs' ],
 					'args'                => [
 						'search' => [
 							'type'              => 'string',
@@ -145,10 +145,64 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_actions' ],
-					'permission_callback' => [ $this, 'check_api_permissions' ],
+					'permission_callback' => [ $this, 'can_read_logs' ],
 				],
 			]
 		);
+	}
+
+	/**
+	 * Whether the request may read this site's logs: an admin of this site, or the governing site it's connected to.
+	 *
+	 * @param \WP_REST_Request<array<string,mixed>> $request Request.
+	 */
+	public function can_read_logs( $request ): bool {
+		return current_user_can( 'manage_options' ) || $this->is_governing_request( $request );
+	}
+
+	/**
+	 * Gets the brand site whose logs the request asks for, from its `site_url` parameter.
+	 *
+	 * Only governing sites read other sites' logs, and only from their own brand sites. Elsewhere the parameter is ignored,
+	 * so a site never answers with logs that aren't its own.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @phpstan-param \WP_REST_Request<array<string,mixed>> $request
+	 *
+	 * @return array{api_key: string, id: string, name: string, url: string}|\WP_Error|null The brand site, null for this site's own logs, or an error for an unknown site.
+	 */
+	private function get_requested_brand_site( WP_REST_Request $request ): array|\WP_Error|null {
+		$site_url = $request->get_param( 'site_url' );
+
+		if ( ! Settings::is_governing_site() || ! is_string( $site_url ) || '' === $site_url || 'governing-site' === $site_url ) {
+			return null;
+		}
+
+		return Settings::get_shared_site_by_url( $site_url ) ?? new \WP_Error(
+			'onelogs_site_not_found',
+			__( 'The brand site was not found. Reload the page and select it again.', 'onelogs' ),
+			[ 'status' => 404 ]
+		);
+	}
+
+	/**
+	 * Gets data from a brand site's OneLogs route, passing on the request's query arguments.
+	 *
+	 * @param array{api_key: string, id: string, name: string, url: string} $brand_site The brand site.
+	 * @param string                                                        $route      The route, relative to the OneLogs namespace.
+	 * @param \WP_REST_Request                                              $request    The request to pass on.
+	 * @param array<string,mixed>                                           $overrides  Query arguments to set for the brand site.
+	 * @phpstan-param \WP_REST_Request<array<string,mixed>> $request
+	 *
+	 * @return array<mixed>|\WP_REST_Response The brand site's response body, or an error response.
+	 */
+	private function get_from_brand_site( array $brand_site, string $route, WP_REST_Request $request, array $overrides = [] ): array|WP_REST_Response {
+		$query = $request->get_query_params();
+		unset( $query['site_url'] );
+
+		$body = Remote_Client::get_from_brand_site( $brand_site, $route, array_merge( $query, $overrides ) );
+
+		return is_wp_error( $body ) ? $this->remote_error_response( $body ) : $body;
 	}
 
 	/**
@@ -505,8 +559,10 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		$trashable_contexts          = [ 'post', 'page', 'attachment' ];
 		$should_populate_object_data = ! ( in_array( $result->context, $trashable_contexts, true ) && 'trashed' === $result->action );
 
-		$object_type  = $should_populate_object_data ? $this->get_custom_object_type( $result->connector, $result->context ) : '';
-		$object_data  = $should_populate_object_data ? $this->get_object_data( $object_type, $result->object_id, $result->connector, $result->context ) : null;
+		$object_type = $should_populate_object_data ? $this->get_custom_object_type( $result->connector, $result->context ) : '';
+		// The database returns the ID as a string, and strict types would reject it.
+		$object_id    = isset( $result->object_id ) && '' !== $result->object_id ? (int) $result->object_id : null;
+		$object_data  = $should_populate_object_data ? $this->get_object_data( $object_type, $object_id, $result->connector, $result->context ) : null;
 		$action_title = $should_populate_object_data ? $this->get_action_title( $result->action, $object_type, $result->context ) : '';
 
 		return [
@@ -811,7 +867,11 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		);
 		$include_shared_sites = filter_var( $params['include_shared_sites'] ?? false, FILTER_VALIDATE_BOOLEAN );
 		$include_current_site = filter_var( $params['current_site_logs'] ?? false, FILTER_VALIDATE_BOOLEAN );
-		$brand_site           = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
+		$brand_site           = $this->get_requested_brand_site( $request );
+
+		if ( is_wp_error( $brand_site ) ) {
+			return $this->remote_error_response( $brand_site );
+		}
 
 		$all_logs    = [];
 		$errors      = [];
@@ -831,20 +891,38 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 			}
 		}
 
-		if ( $include_shared_sites ) {
-			$request_params                         = $params;
-			$request_params['include_shared_sites'] = false;
-			$request_params['current_site_logs']    = true;
-			$response                               = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs', $request_params );
+		if ( $include_shared_sites && null !== $brand_site ) {
+			$body = $this->get_from_brand_site(
+				$brand_site,
+				$this->rest_base,
+				$request,
+				[
+					'include_shared_sites' => false,
+					'current_site_logs'    => true,
+				]
+			);
 
-			foreach ( $response['data'] as &$log ) {
-				$site_info        = Utils::get_shared_site_data_by_url( $brand_site );
-				$log['site_name'] = $site_info['name'] ?? $brand_site;
-				$log['site_url']  = $site_info['name'] ?? $brand_site;
-				$log['is_remote'] = true;
+			if ( $body instanceof WP_REST_Response ) {
+				return $body;
 			}
 
-			return new WP_REST_Response( $response, 200 );
+			$logs = is_array( $body['data'] ?? null ) ? array_values( array_filter( $body['data'], 'is_array' ) ) : [];
+			foreach ( $logs as &$log ) {
+				$log['site_name'] = $brand_site['name'];
+				$log['site_url']  = $brand_site['url'];
+				$log['is_remote'] = true;
+			}
+			unset( $log );
+
+			return new WP_REST_Response(
+				[
+					'status'  => 'success',
+					'data'    => $logs,
+					'meta'    => is_array( $body['meta'] ?? null ) ? $body['meta'] : [],
+					'message' => __( 'Logs fetched successfully.', 'onelogs' ),
+				],
+				200
+			);
 		}
 
 		usort(
@@ -942,8 +1020,9 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 			$count_sql .= ' AND ' . implode( ' AND ', $where_clauses );
 		}
 
+		// Only prepare queries with placeholders, or wpdb::prepare() flags it as incorrect usage.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-		$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $sql_args ) );
+		$total = (int) $wpdb->get_var( ! empty( $sql_args ) ? $wpdb->prepare( $count_sql, $sql_args ) : $count_sql );
 
 		if ( ! $return_count ) {
 			$offset     = ( $page - 1 ) * $per_page;
@@ -957,7 +1036,7 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		 * We have not added caching here as logs can change frequently.
 		 */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $sql_args ) );
+		$results = $wpdb->get_results( ! empty( $sql_args ) ? $wpdb->prepare( $sql, $sql_args ) : $sql );
 
 		if ( false === $results ) {
 			return new \WP_Error(
@@ -1043,14 +1122,15 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function get_contexts( WP_REST_Request $request ): WP_REST_Response {
-		$params     = $request->get_params();
 		$contexts   = [];
-		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
+		$brand_site = $this->get_requested_brand_site( $request );
 
-		if ( $brand_site ) {
-			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/contexts' );
+		if ( is_wp_error( $brand_site ) ) {
+			return $this->remote_error_response( $brand_site );
+		}
 
-			return new WP_REST_Response( $response, 200 );
+		if ( null !== $brand_site ) {
+			return rest_ensure_response( $this->get_from_brand_site( $brand_site, $this->rest_base . '/contexts', $request ) );
 		}
 
 		global $wpdb;
@@ -1118,15 +1198,15 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function get_actions( WP_REST_Request $request ): WP_REST_Response {
-		$params  = $request->get_params();
-		$actions = [];
+		$actions    = [];
+		$brand_site = $this->get_requested_brand_site( $request );
 
-		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
+		if ( is_wp_error( $brand_site ) ) {
+			return $this->remote_error_response( $brand_site );
+		}
 
-		if ( $brand_site ) {
-			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/actions' );
-
-			return new WP_REST_Response( $response, 200 );
+		if ( null !== $brand_site ) {
+			return rest_ensure_response( $this->get_from_brand_site( $brand_site, $this->rest_base . '/actions', $request ) );
 		}
 
 		global $wpdb;
@@ -1170,13 +1250,15 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 
 		$params     = $request->get_params();
 		$search     = trim( wp_strip_all_tags( $params['search'] ?? '' ) );
-		$brand_site = filter_var( $params['site_url'] ?? '', FILTER_VALIDATE_URL ) ?: '';
+		$brand_site = $this->get_requested_brand_site( $request );
 
-		// If brand site is provided, fetch remote users.
-		if ( $brand_site ) {
-			$response = $this->onelogs_remote_request( $brand_site, 'onelogs/v1/logs/users' );
+		if ( is_wp_error( $brand_site ) ) {
+			return $this->remote_error_response( $brand_site );
+		}
 
-			return rest_ensure_response( $response );
+		// If a brand site is selected, fetch its users.
+		if ( null !== $brand_site ) {
+			return rest_ensure_response( $this->get_from_brand_site( $brand_site, $this->rest_base . '/users', $request ) );
 		}
 
 		$stream_table = $wpdb->prefix . 'stream';
@@ -1244,69 +1326,5 @@ final class Logs_REST_Controller extends Abstract_REST_Controller {
 		];
 
 		return rest_ensure_response( $response );
-	}
-
-	/**
-	 * This function is wrapper for wp_remote_request to make authenticated requests to remote OnePress sites.
-	 * Wrapped to ensure consistent return format, and simplify usage.
-	 *
-	 * @param string               $site_url The base URL of the remote site.
-	 * @param string               $path     The REST API endpoint path.
-	 * @param array<string, mixed> $args    Request arguments (query parameters or body data).
-	 * @param string               $method   HTTP method (GET, POST, etc.). Default is 'GET'.
-	 *
-	 * @return array<string, mixed> Response data.
-	 */
-	private function onelogs_remote_request( string $site_url, string $path, array $args = [], string $method = 'GET' ): array {
-		$api_key  = Utils::get_shared_site_api_key_by_url( $site_url );
-		$endpoint = trailingslashit( $site_url ) . 'wp-json/' . ltrim( $path, '/' );
-
-		$request_args = [
-			'method'  => $method,
-			'headers' => [
-				'X-OneLogs-Token' => $api_key,
-			],
-		];
-
-		// Add query/body depending on method.
-		if ( 'GET' === strtoupper( $method ) && ! empty( $args ) ) {
-			$endpoint = add_query_arg( $args, $endpoint );
-		} elseif ( in_array( strtoupper( $method ), [ 'POST', 'PUT', 'PATCH' ], true ) ) {
-			$body = wp_json_encode( $args );
-
-			if ( false !== $body ) {
-				$request_args['body'] = $body;
-			}
-			$request_args['headers']['Content-Type'] = 'application/json';
-		}
-
-		$response = wp_remote_request( $endpoint, $request_args );
-
-		if ( is_wp_error( $response ) ) {
-			return [
-				'status'  => 'error',
-				'data'    => null,
-				'message' => $response->get_error_message(),
-			];
-		}
-
-		$code = wp_remote_retrieve_response_code( $response );
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		// Ensure consistent unified return format.
-		if ( 200 !== $code || empty( $body ) ) {
-			return [
-				'status'  => 'error',
-				'data'    => null,
-				'message' => $body['message'] ?? 'Remote request failed.',
-			];
-		}
-
-		return [
-			'status'  => $body['status'] ?? 'success',
-			'data'    => $body['data'] ?? [],
-			'meta'    => $body['meta'] ?? [],
-			'message' => 'Remote data fetched successfully.',
-		];
 	}
 }
