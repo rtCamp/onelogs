@@ -9,6 +9,7 @@ declare(strict_types = 1);
 
 namespace OneLogs\Tests\Integration\Modules\Settings;
 
+use OneLogs\Modules\Core\Assets;
 use OneLogs\Modules\Settings\Admin;
 use OneLogs\Modules\Settings\Settings;
 use OneLogs\Tests\TestCase;
@@ -142,67 +143,69 @@ final class AdminTest extends TestCase {
 	}
 
 	/**
-	 * Ensures admin body classes are returned as a string.
+	 * Ensures the settings script only loads on the settings screen.
 	 */
-	public function test_add_body_classes_returns_classes_string(): void {
-		set_current_screen( 'plugins.php' );
+	public function test_enqueue_scripts_only_loads_on_the_settings_screen(): void {
+		( new Assets() )->register_assets();
 		$admin = new Admin();
 
-		$classes = $admin->add_body_classes( '' );
+		$admin->enqueue_scripts( 'plugins.php' );
+		$this->assertFalse( wp_script_is( Assets::SETTINGS_SCRIPT_HANDLE, 'enqueued' ) );
 
-		$this->assertIsString( $classes );
-		$this->assertStringContainsString( 'onelogs-site-selection-modal', $classes );
-		$this->assertStringContainsString( 'onelogs-missing-brand-sites', $classes );
+		$admin->enqueue_scripts( 'toplevel_page_' . Admin::MENU_SLUG );
+		$this->assertFalse( wp_script_is( Assets::SETTINGS_SCRIPT_HANDLE, 'enqueued' ) );
 
-		// Test with already configured which should remove the missing-brand-sites class and keep the modal class.
-		update_option( Settings::OPTION_SITE_TYPE, Settings::SITE_TYPE_GOVERNING );
-		update_option(
-			Settings::OPTION_GOVERNING_SHARED_SITES,
-			[
-				[
-					'url'     => 'https://example.com',
-					'name'    => 'Test',
-					'api_key' => '',
-				],
-			]
-		);
-		$classes = $admin->add_body_classes( '' );
-		$this->assertIsString( $classes );
-		$this->assertStringNotContainsString( 'onelogs-site-selection-modal', $classes );
-		$this->assertStringNotContainsString( 'onelogs-missing-brand-sites', $classes );
+		$admin->enqueue_scripts( Admin::MENU_SLUG . '_page_' . Admin::SCREEN_ID );
+		$this->assertTrue( wp_script_is( Assets::SETTINGS_SCRIPT_HANDLE, 'enqueued' ) );
 
-		// Test with a bad current screen which should return the original classes unmodified.
-		set_current_screen( 'not-a-real-screen' );
-		$classes = $admin->add_body_classes( 'original-classes' );
-		$this->assertSame( 'original-classes', $classes );
+		wp_dequeue_script( Assets::SETTINGS_SCRIPT_HANDLE );
 	}
 
 	/**
-	 * Ensures the site-selection modal renders when onboarding is needed.
+	 * Ensures the setup notice links to the settings page while the site type isn't chosen (QA TC-011).
 	 */
-	public function test_inject_site_selection_modal_outputs_html_when_conditions_met(): void {
-		set_current_screen( 'plugins.php' );
+	public function test_render_notices_shows_setup_notice_until_the_site_type_is_set(): void {
+		set_current_screen( 'plugins' );
 
-		ob_start();
-		( new Admin() )->inject_site_selection_modal();
-		$output = (string) ob_get_clean();
+		$output = $this->render_notices();
+		$this->assertStringContainsString( 'OneLogs needs to be set up.', $output );
+		$this->assertStringContainsString( 'admin.php?page=' . Admin::SCREEN_ID, $output );
 
-		$this->assertStringContainsString( 'onelogs-site-selection-modal', $output );
-		$this->assertStringContainsString( 'onelogs-modal', $output );
+		update_option( Settings::OPTION_SITE_TYPE, Settings::SITE_TYPE_GOVERNING );
+
+		$this->assertSame( '', $this->render_notices() );
 	}
 
 	/**
-	 * Ensures the site-selection modal does not render after setup.
+	 * Ensures the setup notice is only shown on the plugins and dashboard screens.
 	 */
-	public function test_inject_site_selection_modal_outputs_nothing_when_site_type_set(): void {
-		update_option( Settings::OPTION_SITE_TYPE, Settings::SITE_TYPE_GOVERNING );
-		set_current_screen( 'plugins.php' );
+	public function test_render_notices_only_shows_on_plugins_and_dashboard(): void {
+		set_current_screen( 'dashboard' );
+		$this->assertStringContainsString( 'OneLogs needs to be set up.', $this->render_notices() );
 
+		// The settings page shows the site type picker itself.
+		set_current_screen( Admin::MENU_SLUG . '_page_' . Admin::SCREEN_ID );
+		$this->assertSame( '', $this->render_notices() );
+	}
+
+	/**
+	 * Ensures users who can't set the site type don't see the setup notice.
+	 */
+	public function test_render_notices_requires_manage_options(): void {
+		wp_set_current_user( self::factory()->user->create( [ 'role' => 'editor' ] ) );
+		set_current_screen( 'plugins' );
+
+		$this->assertSame( '', $this->render_notices() );
+	}
+
+	/**
+	 * Renders the admin notices.
+	 */
+	private function render_notices(): string {
 		ob_start();
-		( new Admin() )->inject_site_selection_modal();
-		$output = (string) ob_get_clean();
+		( new Admin() )->render_notices();
 
-		$this->assertSame( '', trim( $output ) );
+		return trim( (string) ob_get_clean() );
 	}
 
 	/**

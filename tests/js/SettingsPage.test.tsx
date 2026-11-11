@@ -116,6 +116,11 @@ jest.mock( '@/components/SiteSettings', () => ( {
 	default: () => <div data-testid="site-settings">Brand Site Settings</div>,
 } ) );
 
+jest.mock( '@/components/SiteTypeSettings', () => ( {
+	__esModule: true,
+	default: () => <div data-testid="site-type-settings">Site Type</div>,
+} ) );
+
 import SettingsPage from '@/admin/settings/page';
 
 const mockedApiFetch = apiFetch as jest.MockedFunction< typeof apiFetch >;
@@ -166,11 +171,14 @@ describe( 'SettingsPage', () => {
 		mockSubmitResults.length = 0;
 	} );
 
-	it( 'shows neither settings view until the site type is chosen in the setup modal', () => {
+	it( 'shows the site type picker until the site type is chosen (QA TC-011)', () => {
 		setSettings( '' );
 
 		render( <SettingsPage /> );
 
+		expect(
+			screen.getByTestId( 'site-type-settings' )
+		).toBeInTheDocument();
 		expect( screen.queryByTestId( 'site-table' ) ).not.toBeInTheDocument();
 		expect(
 			screen.queryByTestId( 'site-settings' )
@@ -183,6 +191,9 @@ describe( 'SettingsPage', () => {
 		render( <SettingsPage /> );
 
 		expect( screen.getByTestId( 'site-settings' ) ).toBeInTheDocument();
+		expect(
+			screen.queryByTestId( 'site-type-settings' )
+		).not.toBeInTheDocument();
 		expect( screen.queryByTestId( 'site-table' ) ).not.toBeInTheDocument();
 	} );
 
