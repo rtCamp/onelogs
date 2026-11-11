@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace OneLogs\Modules\Core;
 
 use OneLogs\Contracts\Interfaces\Registrable;
+use OneLogs\Modules\Rest\Abstract_REST_Controller;
 use OneLogs\Modules\Settings\Settings;
 
 /**
@@ -40,9 +41,9 @@ final class Assets implements Registrable {
 	 *
 	 * @var array{
 	 *   apiKey: string,
-	 *   nonce: string,
-	 *   restUrl: string,
+	 *   restNamespace: string,
 	 *   setupUrl: string,
+	 *   sharedSites: array{id: string, name: string, url: string}[],
 	 *   siteName: string,
 	 *   siteType: ?string,
 	 * }
@@ -68,9 +69,9 @@ final class Assets implements Registrable {
 	 *
 	 * @return array{
 	 *   apiKey: string,
-	 *   nonce: string,
-	 *   restUrl: string,
+	 *   restNamespace: string,
 	 *   setupUrl: string,
+	 *   sharedSites: array{id: string, name: string, url: string}[],
 	 *   siteName: string,
 	 *   siteType: ?string,
 	 * }
@@ -78,12 +79,14 @@ final class Assets implements Registrable {
 	public static function get_localized_data(): array {
 		if ( empty( self::$localized_data ) ) {
 			self::$localized_data = [
-				'apiKey'   => Settings::get_api_key(),
-				'nonce'    => wp_create_nonce( 'wp_rest' ),
-				'restUrl'  => esc_url( home_url( '/wp-json' ) ),
-				'setupUrl' => esc_url( admin_url( 'admin.php?page=onelogs-settings' ) ),
-				'siteName' => get_bloginfo( 'name' ),
-				'siteType' => Settings::get_site_type(),
+				// Only brand sites use a key of their own, so governing sites don't generate one.
+				'apiKey'        => Settings::is_consumer_site() ? Settings::get_api_key() : '',
+				'restNamespace' => Abstract_REST_Controller::NAMESPACE,
+				'setupUrl'      => esc_url( admin_url( 'admin.php?page=onelogs-settings' ) ),
+				// The brand sites' keys never leave the server.
+				'sharedSites'   => Settings::is_governing_site() ? Settings::get_shared_sites_without_keys() : [],
+				'siteName'      => get_bloginfo( 'name' ),
+				'siteType'      => Settings::get_site_type(),
 			];
 		}
 

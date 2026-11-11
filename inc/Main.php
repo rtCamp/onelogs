@@ -25,11 +25,13 @@ final class Main {
 	 */
 	private const REGISTRABLE_CLASSES = [
 		Modules\Core\Assets::class,
-		Modules\Core\Rest::class,
 		Modules\Settings\Admin::class,
 		Modules\Settings\Settings::class,
-		Modules\Rest\Basic_Options_Controller::class,
+		Modules\Rest\Brand_Site_Controller::class,
+		Modules\Rest\Governing_Site_Controller::class,
 		Modules\Rest\Logs_REST_Controller::class,
+		Modules\Rest\Secret_Key_Controller::class,
+		Modules\Rest\Shared_Sites_Controller::class,
 		Modules\Logs\Admin::class,
 	];
 
