@@ -5,7 +5,7 @@ Tags: OneLogs, Site Logs, Site Activity, Activity Logs, Stream, Multisite, Netwo
 Requires at least: 6.8
 Tested up to: 6.9
 <!-- x-release-please-start-version -->
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 <!-- x-release-please-end -->
 Requires PHP: 8.2
 License: GPLv2 or later
