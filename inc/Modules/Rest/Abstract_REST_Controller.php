@@ -13,11 +13,13 @@ namespace OneLogs\Modules\Rest;
 
 use OneLogs\Contracts\Interfaces\Registrable;
 use OneLogs\Modules\Settings\Settings;
+use OneLogs\Utils;
+use WP_REST_Controller;
 
 /**
  * Class - Abstract_REST_Controller
  */
-abstract class Abstract_REST_Controller extends \WP_REST_Controller implements Registrable {
+abstract class Abstract_REST_Controller extends WP_REST_Controller implements Registrable {
 	/**
 	 * The namespace for the REST API.
 	 */
@@ -53,90 +55,81 @@ abstract class Abstract_REST_Controller extends \WP_REST_Controller implements R
 	}
 
 	/**
-	 * Checks for the use of the OneLogs API key in the request headers.
+	 * Whether the request is from a brand site of this governing site, signed with that brand's API key.
 	 *
-	 * @todo this should be on a hook.
-	 *
-	 * @param \WP_REST_Request<array{}> $request Request.
-	 * @return bool
+	 * @param \WP_REST_Request<array<string,mixed>> $request Request.
 	 */
-	public function check_api_permissions( $request ) {
-		// check if the request is from same site.
-		if ( Settings::is_governing_site() ) {
-			return current_user_can( 'manage_options' );
-		}
-
-		// See if the `X_ONELOGS_TOKEN` header is present.
-		$token = $request->get_header( 'X_ONELOGS_TOKEN' );
-		$token = ! empty( $token ) ? sanitize_text_field( wp_unslash( $token ) ) : '';
-
-		// Bail if the token is missing or invalid.
-		if ( ! hash_equals( Settings::get_api_key(), $token ) ) {
+	public function is_brand_request( $request ): bool {
+		if ( ! Settings::is_governing_site() ) {
 			return false;
 		}
 
-		$request_origin = $request->get_header( 'origin' ) ?: $request->get_header( 'referer' );
-		$request_origin = ! empty( $request_origin ) ? esc_url_raw( wp_unslash( $request_origin ) ) : '';
-		$user_agent     = $request->get_header( 'user-agent' );
-		$user_agent     = ! empty( $user_agent ) ? sanitize_text_field( wp_unslash( $user_agent ) ) : '';
+		$shared_sites = Settings::get_shared_sites();
+		$site_url     = $this->get_requesting_site_url( $request );
 
-		/**
-		 * If both origin and user-agent are missing, deny access.
-		 *
-		 * Here checking both because server side requests will not have origin header.
-		 */
-		if ( empty( $request_origin ) && empty( $user_agent ) ) {
+		return $this->has_api_key( $request, $shared_sites[ $site_url ]['api_key'] ?? '' );
+	}
+
+	/**
+	 * Whether the request is from the governing site this brand site is connected to, signed with this site's API key.
+	 *
+	 * @param \WP_REST_Request<array<string,mixed>> $request Request.
+	 */
+	public function is_governing_request( $request ): bool {
+		if ( ! Settings::is_consumer_site() ) {
 			return false;
-		}
-
-		// If it's the same domain, we're good.
-		if ( $this->is_same_domain( get_site_url(), $request_origin ) ) {
-			return true;
 		}
 
 		$governing_site_url = Settings::get_parent_site_url();
+		$governing_site_url = ! empty( $governing_site_url ) ? Utils::normalize_url( $governing_site_url ) : null;
 
-		// If it's a healthcheck with no governing site, allow it and set the governing site.
-		if ( empty( $governing_site_url ) ) {
-			if ( '/' . $this->namespace . '/health-check' === $request->get_route() ) {
-				Settings::set_parent_site_url( $request_origin );
-				return true;
-			}
-			return false;
-		}
-
-		// if token is valid and request is from different domain then check if it matches governing site url.
-		return $this->is_same_domain( $governing_site_url, $request_origin ) || false !== strpos( $user_agent, $governing_site_url );
+		return $governing_site_url === $this->get_requesting_site_url( $request )
+			&& $this->has_api_key( $request, Settings::get_api_key() );
 	}
 
 	/**
-	 * Build API endpoint URL.
+	 * Gets the normalized URL of the site that sent the request, from its X-OneLogs-Site-URL header.
 	 *
-	 * @param string $site_url       The base URL of the site.
-	 * @param string $endpoint       The specific endpoint path.
-	 * @param string $rest_namespace The REST namespace. Default: onelogs/v1).
+	 * @param \WP_REST_Request<array<string,mixed>>|\WP_REST_Request<array{}> $request Request.
 	 *
-	 * @return string Full API endpoint URL.
+	 * @return string The normalized URL, or an empty string if the header is missing or invalid.
 	 */
-	protected function build_api_endpoint( string $site_url, string $endpoint, string $rest_namespace = self::NAMESPACE ): string {
-		return esc_url_raw( trailingslashit( $site_url ) ) . '/wp-json/' . $rest_namespace . '/' . ltrim( $endpoint, '/' );
+	protected function get_requesting_site_url( $request ): string {
+		$header   = $request->get_header( 'X-OneLogs-Site-URL' );
+		$site_url = ! empty( $header ) ? esc_url_raw( wp_unslash( $header ) ) : '';
+		$parsed   = wp_parse_url( $site_url );
+
+		return ! empty( $parsed['scheme'] ) && ! empty( $parsed['host'] ) ? Utils::normalize_url( $site_url ) : '';
 	}
 
 	/**
-	 * Check if two URLs belong to the same domain.
+	 * Whether the request's X-OneLogs-Token is the given API key.
 	 *
-	 * @param string $url1 First URL.
-	 * @param string $url2 Second URL.
-	 *
-	 * @return bool True if both URLs belong to the same domain, false otherwise.
+	 * @param \WP_REST_Request<array<string,mixed>> $request Request.
+	 * @param string                                $api_key The API key the sender should hold.
 	 */
-	private function is_same_domain( string $url1, string $url2 ): bool {
-		$parsed_url1 = wp_parse_url( $url1 );
-		$parsed_url2 = wp_parse_url( $url2 );
+	protected function has_api_key( $request, string $api_key ): bool {
+		$token = (string) $request->get_header( 'X-OneLogs-Token' );
 
-		if ( ! isset( $parsed_url1['host'] ) || ! isset( $parsed_url2['host'] ) ) {
-			return false;
+		return '' !== $api_key && '' !== $token && hash_equals( $api_key, $token );
+	}
+
+	/**
+	 * Converts an error from another site into a response for the browser.
+	 *
+	 * VIP's edge swaps a 502 body for its error page unless the response says it came from the site, which would hide the message.
+	 *
+	 * @see https://docs.wpvip.com/infrastructure/edge-servers/custom-error-pages/
+	 *
+	 * @param \WP_Error $error The error.
+	 */
+	protected function remote_error_response( \WP_Error $error ): \WP_REST_Response {
+		$response = rest_convert_error_to_response( $error );
+
+		if ( 502 === $response->get_status() ) {
+			$response->header( 'x-vip-reached-origin', 'true' );
 		}
-		return hash_equals( $parsed_url1['host'], $parsed_url2['host'] );
+
+		return $response;
 	}
 }

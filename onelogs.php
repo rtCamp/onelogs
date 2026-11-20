@@ -70,7 +70,12 @@ if ( ! \OneLogs\Autoloader::autoload() ) {
 	return;
 }
 
-// Load the plugin.
+// Load the plugin once all plugins are loaded, since Stream (which loads after OneLogs) has to be checked first.
 if ( class_exists( '\OneLogs\Main' ) ) {
-	\OneLogs\Main::instance();
+	add_action(
+		'plugins_loaded',
+		static function (): void {
+			\OneLogs\Main::instance();
+		}
+	);
 }

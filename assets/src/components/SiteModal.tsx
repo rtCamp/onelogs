@@ -1,23 +1,25 @@
-import { useState, useMemo } from 'react';
+/**
+ * External dependencies
+ */
+import { useMemo, useState } from 'react';
+
+/**
+ * WordPress dependencies
+ */
 import {
+	Button,
 	Modal,
+	Notice,
 	TextControl,
 	TextareaControl,
-	Button,
-	Notice,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { isValidUrl } from '../js/utils';
-
-interface BrandSite {
-	name: string;
-	url: string;
-	api_key: string;
-}
+import type { BrandSite } from '@/admin/settings/page';
+import { isValidUrl, normalizeUrl } from '@/js/utils';
 
 interface ErrorsType {
 	name: string;
@@ -32,14 +34,17 @@ const SiteModal = ( {
 	onSubmit,
 	onClose,
 	editing,
+	sites,
 	originalData,
 }: {
 	formData: BrandSite;
 	setFormData: ( data: BrandSite ) => void;
-	onSubmit: () => Promise< Response >;
+	// Resolves true on success, or false or the server's error message on failure.
+	onSubmit: () => Promise< boolean | string >;
 	onClose: () => void;
 	editing: boolean;
-	originalData?: BrandSite | undefined;
+	sites: BrandSite[];
+	originalData: BrandSite | undefined;
 } ) => {
 	const [ errors, setErrors ] = useState< ErrorsType >( {
 		name: '',
@@ -50,12 +55,32 @@ const SiteModal = ( {
 	const [ showNotice, setShowNotice ] = useState( false );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
+	// A blank API key means the user hasn't typed one yet. When editing, it keeps the stored key.
+	const typedApiKey = ( formData.api_key ?? '' ).trim();
+	const needsApiKey =
+		! editing ||
+		normalizeUrl( formData.url ) !==
+			normalizeUrl( originalData?.url ?? '' );
+
+	// Check if form data has changed from original data (only for editing mode)
+	const hasChanges = useMemo( () => {
+		if ( ! editing ) {
+			return true;
+		} // Always allow submission for new sites
+
+		return (
+			formData.name !== originalData?.name ||
+			formData.url !== originalData?.url ||
+			typedApiKey !== ''
+		);
+	}, [ editing, formData, originalData, typedApiKey ] );
+
 	const handleSubmit = async (): Promise< void > => {
 		// Validate inputs
 		let siteUrlError = '';
 		if ( ! formData.url.trim() ) {
 			siteUrlError = __( 'Site URL is required.', 'onelogs' );
-		} else if ( ! isValidUrl( formData.url ) ) {
+		} else if ( ! isValidUrl( formData.url.trim() ) ) {
 			siteUrlError = __(
 				'Enter a valid URL (must start with http or https).',
 				'onelogs'
@@ -67,9 +92,10 @@ const SiteModal = ( {
 				? __( 'Site Name is required.', 'onelogs' )
 				: '',
 			url: siteUrlError,
-			api_key: ! formData.api_key.trim()
-				? __( 'API Key is required.', 'onelogs' )
-				: '',
+			api_key:
+				needsApiKey && ! typedApiKey
+					? __( 'API Key is required.', 'onelogs' )
+					: '',
 			message: '',
 		};
 
@@ -89,65 +115,44 @@ const SiteModal = ( {
 			return;
 		}
 
+		// Different spellings of the same URL, like `HTTPS://Brand.test` and `https://brand.test/`, are the same site.
+		const formUrl = normalizeUrl( formData.url );
+		const isAlreadyExists = sites.some(
+			( site ) =>
+				normalizeUrl( site.url ) === formUrl &&
+				// Allow keeping the original url in editing mode.
+				! (
+					editing &&
+					normalizeUrl( originalData?.url ?? '' ) === formUrl
+				)
+		);
+
+		if ( isAlreadyExists ) {
+			setErrors( {
+				...newErrors,
+				message: __( 'Brand Site already exists.', 'onelogs' ),
+			} );
+			setShowNotice( true );
+			return;
+		}
+
 		// Start processing
 		setIsProcessing( true );
 		setShowNotice( false );
 
 		try {
-			// Perform health-check
-			const healthCheck = await fetch(
-				`${ formData.url }/wp-json/onelogs/v1/health-check`,
-				{
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-OneLogs-Token': formData.api_key,
-					},
-				}
-			);
+			const submitResponse = await onSubmit();
 
-			const healthCheckData = await healthCheck.json();
-			if ( ! healthCheckData.success ) {
-				setErrors( {
-					...newErrors,
-					message: __(
-						'Health check failed. Please ensure the site is accessible and the api key is correct.',
-						'onelogs'
-					),
-				} );
-				setShowNotice( true );
-				setIsProcessing( false );
-				return;
-			}
-
-			setShowNotice( false );
-			const submitResponse: Response & {
-				data?: { status?: number };
-				message?: string;
-			} = await onSubmit();
-
-			if ( ! submitResponse?.ok ) {
-				const errorData = await submitResponse?.json();
+			if ( submitResponse !== true ) {
 				setErrors( {
 					...newErrors,
 					message:
-						errorData.message ||
-						__(
-							'An error occurred while saving the site. Please try again.',
-							'onelogs'
-						),
-				} );
-				setShowNotice( true );
-			}
-			if ( submitResponse?.data?.status === 400 ) {
-				setErrors( {
-					...newErrors,
-					message:
-						submitResponse?.message ||
-						__(
-							'An error occurred while saving the site. Please try again.',
-							'onelogs'
-						),
+						typeof submitResponse === 'string' && submitResponse
+							? submitResponse
+							: __(
+									'An error occurred while saving the site. Please try again.',
+									'onelogs'
+							  ),
 				} );
 				setShowNotice( true );
 			}
@@ -160,25 +165,10 @@ const SiteModal = ( {
 				),
 			} );
 			setShowNotice( true );
-			setIsProcessing( false );
-			return;
 		} finally {
 			setIsProcessing( false );
 		}
 	};
-
-	// Check if form data has changed from original data (only for editing mode)
-	const hasChanges = useMemo( () => {
-		if ( ! editing ) {
-			return true;
-		} // Always allow submission for new sites
-
-		return (
-			formData.name !== originalData?.name ||
-			formData.url !== originalData?.url ||
-			formData.api_key !== originalData?.api_key
-		);
-	}, [ editing, formData, originalData ] );
 
 	// Button should be disabled if:
 	// 1. Currently processing, OR
@@ -188,7 +178,7 @@ const SiteModal = ( {
 		isProcessing ||
 		! formData.name ||
 		! formData.url ||
-		! formData.api_key ||
+		( needsApiKey && ! typedApiKey ) ||
 		( editing && ! hasChanges );
 
 	return (
@@ -241,17 +231,27 @@ const SiteModal = ( {
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 			/>
-
 			<TextareaControl
-				label={ __( 'API Key*', 'onelogs' ) }
-				value={ formData.api_key }
+				label={
+					needsApiKey
+						? __( 'API Key*', 'onelogs' )
+						: __( 'API Key', 'onelogs' )
+				}
+				value={ formData.api_key ?? '' }
 				onChange={ ( value ) =>
 					setFormData( { ...formData, api_key: value } )
 				}
-				help={ __(
-					'This is the API key that will be used to authenticate the site for OneLogs.',
-					'onelogs'
-				) }
+				help={
+					needsApiKey
+						? __(
+								'This is the API key that will be used to authenticate the site for OneLogs.',
+								'onelogs'
+						  )
+						: __(
+								'Leave blank to keep the current key.',
+								'onelogs'
+						  )
+				}
 				__nextHasNoMarginBottom
 			/>
 

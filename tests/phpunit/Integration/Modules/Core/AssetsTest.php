@@ -65,18 +65,63 @@ final class AssetsTest extends TestCase {
 	}
 
 	/**
-	 * Ensures localized data exposes the expected keys.
+	 * Ensures localized data exposes the expected keys, and a governing site gets no keys at all.
 	 */
 	public function test_get_localized_data_returns_expected_keys(): void {
+		$this->reset_localized_data();
 		update_option( Settings::OPTION_SITE_TYPE, Settings::SITE_TYPE_GOVERNING, false );
+		Settings::set_shared_sites(
+			[
+				[
+					'id'      => 'site-one',
+					'name'    => 'Brand One',
+					'url'     => 'https://brand.test',
+					'api_key' => 'brand-key',
+				],
+			]
+		);
 
 		$data = Assets::get_localized_data();
 
-		$this->assertArrayHasKey( 'nonce', $data );
-		$this->assertArrayHasKey( 'apiKey', $data );
-		$this->assertArrayHasKey( 'restUrl', $data );
-		$this->assertArrayHasKey( 'setupUrl', $data );
-		$this->assertArrayHasKey( 'siteType', $data );
-		$this->assertArrayHasKey( 'siteName', $data );
+		$this->assertSame( [ 'apiKey', 'restNamespace', 'setupUrl', 'sharedSites', 'siteName', 'siteType' ], array_keys( $data ) );
+		$this->assertSame( 'onelogs/v1', $data['restNamespace'] );
+		$this->assertSame( Settings::SITE_TYPE_GOVERNING, $data['siteType'] );
+
+		// Governing sites don't have a key of their own, and the brand sites' keys never reach the browser.
+		$this->assertSame( '', $data['apiKey'] );
+		$this->assertSame(
+			[
+				[
+					'id'   => 'site-one',
+					'name' => 'Brand One',
+					'url'  => 'https://brand.test/',
+				],
+			],
+			$data['sharedSites']
+		);
+		$this->assertStringNotContainsString( 'brand-key', (string) wp_json_encode( $data ) );
+
+		delete_option( Settings::OPTION_GOVERNING_SHARED_SITES );
+	}
+
+	/**
+	 * Ensures a brand site gets its own key, which its settings screen shows.
+	 */
+	public function test_get_localized_data_gives_brand_sites_their_key(): void {
+		$this->reset_localized_data();
+		update_option( Settings::OPTION_SITE_TYPE, Settings::SITE_TYPE_CONSUMER, false );
+
+		$data = Assets::get_localized_data();
+
+		$this->assertSame( Settings::get_api_key(), $data['apiKey'] );
+		$this->assertSame( [], $data['sharedSites'] );
+	}
+
+	/**
+	 * Clears the cached localized data, so each test builds it for its own settings.
+	 */
+	private function reset_localized_data(): void {
+		$property = new \ReflectionProperty( Assets::class, 'localized_data' );
+		$property->setValue( null, [] );
 	}
 }

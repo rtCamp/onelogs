@@ -11,6 +11,7 @@ namespace OneLogs\Modules\Settings;
 
 use OneLogs\Contracts\Interfaces\Registrable;
 use OneLogs\Encryptor;
+use OneLogs\Utils;
 
 /**
  * Class - Settings
@@ -87,11 +88,8 @@ final class Settings implements Registrable {
 				'label'             => __( 'Consumer API Key', 'onelogs' ),
 				'description'       => __( 'API key used by governing site to authenticate requests from this consumer site.', 'onelogs' ),
 				'sanitize_callback' => 'sanitize_text_field',
-				'show_in_rest'      => [
-					'schema' => [
-						'type' => 'string',
-					],
-				],
+				// Core would return the encrypted key and save a new one unencrypted, so it's only regenerated through the OneLogs route.
+				'show_in_rest'      => false,
 			],
 			self::OPTION_CONSUMER_PARENT_SITE_URL => [
 				'type'              => 'string',
@@ -115,29 +113,8 @@ final class Settings implements Registrable {
 				'label'             => __( 'Brand Sites', 'onelogs' ),
 				'description'       => __( 'An array of brand sites connected to this governing site.', 'onelogs' ),
 				'sanitize_callback' => [ self::class, 'sanitize_shared_sites' ],
-				'show_in_rest'      => [
-					'schema' => [
-						'type'  => 'array',
-						'items' => [
-							'type'       => 'object',
-							'properties' => [
-								'id'      => [
-									'type' => 'string',
-								],
-								'name'    => [
-									'type' => 'string',
-								],
-								'url'     => [
-									'type'   => 'string',
-									'format' => 'uri',
-								],
-								'api_key' => [
-									'type' => 'string',
-								],
-							],
-						],
-					],
-				],
+				// The stored sites hold the brand keys, which never leave the server. They're managed through the OneLogs routes.
+				'show_in_rest'      => false,
 			],
 		];
 
@@ -222,7 +199,7 @@ final class Settings implements Registrable {
 	 */
 
 	/**
-	 * Get brand sites configured for this governing site, keyed by the (trailing-slash) URL.
+	 * Get brand sites configured for this governing site, keyed by the normalized URL.
 	 *
 	 * @return array<string,array{
 	 *  api_key: string,
@@ -240,8 +217,8 @@ final class Settings implements Registrable {
 				continue;
 			}
 
-			// Always use a trailing-slash URL.
-			$url = trailingslashit( $brand['url'] );
+			// Always use the normalized URL, so lookups match however the URL was typed.
+			$url = Utils::normalize_url( (string) $brand['url'] );
 
 			// API keys are stored encrypted — decrypt on read.
 			$api_key = '';
@@ -262,6 +239,26 @@ final class Settings implements Registrable {
 	}
 
 	/**
+	 * Gets the brand sites for the browser, without their API keys. The keys never leave the server.
+	 *
+	 * @return array{
+	 *  id: string,
+	 *  name: string,
+	 *  url: string,
+	 * }[]
+	 */
+	public static function get_shared_sites_without_keys(): array {
+		return array_map(
+			static fn ( array $site ): array => [
+				'id'   => $site['id'],
+				'name' => $site['name'],
+				'url'  => $site['url'],
+			],
+			array_values( self::get_shared_sites() )
+		);
+	}
+
+	/**
 	 * Get a single brand site by URL
 	 *
 	 * @param string $site_url The site URL.
@@ -274,41 +271,15 @@ final class Settings implements Registrable {
 	 * }
 	 */
 	public static function get_shared_site_by_url( string $site_url ): ?array {
-		$brand_sites = self::get_shared_sites();
-
-		$normalized_url = trailingslashit( $site_url );
-
-		return $brand_sites[ $normalized_url ] ?? null;
-	}
-
-	/**
-	 * Get a single brand site by name
-	 *
-	 * @param string $site_name The site name.
-	 *
-	 * @return ?array{
-	 *   api_key: string,
-	 *   id: string,
-	 *   name: string,
-	 *   url: string,
-	 * }
-	 */
-	public static function get_shared_site_by_name( string $site_name ): ?array {
-		$brand_sites = self::get_shared_sites();
-		foreach ( $brand_sites as $site ) {
-			if ( $site['name'] === $site_name ) {
-				return $site;
-			}
-		}
-		return null;
+		return self::get_shared_sites()[ Utils::normalize_url( $site_url ) ] ?? null;
 	}
 
 	/**
 	 * Set the shared sites.
 	 *
-	 * @param array<string,array<string,mixed>> $sites The sites to set.
+	 * @param array<array-key,array<string,mixed>> $sites The sites to set.
 	 *
-	 * @phpstan-param array<string,array{
+	 * @phpstan-param array<array-key,array{
 	 *   api_key?: string,
 	 *   id?: string,
 	 *   name?: string,
@@ -335,6 +306,31 @@ final class Settings implements Registrable {
 		}
 
 		return update_option( self::OPTION_GOVERNING_SHARED_SITES, array_values( $sites ), false );
+	}
+
+	/**
+	 * Remove a single brand site by URL.
+	 *
+	 * @param string $site_url The site URL.
+	 *
+	 * @return bool Whether the site was removed.
+	 */
+	public static function remove_shared_site( string $site_url ): bool {
+		$sites = get_option( self::OPTION_GOVERNING_SHARED_SITES, [] );
+		$sites = is_array( $sites ) ? $sites : [];
+
+		$normalized_url = Utils::normalize_url( $site_url );
+
+		$remaining_sites = array_filter(
+			$sites,
+			static fn ( $site ): bool => empty( $site['url'] ) || Utils::normalize_url( (string) $site['url'] ) !== $normalized_url
+		);
+
+		if ( count( $remaining_sites ) === count( $sites ) ) {
+			return false;
+		}
+
+		return update_option( self::OPTION_GOVERNING_SHARED_SITES, array_values( $remaining_sites ), false );
 	}
 
 	/**

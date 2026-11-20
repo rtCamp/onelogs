@@ -8,6 +8,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import apiFetch from '@wordpress/api-fetch';
 
 import OnboardingScreen from '@/admin/onboarding/page';
+import type { OneLogsSettings } from '@/types/global';
 
 const mockedApiFetch = apiFetch as jest.MockedFunction< typeof apiFetch >;
 
@@ -18,8 +19,7 @@ describe( 'OnboardingScreen', () => {
 	beforeEach( () => {
 		mockedApiFetch.mockReset();
 		window.OneLogsSettings = {
-			...window.OneLogsSettings,
-			nonce: 'onboarding-nonce',
+			...( window.OneLogsSettings as OneLogsSettings ),
 			siteType: '',
 		};
 

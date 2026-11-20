@@ -60,6 +60,9 @@ final class SettingsTest extends TestCase {
 
 		$this->assertSettingRegistered( Settings::OPTION_CONSUMER_API_KEY );
 		$this->assertSettingRegistered( Settings::OPTION_CONSUMER_PARENT_SITE_URL );
+
+		// The key is only shown on the settings screen and regenerated through the OneLogs route.
+		$this->assertFalse( get_registered_settings()[ Settings::OPTION_CONSUMER_API_KEY ]['show_in_rest'] );
 	}
 
 	/** Ensures register_settings registers governing options. */
@@ -69,6 +72,9 @@ final class SettingsTest extends TestCase {
 		$this->settings->register_settings();
 
 		$this->assertSettingRegistered( Settings::OPTION_GOVERNING_SHARED_SITES );
+
+		// The stored sites hold the brand sites' keys, which never leave the server.
+		$this->assertFalse( get_registered_settings()[ Settings::OPTION_GOVERNING_SHARED_SITES ]['show_in_rest'] );
 	}
 
 	/** Ensures get_site_type returns null when not set. */
@@ -208,6 +214,73 @@ final class SettingsTest extends TestCase {
 		);
 
 		$this->assertSame( 'Brand One', Settings::get_shared_site_by_url( 'https://brand-one.example' )['name'] );
+	}
+
+	/** Ensures get_shared_site_by_url finds a site however its URL is spelled (TC-037). */
+	public function test_get_shared_site_by_url_matches_url_variants(): void {
+		Settings::set_shared_sites(
+			[
+				[
+					'id'      => 'brand-1',
+					'name'    => 'Brand One',
+					'url'     => 'https://brand-one.example',
+					'api_key' => 'brand-one-key',
+				],
+			]
+		);
+
+		foreach ( [ 'https://brand-one.example/', 'HTTPS://Brand-One.example', ' https://brand-one.example ' ] as $variant ) {
+			$this->assertSame( 'Brand One', Settings::get_shared_site_by_url( $variant )['name'] ?? null, $variant );
+		}
+	}
+
+	/** Ensures the sites for the browser have no keys. */
+	public function test_get_shared_sites_without_keys(): void {
+		Settings::set_shared_sites(
+			[
+				[
+					'id'      => 'brand-1',
+					'name'    => 'Brand One',
+					'url'     => 'https://brand-one.example',
+					'api_key' => 'brand-one-key',
+				],
+			]
+		);
+
+		$this->assertSame(
+			[
+				[
+					'id'   => 'brand-1',
+					'name' => 'Brand One',
+					'url'  => 'https://brand-one.example/',
+				],
+			],
+			Settings::get_shared_sites_without_keys()
+		);
+	}
+
+	/** Ensures remove_shared_site removes only the matching site. */
+	public function test_remove_shared_site(): void {
+		Settings::set_shared_sites(
+			[
+				[
+					'id'      => 'brand-1',
+					'name'    => 'Brand One',
+					'url'     => 'https://brand-one.example',
+					'api_key' => 'brand-one-key',
+				],
+				[
+					'id'      => 'brand-2',
+					'name'    => 'Brand Two',
+					'url'     => 'https://brand-two.example',
+					'api_key' => 'brand-two-key',
+				],
+			]
+		);
+
+		$this->assertFalse( Settings::remove_shared_site( 'https://unknown.example' ) );
+		$this->assertTrue( Settings::remove_shared_site( 'HTTPS://Brand-One.example/' ) );
+		$this->assertSame( [ 'https://brand-two.example/' ], array_keys( Settings::get_shared_sites() ) );
 	}
 
 	/** Ensures get_shared_site_by_url returns null for unknown URLs. */

@@ -83,21 +83,9 @@ export type APIResponse = {
 
 export type StringArrayResponse = string[];
 
-export type fetchReturn =
-	| APIResponse
-	| StringArrayResponse
-	| string
-	| SharedSite[];
+export type fetchReturn = APIResponse | StringArrayResponse;
 
-export interface SharedSite {
-	api_key: string;
-	id: string;
-	name: string;
-	url: string;
-}
-
-export interface OneLogsDataType {
-	restUrl: string;
-	nonce: string;
-	apiKey: string;
-}
+/**
+ * A brand site, without its API key, which never leaves the server.
+ */
+export type { OneLogsSharedSite as SharedSite } from '@/types/global';

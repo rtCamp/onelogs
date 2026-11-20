@@ -4,30 +4,35 @@
  * @package
  */
 
-let settings: {
-	restUrl?: string;
-	nonce?: string;
-	apiKey?: string;
-	setupUrl?: string;
-	siteType?: string;
-	siteName?: string;
-} = {};
+/**
+ * Internal dependencies
+ */
+import type {
+	OneLogsSettings,
+	OneLogsSharedSite,
+	SiteType,
+} from '@/types/global';
 
-if ( typeof window.OneLogsSettings !== 'undefined' ) {
-	settings = window.OneLogsSettings;
-} else if ( typeof window.OneLogsData !== 'undefined' ) {
-	settings = window.OneLogsData;
-}
+// The settings screen and the logs dashboard localize the same data under different names.
+const settings: Partial< OneLogsSettings > =
+	window.OneLogsSettings ?? window.OneLogsData ?? {};
 
-const ONELOGS_REST_NAME = 'onelogs';
-const ONELOGS_REST_VERSION = 'v1';
+/**
+ * REST namespace used by the OneLogs plugin, e.g. `onelogs/v1`.
+ */
+const REST_NAMESPACE = settings.restNamespace || 'onelogs/v1';
 
-const API_NAMESPACE = settings?.restUrl
-	? settings.restUrl + `/${ ONELOGS_REST_NAME }/${ ONELOGS_REST_VERSION }`
-	: '';
-const NONCE = settings?.nonce ? settings.nonce : '';
-const API_KEY = settings?.apiKey ? settings.apiKey : '';
-const SITE_TYPE = settings?.siteType ? settings.siteType : '';
-const SITE_NAME = settings?.siteName ? settings.siteName : '';
+/**
+ * This brand site's own API key. Empty on governing sites.
+ */
+const API_KEY = settings.apiKey ?? '';
 
-export { API_NAMESPACE, NONCE, API_KEY, SITE_TYPE, SITE_NAME };
+const SITE_TYPE: SiteType = settings.siteType ?? '';
+const SITE_NAME = settings.siteName ?? '';
+
+/**
+ * The governing site's brand sites, without their API keys.
+ */
+const SHARED_SITES: OneLogsSharedSite[] = settings.sharedSites ?? [];
+
+export { REST_NAMESPACE, API_KEY, SITE_TYPE, SITE_NAME, SHARED_SITES };

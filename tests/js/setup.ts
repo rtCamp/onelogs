@@ -1,3 +1,5 @@
+/// <reference types="@wordpress/jest-console" />
+
 /**
  * External dependencies
  */
@@ -15,21 +17,12 @@ Object.defineProperty( global, 'fetch', {
 
 Object.defineProperty( window, 'OneLogsSettings', {
 	value: {
-		restUrl: 'https://example.com/wp-json',
-		nonce: 'nonce',
 		apiKey: 'api-key',
+		restNamespace: 'onelogs/v1',
+		setupUrl: '/wp-admin/admin.php?page=onelogs-settings',
+		sharedSites: [],
 		siteType: 'governing-site',
 		siteName: 'Example Site',
-		setupUrl: '/wp-admin/admin.php?page=onelogs-settings',
-	},
-	writable: true,
-} );
-
-Object.defineProperty( window, 'OneLogsOnboarding', {
-	value: {
-		nonce: 'onboarding-nonce',
-		siteType: '',
-		setupUrl: '',
 	},
 	writable: true,
 } );

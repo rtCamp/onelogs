@@ -20,12 +20,9 @@ interface NoticeState {
 	message: string;
 }
 
-const { nonce, setupUrl, siteType: initialSiteType } = window.OneLogsSettings;
-
-/**
- * Create NONCE middleware for apiFetch
- */
-apiFetch.use( apiFetch.createNonceMiddleware( nonce ) );
+// WordPress sets up apiFetch's nonce and root URL, so no middleware is needed here.
+const setupUrl = window.OneLogsSettings?.setupUrl ?? '';
+const initialSiteType = window.OneLogsSettings?.siteType ?? '';
 
 const SiteTypeSelector = ( {
 	value,

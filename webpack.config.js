@@ -79,7 +79,7 @@ const scripts = {
 			'src',
 			'admin',
 			'settings',
-			'index.js'
+			'index.tsx'
 		),
 	},
 	module: {

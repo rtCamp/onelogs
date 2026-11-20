@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { useEffect, useState, useCallback } from 'react';
+
+/**
+ * WordPress dependencies
+ */
 import {
 	TextareaControl,
 	Button,
@@ -11,68 +18,28 @@ import {
 	Modal,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Internal dependencies
  */
-import { API_NAMESPACE, NONCE, API_KEY } from '../js/constants';
-
-type NoticeState = {
-	type: 'success' | 'error' | 'warning' | 'info';
-	message: string;
-} | null;
+import type { NoticeType } from '@/admin/settings/page';
+import { API_KEY, REST_NAMESPACE } from '@/js/constants';
 
 const SiteSettings = () => {
 	const [ apiKey, setApiKey ] = useState( API_KEY );
-	const [ isLoading, setIsLoading ] = useState( false );
-	const [ notice, setNotice ] = useState< NoticeState >( null );
+	const [ isLoading, setIsLoading ] = useState( true );
+	const [ notice, setNotice ] = useState< NoticeType | null >( null );
 	const [ governingSite, setGoverningSite ] = useState( '' );
 	const [ showDisconnectionModal, setShowDisconnectionModal ] =
 		useState( false );
 
-	const fetchApiKey = useCallback( async () => {
-		try {
-			setIsLoading( true );
-			const response = await fetch( API_NAMESPACE + '/secret-key', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': NONCE,
-					'X-OneLogs-Token': API_KEY,
-				},
-			} );
-			if ( ! response.ok ) {
-				throw new Error( 'Network response was not ok' );
-			}
-			const data = await response.json();
-			setApiKey( data?.secret_key || '' );
-		} catch {
-			setNotice( {
-				type: 'error',
-				message: __(
-					'Failed to fetch API key. Please try again later.',
-					'onelogs'
-				),
-			} );
-		} finally {
-			setIsLoading( false );
-		}
-	}, [] );
-
-	// regenerate api key using REST endpoint.
 	const regenerateApiKey = useCallback( async () => {
 		try {
-			const response = await fetch( API_NAMESPACE + '/secret-key', {
+			const data = await apiFetch< { secret_key?: string } >( {
+				path: `/${ REST_NAMESPACE }/secret-key`,
 				method: 'POST',
-				headers: {
-					'X-WP-Nonce': NONCE,
-					'X-OneLogs-Token': API_KEY,
-				},
 			} );
-			if ( ! response.ok ) {
-				throw new Error( 'Network response was not ok' );
-			}
-			const data = await response.json();
 			if ( data?.secret_key ) {
 				setApiKey( data.secret_key );
 				setNotice( {
@@ -103,24 +70,11 @@ const SiteSettings = () => {
 	}, [] );
 
 	const fetchCurrentGoverningSite = useCallback( async () => {
-		setIsLoading( true );
 		try {
-			const response = await fetch(
-				`${ API_NAMESPACE }/governing-site?${ new Date().getTime() }`,
-				{
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-WP-Nonce': NONCE,
-						'X-OneLogs-Token': apiKey,
-					},
-				}
-			);
-			if ( ! response.ok ) {
-				throw new Error( 'Network response was not ok' );
-			}
-			const data = await response.json();
-			setGoverningSite( data?.governing_site_url || '' );
+			const data = await apiFetch< {
+				onelogs_parent_site_url?: string;
+			} >( { path: '/wp/v2/settings' } );
+			setGoverningSite( data?.onelogs_parent_site_url || '' );
 		} catch {
 			setNotice( {
 				type: 'error',
@@ -129,25 +83,26 @@ const SiteSettings = () => {
 					'onelogs'
 				),
 			} );
-		} finally {
-			setIsLoading( false );
 		}
-	}, [ apiKey ] );
+	}, [] );
 
 	const deleteGoverningSiteConnection = useCallback( async () => {
 		try {
-			const response = await fetch( `${ API_NAMESPACE }/governing-site`, {
+			const data = await apiFetch< {
+				governing_site_notified: boolean;
+				message: string;
+			} >( {
+				path: `/${ REST_NAMESPACE }/governing-site`,
 				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': NONCE,
-					'X-OneLogs-Token': apiKey,
-				},
 			} );
-			if ( ! response.ok ) {
-				throw new Error( 'Network response was not ok' );
-			}
 			setGoverningSite( '' );
+
+			// Disconnected locally, but the governing site may still list this site.
+			if ( data?.governing_site_notified === false ) {
+				setNotice( { type: 'warning', message: data.message } );
+				return;
+			}
+
 			setNotice( {
 				type: 'success',
 				message: __(
@@ -166,16 +121,16 @@ const SiteSettings = () => {
 		} finally {
 			setShowDisconnectionModal( false );
 		}
-	}, [ apiKey ] );
+	}, [] );
 
 	const handleDisconnectGoverningSite = useCallback( async () => {
 		setShowDisconnectionModal( true );
 	}, [] );
 
+	// Load once on mount.
 	useEffect( () => {
-		fetchApiKey();
-		fetchCurrentGoverningSite();
-	}, [ fetchApiKey, fetchCurrentGoverningSite ] );
+		fetchCurrentGoverningSite().finally( () => setIsLoading( false ) );
+	}, [ fetchCurrentGoverningSite ] );
 
 	if ( isLoading ) {
 		return <Spinner />;
@@ -204,8 +159,10 @@ const SiteSettings = () => {
 						<Button
 							variant="primary"
 							onClick={ () => {
-								navigator?.clipboard
-									?.writeText( apiKey )
+								(
+									navigator.clipboard?.writeText( apiKey ) ??
+									Promise.reject( '' )
+								)
 									.then( () => {
 										setNotice( {
 											type: 'success',
@@ -244,8 +201,11 @@ const SiteSettings = () => {
 				<CardBody>
 					<div>
 						<TextareaControl
+							label={ __( 'API Key', 'onelogs' ) }
+							hideLabelFromVision
 							value={ apiKey }
-							disabled
+							// Not disabled, so the key can still be selected and copied by hand.
+							readOnly
 							help={ __(
 								'This key is used for secure communication with the Governing site.',
 								'onelogs'

@@ -1,14 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { debounce } from '@wordpress/compose';
-import { fetchSiteType } from '../apiService';
-import type {
-	fetchReturn,
-	FilterOptions,
-	SharedSite,
-	UserOption,
-} from '../types';
+import { SITE_TYPE } from '../../../js/constants';
+import type { FilterOptions, SharedSite, UserOption } from '../types';
 
 interface FiltersPanelProps {
 	localSearch: string;
@@ -51,21 +46,9 @@ export const FiltersPanel: React.FC< FiltersPanelProps > = ( {
 		( ( searchValue: string | undefined ) => void ) | null
 	>( null );
 
-	const [ siteType, setSiteType ] = useState< string | fetchReturn >( '' );
 	const today = new Date().toISOString().split( 'T' )[ 0 ];
 
-	const loadSiteType = async () => {
-		try {
-			const data = await fetchSiteType();
-			setSiteType( data );
-		} catch ( err ) {
-			// eslint-disable-next-line no-console
-			console.log( err );
-		}
-	};
-
 	useEffect( () => {
-		loadSiteType();
 		const debouncedFn = debounce( ( searchValue: unknown ) => {
 			handleFilterChange( 'search', searchValue as string );
 		}, 500 );
@@ -76,7 +59,7 @@ export const FiltersPanel: React.FC< FiltersPanelProps > = ( {
 	return (
 		<div>
 			<div className="onelogs-advanced-filters-grid">
-				{ siteType && siteType === 'governing-site' && (
+				{ SITE_TYPE === 'governing-site' && (
 					<SelectControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
