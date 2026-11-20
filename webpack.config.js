@@ -65,14 +65,6 @@ const scripts = {
 			'logs',
 			'index.ts'
 		),
-		onboarding: path.resolve(
-			process.cwd(),
-			'assets',
-			'src',
-			'admin',
-			'onboarding',
-			'index.tsx'
-		),
 		settings: path.resolve(
 			process.cwd(),
 			'assets',

@@ -16,6 +16,7 @@ import apiFetch from '@wordpress/api-fetch';
 import SiteTable from '@/components/SiteTable';
 import SiteModal from '@/components/SiteModal';
 import SiteSettings from '@/components/SiteSettings';
+import SiteTypeSettings from '@/components/SiteTypeSettings';
 import { REST_NAMESPACE, SHARED_SITES, SITE_TYPE } from '@/js/constants';
 import { getErrorMessage } from '@/js/utils';
 
@@ -220,6 +221,8 @@ const SettingsPage = () => {
 					{ disconnectNotice.message }
 				</Notice>
 			) ) }
+
+			{ ! SITE_TYPE && <SiteTypeSettings /> }
 
 			{ SITE_TYPE === 'brand-site' && <SiteSettings /> }
 

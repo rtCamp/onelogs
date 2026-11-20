@@ -33,7 +33,6 @@ final class Assets implements Registrable {
 	 */
 	public const ADMIN_STYLES_HANDLE          = self::PREFIX . 'admin';
 	public const SETTINGS_SCRIPT_HANDLE       = self::PREFIX . 'settings';
-	public const ONBOARDING_SCRIPT_HANDLE     = self::PREFIX . 'setup';
 	public const LOGS_DASHBOARD_SCRIPT_HANDLE = self::PREFIX . 'logs-dashboard';
 
 	/**
@@ -121,9 +120,6 @@ final class Assets implements Registrable {
 
 		$this->register_script( self::SETTINGS_SCRIPT_HANDLE, 'settings' );
 		$this->register_style( self::SETTINGS_SCRIPT_HANDLE, 'settings', [ 'wp-components' ] );
-
-		$this->register_script( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding' );
-		$this->register_style( self::ONBOARDING_SCRIPT_HANDLE, 'onboarding', [ 'wp-components' ] );
 
 		$this->register_script(
 			self::LOGS_DASHBOARD_SCRIPT_HANDLE,
